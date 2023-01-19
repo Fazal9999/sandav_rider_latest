@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>37598349845-jkuvc7r6htphu36mhucb61gkjf11tmgi.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.37598349845-jkuvc7r6htphu36mhucb61gkjf11tmgi</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>37598349845-67pcvmt288usha6h62m2bgak2oaaiuho.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCFzEKqsgEUHSAmXZGtcBEfdp_kyThxT1Y</string>
+	<key>GCM_SENDER_ID</key>
+	<string>37598349845</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.sandav.customer</string>
+	<key>PROJECT_ID</key>
+	<string>sandavfood</string>
+	<key>STORAGE_BUCKET</key>
+	<string>sandavfood.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:37598349845:ios:5f9fd2245aa8ed317ddc1c</string>
+	<key>DATABASE_URL</key>
+	<string>https://sandavfood-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>
