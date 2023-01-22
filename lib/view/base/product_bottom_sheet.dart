@@ -49,11 +49,12 @@ class ProductBottomSheet extends StatefulWidget {
 
   final bool inRestaurantPage;
 
-  ProductBottomSheet({@required this.product,
-    this.isCampaign = false,
-    this.cart,
-    this.cartIndex,
-    this.inRestaurantPage = false});
+  ProductBottomSheet(
+      {@required this.product,
+      this.isCampaign = false,
+      this.cart,
+      this.cartIndex,
+      this.inRestaurantPage = false});
 
   @override
   State<ProductBottomSheet> createState() => _ProductBottomSheetState();
@@ -69,7 +70,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
   bool shouldShow = false;
   bool _isWalletActive;
   bool _todayClosed = false;
-  int minutesBy=1;
+  int minutesBy = 1;
   bool _tomorrowClosed = false;
   String response_text = "";
 
@@ -78,20 +79,11 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
     super.initState();
 
     _isCashOnDeliveryActive =
-        Get
-            .find<SplashController>()
-            .configModel
-            .cashOnDelivery;
+        Get.find<SplashController>().configModel.cashOnDelivery;
     _isDigitalPaymentActive =
-        Get
-            .find<SplashController>()
-            .configModel
-            .digitalPayment;
+        Get.find<SplashController>().configModel.digitalPayment;
     _isWalletActive =
-        Get
-            .find<SplashController>()
-            .configModel
-            .customerWalletStatus == 1;
+        Get.find<SplashController>().configModel.customerWalletStatus == 1;
     Get.find<ProductController>().initData(widget.product, widget.cart);
     avail_availability();
   }
@@ -125,26 +117,24 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
       }
     });
   }
+
   @override
   void dispose() {
     super.dispose();
     resetTimer();
     stopTimer();
   }
+
   Future<void> avail_availability() async {
     final DateTime now = DateTime.now();
     final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
     final String currentDateTime = formatter.format(now);
     List data = (await Get.find<OrderController>().getAvail(
         AvailabilityDetailsModel(
-            userId: Get
-                .find<UserController>()
-                .userInfoModel
-                .id,
+            userId: Get.find<UserController>().userInfoModel.id,
             food_id: widget.product.id,
             createdAt: currentDateTime,
-            updatedAt: currentDateTime
-        ),
+            updatedAt: currentDateTime),
         _callback2));
 
     print("sasss ${data}");
@@ -166,12 +156,10 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
           left: Dimensions.PADDING_SIZE_DEFAULT,
           bottom: Dimensions.PADDING_SIZE_DEFAULT),
       decoration: BoxDecoration(
-        color: Theme
-            .of(context)
-            .cardColor,
+        color: Theme.of(context).cardColor,
         borderRadius: ResponsiveHelper.isMobile(context)
             ? BorderRadius.vertical(
-            top: Radius.circular(Dimensions.RADIUS_EXTRA_LARGE))
+                top: Radius.circular(Dimensions.RADIUS_EXTRA_LARGE))
             : BorderRadius.all(Radius.circular(Dimensions.RADIUS_EXTRA_LARGE)),
       ),
       child: GetBuilder<ProductController>(builder: (productController) {
@@ -192,8 +180,8 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
 
         List<String> _variationList = [];
         for (int index = 0;
-        index < widget.product.choiceOptions.length;
-        index++) {
+            index < widget.product.choiceOptions.length;
+            index++) {
           _variationList.add(widget.product.choiceOptions[index]
               .options[productController.variationIndex[index]]
               .replaceAll(' ', ''));
@@ -220,15 +208,15 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
         }
 
         double _discount =
-        (widget.isCampaign || widget.product.restaurantDiscount == 0)
-            ? widget.product.discount
-            : widget.product.restaurantDiscount;
+            (widget.isCampaign || widget.product.restaurantDiscount == 0)
+                ? widget.product.discount
+                : widget.product.restaurantDiscount;
         String _discountType =
-        (widget.isCampaign || widget.product.restaurantDiscount == 0)
-            ? widget.product.discountType
-            : 'percent';
+            (widget.isCampaign || widget.product.restaurantDiscount == 0)
+                ? widget.product.discountType
+                : 'percent';
         double priceWithDiscount =
-        PriceConverter.convertWithDiscount(price, _discount, _discountType);
+            PriceConverter.convertWithDiscount(price, _discount, _discountType);
         double priceWithQuantity =
             priceWithDiscount * productController.quantity;
         double addonsCost = 0;
@@ -296,59 +284,50 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               (widget.product.image != null &&
-                                  widget.product.image.isNotEmpty)
+                                      widget.product.image.isNotEmpty)
                                   ? Padding(
-                                padding:
-                                const EdgeInsets.only(right: 10.0),
-                                child: InkWell(
-                                  onTap: widget.isCampaign
-                                      ? null
-                                      : () {
-                                    if (!widget.isCampaign) {
-                                      Get.toNamed(RouteHelper
-                                          .getItemImagesRoute(
-                                          widget.product));
-                                    }
-                                  },
-                                  child: Stack(children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                          Dimensions.RADIUS_SMALL),
-                                      child: CustomImage(
-                                        image:
-                                        '${widget.isCampaign ? Get
-                                            .find<SplashController>()
-                                            .configModel
-                                            .baseUrls
-                                            .campaignImageUrl : Get
-                                            .find<SplashController>()
-                                            .configModel
-                                            .baseUrls
-                                            .productImageUrl}/${widget.product
-                                            .image}',
-                                        width: ResponsiveHelper.isMobile(
-                                            context)
-                                            ? 100
-                                            : 140,
-                                        height: ResponsiveHelper.isMobile(
-                                            context)
-                                            ? 100
-                                            : 140,
-                                        fit: BoxFit.cover,
+                                      padding:
+                                          const EdgeInsets.only(right: 10.0),
+                                      child: InkWell(
+                                        onTap: widget.isCampaign
+                                            ? null
+                                            : () {
+                                                if (!widget.isCampaign) {
+                                                  Get.toNamed(RouteHelper
+                                                      .getItemImagesRoute(
+                                                          widget.product));
+                                                }
+                                              },
+                                        child: Stack(children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                                Dimensions.RADIUS_SMALL),
+                                            child: CustomImage(
+                                              image:
+                                                  '${widget.isCampaign ? Get.find<SplashController>().configModel.baseUrls.campaignImageUrl : Get.find<SplashController>().configModel.baseUrls.productImageUrl}/${widget.product.image}',
+                                              width: ResponsiveHelper.isMobile(
+                                                      context)
+                                                  ? 100
+                                                  : 140,
+                                              height: ResponsiveHelper.isMobile(
+                                                      context)
+                                                  ? 100
+                                                  : 140,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          DiscountTag(
+                                              discount: _discount,
+                                              discountType: _discountType,
+                                              fromTop: 20),
+                                        ]),
                                       ),
-                                    ),
-                                    DiscountTag(
-                                        discount: _discount,
-                                        discountType: _discountType,
-                                        fromTop: 20),
-                                  ]),
-                                ),
-                              )
+                                    )
                                   : SizedBox.shrink(),
                               Expanded(
                                 child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         // widget.product.status==1 ? widget.product.name : "${widget.product.name}  (Out Of Stock)"
@@ -373,14 +352,13 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                         },
                                         child: Padding(
                                           padding:
-                                          EdgeInsets.fromLTRB(0, 5, 5, 5),
+                                              EdgeInsets.fromLTRB(0, 5, 5, 5),
                                           child: Text(
                                             widget.product.restaurantName,
                                             style: robotoRegular.copyWith(
                                                 fontSize:
-                                                Dimensions.fontSizeSmall,
-                                                color: Theme
-                                                    .of(context)
+                                                    Dimensions.fontSizeSmall,
+                                                color: Theme.of(context)
                                                     .primaryColor),
                                           ),
                                         ),
@@ -389,152 +367,136 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                           rating: widget.product.avgRating,
                                           size: 15,
                                           ratingCount:
-                                          widget.product.ratingCount),
+                                              widget.product.ratingCount),
                                       Text(
-                                        '${PriceConverter.convertPrice(
-                                            _startingPrice, discount: _discount,
-                                            discountType: _discountType)}'
-                                            '${_endingPrice != null
-                                            ? ' - ${PriceConverter.convertPrice(
-                                            _endingPrice, discount: _discount,
-                                            discountType: _discountType)}'
-                                            : ''}',
+                                        '${PriceConverter.convertPrice(_startingPrice, discount: _discount, discountType: _discountType)}'
+                                        '${_endingPrice != null ? ' - ${PriceConverter.convertPrice(_endingPrice, discount: _discount, discountType: _discountType)}' : ''}',
                                         style: robotoMedium.copyWith(
                                             fontSize: Dimensions.fontSizeLarge),
                                       ),
                                       Row(children: [
                                         price > priceWithDiscount
                                             ? Text(
-                                          '${PriceConverter.convertPrice(
-                                              _startingPrice)}'
-                                              '${_endingPrice != null
-                                              ? ' - ${PriceConverter
-                                              .convertPrice(_endingPrice)}'
-                                              : ''}',
-                                          style: robotoMedium.copyWith(
-                                              color: Theme
-                                                  .of(context)
-                                                  .disabledColor,
-                                              decoration: TextDecoration
-                                                  .lineThrough),
-                                        )
+                                                '${PriceConverter.convertPrice(_startingPrice)}'
+                                                '${_endingPrice != null ? ' - ${PriceConverter.convertPrice(_endingPrice)}' : ''}',
+                                                style: robotoMedium.copyWith(
+                                                    color: Theme.of(context)
+                                                        .disabledColor,
+                                                    decoration: TextDecoration
+                                                        .lineThrough),
+                                              )
                                             : SizedBox(),
                                         SizedBox(
                                             width: Dimensions
                                                 .PADDING_SIZE_EXTRA_SMALL),
                                         (widget.product.image != null &&
-                                            widget.product.image.isNotEmpty)
+                                                widget.product.image.isNotEmpty)
                                             ? SizedBox.shrink()
                                             : DiscountTagWithoutImage(
-                                            discount: _discount,
-                                            discountType: _discountType),
+                                                discount: _discount,
+                                                discountType: _discountType),
                                       ]),
                                     ]),
                               ),
                               Column(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Get
-                                        .find<SplashController>()
-                                        .configModel
-                                        .toggleVegNonVeg
-                                        ? Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: Dimensions
-                                              .PADDING_SIZE_EXTRA_SMALL,
-                                          horizontal: Dimensions
-                                              .PADDING_SIZE_SMALL),
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                        BorderRadius.circular(
-                                            Dimensions.RADIUS_SMALL),
-                                        color: Theme
-                                            .of(context)
-                                            .primaryColor,
-                                      ),
-                                      child: Text(
-                                        widget.product.veg == 0
-                                            ? 'non_veg'.tr
-                                            : 'veg'.tr,
-                                        style: robotoRegular.copyWith(
-                                            fontSize: Dimensions
-                                                .fontSizeExtraSmall,
-                                            color: Colors.white),
-                                      ),
-                                    )
-                                        : SizedBox(),
-                                    SizedBox(
-                                        height: Get
-                                            .find<SplashController>()
+                                    Get.find<SplashController>()
                                             .configModel
                                             .toggleVegNonVeg
+                                        ? Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: Dimensions
+                                                    .PADDING_SIZE_EXTRA_SMALL,
+                                                horizontal: Dimensions
+                                                    .PADDING_SIZE_SMALL),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      Dimensions.RADIUS_SMALL),
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                            child: Text(
+                                              widget.product.veg == 0
+                                                  ? 'non_veg'.tr
+                                                  : 'veg'.tr,
+                                              style: robotoRegular.copyWith(
+                                                  fontSize: Dimensions
+                                                      .fontSizeExtraSmall,
+                                                  color: Colors.white),
+                                            ),
+                                          )
+                                        : SizedBox(),
+                                    SizedBox(
+                                        height: Get.find<SplashController>()
+                                                .configModel
+                                                .toggleVegNonVeg
                                             ? 50
                                             : 0),
                                     widget.isCampaign
                                         ? SizedBox(height: 25)
                                         : GetBuilder<WishListController>(
-                                        builder: (wishList) {
-                                          return InkWell(
-                                            onTap: () {
-                                              if (Get.find<AuthController>()
-                                                  .isLoggedIn()) {
+                                            builder: (wishList) {
+                                            return InkWell(
+                                              onTap: () {
+                                                if (Get.find<AuthController>()
+                                                    .isLoggedIn()) {
+                                                  wishList.wishProductIdList
+                                                          .contains(
+                                                              widget.product.id)
+                                                      ? wishList
+                                                          .removeFromWishList(
+                                                              widget.product.id,
+                                                              false)
+                                                      : wishList.addToWishList(
+                                                          widget.product,
+                                                          null,
+                                                          false);
+                                                } else {
+                                                  showCustomSnackBar(
+                                                      'you_are_not_logged_in'
+                                                          .tr);
+                                                }
+                                              },
+                                              child: Icon(
                                                 wishList.wishProductIdList
-                                                    .contains(
-                                                    widget.product.id)
-                                                    ? wishList
-                                                    .removeFromWishList(
-                                                    widget.product.id,
-                                                    false)
-                                                    : wishList.addToWishList(
-                                                    widget.product,
-                                                    null,
-                                                    false);
-                                              } else {
-                                                showCustomSnackBar(
-                                                    'you_are_not_logged_in'
-                                                        .tr);
-                                              }
-                                            },
-                                            child: Icon(
-                                              wishList.wishProductIdList
-                                                  .contains(
-                                                  widget.product.id)
-                                                  ? Icons.favorite
-                                                  : Icons.favorite_border,
-                                              color: wishList
-                                                  .wishProductIdList
-                                                  .contains(
-                                                  widget.product.id)
-                                                  ? Theme
-                                                  .of(context)
-                                                  .primaryColor
-                                                  : Theme
-                                                  .of(context)
-                                                  .disabledColor,
-                                            ),
-                                          );
-                                        }),
+                                                        .contains(
+                                                            widget.product.id)
+                                                    ? Icons.favorite
+                                                    : Icons.favorite_border,
+                                                color: wishList
+                                                        .wishProductIdList
+                                                        .contains(
+                                                            widget.product.id)
+                                                    ? Theme.of(context)
+                                                        .primaryColor
+                                                    : Theme.of(context)
+                                                        .disabledColor,
+                                              ),
+                                            );
+                                          }),
                                   ]),
                             ]),
 
                         SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 
                         (widget.product.description != null &&
-                            widget.product.description.isNotEmpty)
+                                widget.product.description.isNotEmpty)
                             ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('description'.tr, style: robotoMedium),
-                            SizedBox(
-                                height:
-                                Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                            Text(widget.product.description,
-                                style: robotoRegular),
-                            SizedBox(
-                                height: Dimensions.PADDING_SIZE_LARGE),
-                          ],
-                        )
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('description'.tr, style: robotoMedium),
+                                  SizedBox(
+                                      height:
+                                          Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                                  Text(widget.product.description,
+                                      style: robotoRegular),
+                                  SizedBox(
+                                      height: Dimensions.PADDING_SIZE_LARGE),
+                                ],
+                              )
                             : SizedBox(),
 
                         // Variation
@@ -551,14 +513,14 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                       style: robotoMedium),
                                   SizedBox(
                                       height:
-                                      Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                                          Dimensions.PADDING_SIZE_EXTRA_SMALL),
                                   GridView.builder(
                                     gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount:
-                                      ResponsiveHelper.isMobile(context)
-                                          ? 3
-                                          : 4,
+                                          ResponsiveHelper.isMobile(context)
+                                              ? 3
+                                              : 4,
                                       crossAxisSpacing: 20,
                                       mainAxisSpacing: 10,
                                       childAspectRatio: (1 / 0.25),
@@ -571,17 +533,12 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                       return InkWell(
                                         onTap: () {
                                           print(
-                                              '---check for update  ${widget
-                                                  .cart != null
-                                                  ? widget.cart.toJson()
-                                                  : null} and ${productController
-                                                  .cartIndex}-----');
+                                              '---check for update  ${widget.cart != null ? widget.cart.toJson() : null} and ${productController.cartIndex}-----');
                                           print(
-                                              '-----and ${productController
-                                                  .cartIndex}///-----');
+                                              '-----and ${productController.cartIndex}///-----');
                                           productController
                                               .setCartVariationIndex(
-                                              index, i, widget.product);
+                                                  index, i, widget.product);
                                         },
                                         child: Container(
                                           alignment: Alignment.center,
@@ -590,26 +547,23 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                                   .PADDING_SIZE_EXTRA_SMALL),
                                           decoration: BoxDecoration(
                                             color: productController
-                                                .variationIndex[
-                                            index] !=
-                                                i
-                                                ? Theme
-                                                .of(context)
-                                                .backgroundColor
-                                                : Theme
-                                                .of(context)
-                                                .primaryColor,
+                                                            .variationIndex[
+                                                        index] !=
+                                                    i
+                                                ? Theme.of(context)
+                                                    .backgroundColor
+                                                : Theme.of(context)
+                                                    .primaryColor,
                                             borderRadius: BorderRadius.circular(
                                                 Dimensions.RADIUS_SMALL),
                                             border: productController
-                                                .variationIndex[
-                                            index] !=
-                                                i
+                                                            .variationIndex[
+                                                        index] !=
+                                                    i
                                                 ? Border.all(
-                                                color: Theme
-                                                    .of(context)
-                                                    .disabledColor,
-                                                width: 2)
+                                                    color: Theme.of(context)
+                                                        .disabledColor,
+                                                    width: 2)
                                                 : null,
                                           ),
                                           child: Text(
@@ -620,9 +574,9 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                             overflow: TextOverflow.ellipsis,
                                             style: robotoRegular.copyWith(
                                               color: productController
-                                                  .variationIndex[
-                                              index] !=
-                                                  i
+                                                              .variationIndex[
+                                                          index] !=
+                                                      i
                                                   ? Colors.black
                                                   : Colors.white,
                                             ),
@@ -633,9 +587,9 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                   ),
                                   SizedBox(
                                       height: index !=
-                                          widget.product.choiceOptions
-                                              .length -
-                                              1
+                                              widget.product.choiceOptions
+                                                      .length -
+                                                  1
                                           ? Dimensions.PADDING_SIZE_LARGE
                                           : 0),
                                 ]);
@@ -673,504 +627,478 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                         // Addons
                         widget.product.addOns.length > 0
                             ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('addons'.tr, style: robotoMedium),
-                              SizedBox(
-                                  height: Dimensions
-                                      .PADDING_SIZE_EXTRA_SMALL),
-                              GridView.builder(
-                                gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 4,
-                                  crossAxisSpacing: 20,
-                                  mainAxisSpacing: 10,
-                                  childAspectRatio: (1 / 1.1),
-                                ),
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: widget.product.addOns.length,
-                                itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: () {
-                                      if (!productController
-                                          .addOnActiveList[index]) {
-                                        productController.addAddOn(
-                                            true, index);
-                                      } else if (productController
-                                          .addOnQtyList[index] ==
-                                          1) {
-                                        productController.addAddOn(
-                                            false, index);
-                                      }
-                                    },
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      margin: EdgeInsets.only(
-                                          bottom: productController
-                                              .addOnActiveList[index]
-                                              ? 2
-                                              : 20),
-                                      decoration: BoxDecoration(
-                                        color: productController
-                                            .addOnActiveList[index]
-                                            ? Theme
-                                            .of(context)
-                                            .primaryColor
-                                            : Theme
-                                            .of(context)
-                                            .backgroundColor,
-                                        borderRadius:
-                                        BorderRadius.circular(
-                                            Dimensions.RADIUS_SMALL),
-                                        border: productController
-                                            .addOnActiveList[index]
-                                            ? null
-                                            : Border.all(
-                                            color: Theme
-                                                .of(context)
-                                                .disabledColor,
-                                            width: 2),
-                                        boxShadow: productController
-                                            .addOnActiveList[index]
-                                            ? [
-                                          BoxShadow(
-                                              color: Colors.grey[
-                                              Get.isDarkMode
-                                                  ? 700
-                                                  : 300],
-                                              blurRadius: 5,
-                                              spreadRadius: 1)
-                                        ]
-                                            : null,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                    Text('addons'.tr, style: robotoMedium),
+                                    SizedBox(
+                                        height: Dimensions
+                                            .PADDING_SIZE_EXTRA_SMALL),
+                                    GridView.builder(
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4,
+                                        crossAxisSpacing: 20,
+                                        mainAxisSpacing: 10,
+                                        childAspectRatio: (1 / 1.1),
                                       ),
-                                      child: Column(children: [
-                                        Expanded(
-                                          child: Column(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
-                                              children: [
-                                                Text(
-                                                  widget.product
-                                                      .addOns[index].name,
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow
-                                                      .ellipsis,
-                                                  textAlign:
-                                                  TextAlign.center,
-                                                  style: robotoMedium
-                                                      .copyWith(
-                                                    color: productController
-                                                        .addOnActiveList[
-                                                    index]
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontSize: Dimensions
-                                                        .fontSizeSmall,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 5),
-                                                Text(
-                                                  widget
-                                                      .product
-                                                      .addOns[
-                                                  index]
-                                                      .price >
-                                                      0
-                                                      ? PriceConverter
-                                                      .convertPrice(
-                                                      widget
-                                                          .product
-                                                          .addOns[
-                                                      index]
-                                                          .price)
-                                                      : 'free'.tr,
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow
-                                                      .ellipsis,
-                                                  style: robotoRegular
-                                                      .copyWith(
-                                                    color: productController
-                                                        .addOnActiveList[
-                                                    index]
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontSize: Dimensions
-                                                        .fontSizeExtraSmall,
-                                                  ),
-                                                ),
-                                              ]),
-                                        ),
-                                        productController
-                                            .addOnActiveList[index]
-                                            ? Container(
-                                          height: 25,
-                                          decoration: BoxDecoration(
-                                              borderRadius: BorderRadius
-                                                  .circular(Dimensions
-                                                  .RADIUS_SMALL),
-                                              color:
-                                              Theme
-                                                  .of(context)
-                                                  .cardColor),
-                                          child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
-                                              children: [
-                                                Expanded(
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      if (productController
-                                                          .addOnQtyList[
-                                                      index] >
-                                                          1) {
-                                                        productController
-                                                            .setAddOnQuantity(
-                                                            false,
-                                                            index);
-                                                      } else {
-                                                        productController
-                                                            .addAddOn(
-                                                            false,
-                                                            index);
-                                                      }
-                                                    },
-                                                    child: Center(
-                                                        child: Icon(
-                                                            Icons
-                                                                .remove,
-                                                            size:
-                                                            15)),
-                                                  ),
-                                                ),
-                                                Text(
-                                                  productController
-                                                      .addOnQtyList[
-                                                  index]
-                                                      .toString(),
-                                                  style: robotoMedium
-                                                      .copyWith(
-                                                      fontSize:
-                                                      Dimensions
-                                                          .fontSizeSmall),
-                                                ),
-                                                Expanded(
-                                                  child: InkWell(
-                                                    onTap: () =>
-                                                        productController
-                                                            .setAddOnQuantity(
-                                                            true,
-                                                            index),
-                                                    child: Center(
-                                                        child: Icon(
-                                                            Icons
-                                                                .add,
-                                                            size:
-                                                            15)),
-                                                  ),
-                                                ),
-                                              ]),
-                                        )
-                                            : SizedBox(),
-                                      ]),
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: widget.product.addOns.length,
+                                      itemBuilder: (context, index) {
+                                        return InkWell(
+                                          onTap: () {
+                                            if (!productController
+                                                .addOnActiveList[index]) {
+                                              productController.addAddOn(
+                                                  true, index);
+                                            } else if (productController
+                                                    .addOnQtyList[index] ==
+                                                1) {
+                                              productController.addAddOn(
+                                                  false, index);
+                                            }
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            margin: EdgeInsets.only(
+                                                bottom: productController
+                                                        .addOnActiveList[index]
+                                                    ? 2
+                                                    : 20),
+                                            decoration: BoxDecoration(
+                                              color: productController
+                                                      .addOnActiveList[index]
+                                                  ? Theme.of(context)
+                                                      .primaryColor
+                                                  : Theme.of(context)
+                                                      .backgroundColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      Dimensions.RADIUS_SMALL),
+                                              border: productController
+                                                      .addOnActiveList[index]
+                                                  ? null
+                                                  : Border.all(
+                                                      color: Theme.of(context)
+                                                          .disabledColor,
+                                                      width: 2),
+                                              boxShadow: productController
+                                                      .addOnActiveList[index]
+                                                  ? [
+                                                      BoxShadow(
+                                                          color: Colors.grey[
+                                                              Get.isDarkMode
+                                                                  ? 700
+                                                                  : 300],
+                                                          blurRadius: 5,
+                                                          spreadRadius: 1)
+                                                    ]
+                                                  : null,
+                                            ),
+                                            child: Column(children: [
+                                              Expanded(
+                                                child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        widget.product
+                                                            .addOns[index].name,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: robotoMedium
+                                                            .copyWith(
+                                                          color: productController
+                                                                      .addOnActiveList[
+                                                                  index]
+                                                              ? Colors.white
+                                                              : Colors.black,
+                                                          fontSize: Dimensions
+                                                              .fontSizeSmall,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 5),
+                                                      Text(
+                                                        widget
+                                                                    .product
+                                                                    .addOns[
+                                                                        index]
+                                                                    .price >
+                                                                0
+                                                            ? PriceConverter
+                                                                .convertPrice(
+                                                                    widget
+                                                                        .product
+                                                                        .addOns[
+                                                                            index]
+                                                                        .price)
+                                                            : 'free'.tr,
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: robotoRegular
+                                                            .copyWith(
+                                                          color: productController
+                                                                      .addOnActiveList[
+                                                                  index]
+                                                              ? Colors.white
+                                                              : Colors.black,
+                                                          fontSize: Dimensions
+                                                              .fontSizeExtraSmall,
+                                                        ),
+                                                      ),
+                                                    ]),
+                                              ),
+                                              productController
+                                                      .addOnActiveList[index]
+                                                  ? Container(
+                                                      height: 25,
+                                                      decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius
+                                                              .circular(Dimensions
+                                                                  .RADIUS_SMALL),
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .cardColor),
+                                                      child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Expanded(
+                                                              child: InkWell(
+                                                                onTap: () {
+                                                                  if (productController
+                                                                              .addOnQtyList[
+                                                                          index] >
+                                                                      1) {
+                                                                    productController
+                                                                        .setAddOnQuantity(
+                                                                            false,
+                                                                            index);
+                                                                  } else {
+                                                                    productController
+                                                                        .addAddOn(
+                                                                            false,
+                                                                            index);
+                                                                  }
+                                                                },
+                                                                child: Center(
+                                                                    child: Icon(
+                                                                        Icons
+                                                                            .remove,
+                                                                        size:
+                                                                            15)),
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              productController
+                                                                  .addOnQtyList[
+                                                                      index]
+                                                                  .toString(),
+                                                              style: robotoMedium
+                                                                  .copyWith(
+                                                                      fontSize:
+                                                                          Dimensions
+                                                                              .fontSizeSmall),
+                                                            ),
+                                                            Expanded(
+                                                              child: InkWell(
+                                                                onTap: () =>
+                                                                    productController
+                                                                        .setAddOnQuantity(
+                                                                            true,
+                                                                            index),
+                                                                child: Center(
+                                                                    child: Icon(
+                                                                        Icons
+                                                                            .add,
+                                                                        size:
+                                                                            15)),
+                                                              ),
+                                                            ),
+                                                          ]),
+                                                    )
+                                                  : SizedBox(),
+                                            ]),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
-                              SizedBox(
-                                  height: Dimensions
-                                      .PADDING_SIZE_EXTRA_SMALL),
-                            ])
+                                    SizedBox(
+                                        height: Dimensions
+                                            .PADDING_SIZE_EXTRA_SMALL),
+                                  ])
                             : SizedBox(),
                         GetBuilder<OrderController>(builder: (orderController) {
                           List<AddressModel> _addressList = [];
                           return GetBuilder<RestaurantController>(
                               builder: (restController) {
-                                double _deliveryCharge = -1;
+                            double _deliveryCharge = -1;
 
-                                if (restController.restaurant != null) {
-                                  _todayClosed =
-                                      restController.isRestaurantClosed(
-                                          true,
-                                          restController.restaurant.active,
-                                          restController.restaurant.schedules);
-                                  _tomorrowClosed =
-                                      restController.isRestaurantClosed(
-                                          false,
-                                          restController.restaurant.active,
-                                          restController.restaurant.schedules);
-                                }
-                                _addressList.add(Get.find<LocationController>()
-                                    .getUserAddress());
-                                if (restController.restaurant != null) {
-                                  if (Get
-                                      .find<LocationController>()
-                                      .addressList !=
-                                      null) {
-                                    for (int index = 0;
+                            if (restController.restaurant != null) {
+                              _todayClosed = restController.isRestaurantClosed(
+                                  true,
+                                  restController.restaurant.active,
+                                  restController.restaurant.schedules);
+                              _tomorrowClosed =
+                                  restController.isRestaurantClosed(
+                                      false,
+                                      restController.restaurant.active,
+                                      restController.restaurant.schedules);
+                            }
+                            _addressList.add(Get.find<LocationController>()
+                                .getUserAddress());
+                            if (restController.restaurant != null) {
+                              if (Get.find<LocationController>().addressList !=
+                                  null) {
+                                for (int index = 0;
                                     index <
-                                        Get
-                                            .find<LocationController>()
+                                        Get.find<LocationController>()
                                             .addressList
                                             .length;
                                     index++) {
-                                      if (Get
-                                          .find<LocationController>()
-                                          .addressList[index]
-                                          .zoneIds
-                                          .contains(
+                                  if (Get.find<LocationController>()
+                                      .addressList[index]
+                                      .zoneIds
+                                      .contains(
                                           restController.restaurant.zoneId)) {
-                                        _addressList.add(
-                                            Get
-                                                .find<LocationController>()
-                                                .addressList[index]);
-                                      }
-                                    }
+                                    _addressList.add(
+                                        Get.find<LocationController>()
+                                            .addressList[index]);
                                   }
                                 }
-                                return Row(children: [
-                                Text('${'total_amount'.tr}:',
-                                    style: robotoMedium),
-                                SizedBox(
-                                width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                                Text(PriceConverter.convertPrice(priceWithAddons),
-                                style: robotoBold.copyWith(
-                                color: Theme.of(context).primaryColor)),
-                                SizedBox(width: Dimensions.PADDING_SIZE_LARGE),
-                                Expanded(child: SizedBox()),
-                                Get.find<AuthController>().isLoggedIn()
-                                ?
-                                ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                minimumSize: Size(40, 40),
-                                backgroundColor:
-
-                               requestSent ? Color.fromRGBO(241, 157, 157, 1.0)
-                                   : Colors.red,
-
-
-                                  shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                Dimensions.RADIUS_SMALL),
-                                side: BorderSide(
-                                width: 2, color: Colors.red),
-                                ),
-                                ),
-                                onPressed: () async {
-                               if(!requestSent){
-                                 await avail_request(
-                                     priceWithAddons,
-                                     _deliveryCharge,
-                                     _discount,
-                                     orderController,
-                                     productController) ;
-                               }
-                                },
-                                child: !orderController.isLoading
-                                ?
-
-                                !orderController.isAvLoading
-                                    ?  requestSent ?
-                                const Text(
-                                "Request Sent ",
-                                style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                ),
-                                )
-                                    :
-                                const Text(
-                                "Check Availability",
-                                style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                ),
-                                )
-
-                                    : Padding(
-                                padding:
-                                const EdgeInsets.all(6.0),
-                                child: CircularProgressIndicator(
-                                valueColor:
-                                AlwaysStoppedAnimation<
-                                Color>(Colors.white),
-                                )) : CircularProgressIndicator(),
-                                )
-                                    : SizedBox(),
-
-                                ]
-                                );
-                              });
+                              }
+                            }
+                            return Row(children: [
+                              Text('${'total_amount'.tr}:',
+                                  style: robotoMedium),
+                              SizedBox(
+                                  width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                              Text(PriceConverter.convertPrice(priceWithAddons),
+                                  style: robotoBold.copyWith(
+                                      color: Theme.of(context).primaryColor)),
+                              SizedBox(width: Dimensions.PADDING_SIZE_LARGE),
+                              Expanded(child: SizedBox()),
+                              Get.find<AuthController>().isLoggedIn()
+                                  ? ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        minimumSize: Size(40, 40),
+                                        backgroundColor: requestSent
+                                            ? Color.fromRGBO(241, 157, 157, 1.0)
+                                            : Colors.red,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              Dimensions.RADIUS_SMALL),
+                                          side: BorderSide(
+                                              width: 2, color: Colors.red),
+                                        ),
+                                      ),
+                                      onPressed: () async {
+                                        if (!requestSent) {
+                                          await avail_request(
+                                              priceWithAddons,
+                                              _deliveryCharge,
+                                              _discount,
+                                              orderController,
+                                              productController);
+                                        }
+                                      },
+                                      child: !orderController.isLoading
+                                          ? !orderController.isAvLoading
+                                              ? requestSent
+                                                  ? const Text(
+                                                      "Request Sent ",
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    )
+                                                  : const Text(
+                                                      "Check Availability",
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    )
+                                              : Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(6.0),
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                                Color>(
+                                                            Colors.white),
+                                                  ))
+                                          : CircularProgressIndicator(),
+                                    )
+                                  : SizedBox(),
+                            ]);
+                          });
                         }),
                         SizedBox(height: 15),
-                        ! Get.find<OrderController>().isAvLoading
-                            ? Row(children: [
-                          SizedBox(width: 44),
-                           Text(
-                            "Availability Request Valid For : ",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                                fontSize: 14),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            '$minutes:$seconds',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                                fontSize: 15),
-                          ),
-
-                        ],) : SizedBox(height: 5),
-                        SizedBox(height:10),
+                        !Get.find<OrderController>().isAvLoading && requestSent
+                            ? Row(
+                                children: [
+                                  SizedBox(width: 44),
+                                  Text(
+                                    "Availability Request Valid For : ",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.red,
+                                        fontSize: 14),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    '$minutes:$seconds',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        fontSize: 15),
+                                  ),
+                                ],
+                              )
+                            : SizedBox(height: 5),
+                        SizedBox(height: 10),
                         Container(
                           alignment: Alignment.center,
                           padding:
-                          EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                              EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
                           margin: EdgeInsets.only(
                               bottom: Dimensions.PADDING_SIZE_SMALL),
                           child: shouldShow
                               ? Text(
-                            response_text,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: error ? Colors.red : Colors.green,
-                                fontWeight: FontWeight.bold),
-                          )
+                                  response_text,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: error ? Colors.red : Colors.green,
+                                      fontWeight: FontWeight.bold),
+                                )
                               : Text(""),
                         ),
                         _isAvailable
                             ? SizedBox()
                             : Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.all(
-                              Dimensions.PADDING_SIZE_SMALL),
-                          margin: EdgeInsets.only(
-                              bottom: Dimensions.PADDING_SIZE_SMALL),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                                Dimensions.RADIUS_SMALL),
-                            color: Theme
-                                .of(context)
-                                .primaryColor
-                                .withOpacity(0.1),
-                          ),
-                          child: Column(children: [
-                            Text('not_available_now'.tr,
-                                style: robotoMedium.copyWith(
-                                  color: Theme
-                                      .of(context)
-                                      .primaryColor,
-                                  fontSize: Dimensions.fontSizeLarge,
-                                )),
-                            Text(
-                              '${'available_will_be'.tr} ${DateConverter
-                                  .convertTimeToTime(
-                                  widget.product.availableTimeStarts)} '
-                                  '- ${DateConverter.convertTimeToTime(
-                                  widget.product.availableTimeEnds)}',
-                              style: robotoRegular,
-                            ),
-                          ]),
-                        ),
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.all(
+                                    Dimensions.PADDING_SIZE_SMALL),
+                                margin: EdgeInsets.only(
+                                    bottom: Dimensions.PADDING_SIZE_SMALL),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                      Dimensions.RADIUS_SMALL),
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.1),
+                                ),
+                                child: Column(children: [
+                                  Text('not_available_now'.tr,
+                                      style: robotoMedium.copyWith(
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: Dimensions.fontSizeLarge,
+                                      )),
+                                  Text(
+                                    '${'available_will_be'.tr} ${DateConverter.convertTimeToTime(widget.product.availableTimeStarts)} '
+                                    '- ${DateConverter.convertTimeToTime(widget.product.availableTimeEnds)}',
+                                    style: robotoRegular,
+                                  ),
+                                ]),
+                              ),
 
                         (!widget.product.scheduleOrder && !_isAvailable)
                             ? SizedBox()
                             : Row(children: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(50, 50),
-                              primary: Theme
-                                  .of(context)
-                                  .cardColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    Dimensions.RADIUS_SMALL),
-                                side: BorderSide(
-                                    width: 2,
-                                    color:
-                                    Theme
-                                        .of(context)
-                                        .primaryColor),
-                              ),
-                            ),
-                            onPressed: () {
-                              if (widget.inRestaurantPage) {
-                                Get.back();
-                              } else {
-                                Get.offNamed(
-                                    RouteHelper.getRestaurantRoute(
-                                        widget.product.restaurantId));
-                              }
-                            },
-                            child: Image.asset(house,
-                                height: 30,
-                                color: Colors.black,
-                                width: 30),
-                          ),
-                          SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
-                          Expanded(
-                              child: CustomButton(
-                                width: ResponsiveHelper.isDesktop(context)
-                                    ? MediaQuery
-                                    .of(context)
-                                    .size
-                                    .width / 2.0
-                                    : null,
-                                /*buttonText: isCampaign ? 'order_now'.tr : isExistInCart ? 'already_added_in_cart'.tr : fromCart
-                                  ? 'update_in_cart'.tr : 'add_to_cart'.tr,*/
-                                buttonText: widget.isCampaign
-                                    ? 'order_now'.tr
-                                    : (widget.cart != null ||
-                                    productController.cartIndex != -1)
-                                    ? 'update_in_cart'.tr
-                                    : 'add_to_cart'.tr,
-                                onPressed: () {
-                                  Get.back();
-                                  if (widget.isCampaign) {
-                                    Get.toNamed(
-                                        RouteHelper.getCheckoutRoute(
-                                            'campaign'),
-                                        arguments: CheckoutScreen(
-                                          fromCart: false,
-                                          cartList: [_cartModel],
-                                        ));
-                                  } else {
-                                    if (Get.find<CartController>()
-                                        .existAnotherRestaurantProduct(
-                                        _cartModel
-                                            .product.restaurantId)) {
-                                      Get.dialog(
-                                          ConfirmationDialog(
-                                            icon: warning,
-                                            title: 'are_you_sure_to_reset'.tr,
-                                            description: 'if_you_continue'.tr,
-                                            onYesPressed: () {
-                                              Get.back();
-                                              Get.find<CartController>()
-                                                  .removeAllAndAddToCart(
-                                                  _cartModel);
-                                              _showCartSnackBar();
-                                            },
-                                          ),
-                                          barrierDismissible: false);
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(50, 50),
+                                    primary: Theme.of(context).cardColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          Dimensions.RADIUS_SMALL),
+                                      side: BorderSide(
+                                          width: 2,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if (widget.inRestaurantPage) {
+                                      Get.back();
                                     } else {
-                                      Get.find<CartController>().addToCart(
-                                          _cartModel,
-                                          widget.cartIndex != null
-                                              ? widget.cartIndex
-                                              : productController.cartIndex);
-                                      _showCartSnackBar();
+                                      Get.offNamed(
+                                          RouteHelper.getRestaurantRoute(
+                                              widget.product.restaurantId));
                                     }
-                                  }
-                                },
-                              )),
-                        ]),
+                                  },
+                                  child: Image.asset(house,
+                                      height: 30,
+                                      color: Colors.black,
+                                      width: 30),
+                                ),
+                                SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                                Expanded(
+                                    child: CustomButton(
+                                  width: ResponsiveHelper.isDesktop(context)
+                                      ? MediaQuery.of(context).size.width / 2.0
+                                      : null,
+                                  /*buttonText: isCampaign ? 'order_now'.tr : isExistInCart ? 'already_added_in_cart'.tr : fromCart
+                                  ? 'update_in_cart'.tr : 'add_to_cart'.tr,*/
+                                  buttonText: widget.isCampaign
+                                      ? 'order_now'.tr
+                                      : (widget.cart != null ||
+                                              productController.cartIndex != -1)
+                                          ? 'update_in_cart'.tr
+                                          : 'add_to_cart'.tr,
+                                  onPressed: () {
+                                    Get.back();
+                                    if (widget.isCampaign) {
+                                      Get.toNamed(
+                                          RouteHelper.getCheckoutRoute(
+                                              'campaign'),
+                                          arguments: CheckoutScreen(
+                                            fromCart: false,
+                                            cartList: [_cartModel],
+                                          ));
+                                    } else {
+                                      if (Get.find<CartController>()
+                                          .existAnotherRestaurantProduct(
+                                              _cartModel
+                                                  .product.restaurantId)) {
+                                        Get.dialog(
+                                            ConfirmationDialog(
+                                              icon: warning,
+                                              title: 'are_you_sure_to_reset'.tr,
+                                              description: 'if_you_continue'.tr,
+                                              onYesPressed: () {
+                                                Get.back();
+                                                Get.find<CartController>()
+                                                    .removeAllAndAddToCart(
+                                                        _cartModel);
+                                                _showCartSnackBar();
+                                              },
+                                            ),
+                                            barrierDismissible: false);
+                                      } else {
+                                        Get.find<CartController>().addToCart(
+                                            _cartModel,
+                                            widget.cartIndex != null
+                                                ? widget.cartIndex
+                                                : productController.cartIndex);
+                                        _showCartSnackBar();
+                                      }
+                                    }
+                                  },
+                                )),
+                              ]),
                       ]),
                 ),
               ]),
@@ -1179,7 +1107,8 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
     );
   }
 
-  Future<void> avail_request(double priceWithAddons,
+  Future<void> avail_request(
+      double priceWithAddons,
       double _deliveryCharge,
       double _discount,
       OrderController orderController,
@@ -1195,13 +1124,11 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
     double _total = _subTotal +
         _deliveryCharge -
         _discount -
-        Get
-            .find<CouponController>()
-            .discount +
+        Get.find<CouponController>().discount +
         _tax;
     AddressModel _address;
     String sharedAddress =
-    sharedPreferences.getString(AppConstants.USER_ADDRESS);
+        sharedPreferences.getString(AppConstants.USER_ADDRESS);
     if (sharedAddress != null) {
       _address = AddressModel.fromJson(jsonDecode(sharedAddress));
       print("Fazal Address ${_address.toJson()}");
@@ -1211,10 +1138,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
 
     int code = (await orderController.getAvailability(
         AvailabilityDetailsModel(
-          userId: Get
-              .find<UserController>()
-              .userInfoModel
-              .id,
+          userId: Get.find<UserController>().userInfoModel.id,
           food_id: widget.product.id,
         ),
         _callback,
@@ -1254,10 +1178,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
         AvailabilityDetailsModel(
           food_id: widget.product.id,
           restaurant_id: widget.product.restaurantId,
-          userId: Get
-              .find<UserController>()
-              .userInfoModel
-              .id,
+          userId: Get.find<UserController>().userInfoModel.id,
           price: PriceConverter.convertPrice(priceWithAddons).toDouble(),
           status: "requested".toString(),
           foodDetails: widget.product,
@@ -1266,19 +1187,10 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
           latitude: _address.latitude,
           longitude: _address.longitude,
           contactPersonName: _address.contactPersonName ??
-              '${Get
-                  .find<UserController>()
-                  .userInfoModel
-                  .fName} '
-                  '${Get
-                  .find<UserController>()
-                  .userInfoModel
-                  .lName}',
+              '${Get.find<UserController>().userInfoModel.fName} '
+                  '${Get.find<UserController>().userInfoModel.lName}',
           contactPersonNumber: _address.contactPersonNumber ??
-              Get
-                  .find<UserController>()
-                  .userInfoModel
-                  .phone,
+              Get.find<UserController>().userInfoModel.phone,
           addressType: _address.addressType,
           deliveryCharge: _deliveryCharge,
           quantity: productController.quantity,
@@ -1297,7 +1209,8 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
         (orderController.selectedDateSlot == 1 && _tomorrowClosed)) {
       showCustomSnackBar('restaurant_is_closed'.tr);
     } else if (orderController.timeSlots == null ||
-        orderController.timeSlots.length == 0) {} else if (!_isAvailable) {
+        orderController.timeSlots.length == 0) {
+    } else if (!_isAvailable) {
       showCustomSnackBar(
           'one_or_more_products_are_not_available_for_this_selected_time'.tr);
     } else if (orderController.orderType != 'take_away' &&
@@ -1307,14 +1220,9 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
     } else {
       List<Cart> carts = [];
       for (int index = 0;
-      index < Get
-          .find<CartController>()
-          .cartList
-          .length;
-      index++) {
-        CartModel cart = Get
-            .find<CartController>()
-            .cartList[index];
+          index < Get.find<CartController>().cartList.length;
+          index++) {
+        CartModel cart = Get.find<CartController>().cartList[index];
         List<int> _addOnIdList = [];
         List<int> _addOnQtyList = [];
         cart.addOnIds.forEach((addOn) {
@@ -1374,8 +1282,8 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
     // ));
   }
 
-  void _callback(bool isSuccess, int code,
-      AvailabilityDetailsModel availability) async {
+  void _callback(
+      bool isSuccess, int code, AvailabilityDetailsModel availability) async {
     if (availability != null) {
       print("ghrr ${availability}");
     }
@@ -1397,16 +1305,20 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
           "food_id ${food_id} ,  user_id ${user_id} ---------${dt1} ---------${dt2}     ");
       minutesBy = diff.inMinutes;
 
-      startTimer();
-      // if(minutes >=5){
-      //  //delete availability
-      // }
-      // else{
-      //   //timer
-      //   startTimer;
-      // }
-
-
+print("asasa ${minutesBy}");
+      if (minutesBy >= 500) {
+        //delete availability
+        Get.find<OrderController>().deleteAvailability(
+          AvailabilityDetailsModel(
+            userId: Get.find<UserController>().userInfoModel.id,
+            food_id: widget.product.id,
+          ),
+          _callback,
+        );
+      } else {
+        //timer
+        startTimer();
+      }
     }
   }
 }

@@ -49,6 +49,12 @@ class OrderRepo {
     return await apiClient.postAvailability(
         AppConstants.GET_AVAILABILITY, orderBody.toJson());
   }
+  Future<Response> deleteAvailability(AvailabilityDetailsModel orderBody) async {
+    return await apiClient.deleteAvailability(
+        AppConstants.DELETE_AVAILABILITY, orderBody.toJson());
+  }
+
+
 
   Future<Response> getDeliveryManData(String orderID) async {
     return await apiClient.getData('${AppConstants.LAST_LOCATION_URI}$orderID');

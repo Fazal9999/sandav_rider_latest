@@ -396,6 +396,31 @@ class OrderController extends GetxController implements GetxService {
     return response.statusCode;
   }
 
+  Future<int> deleteAvailability(
+      AvailabilityDetailsModel availability,
+      Function callback,
+
+      ) async {
+
+    Response response = await orderRepo.deleteAvailability(availability);
+
+    if (response.statusCode == 200) {
+      callback(true, response.statusCode, null);
+    } else {
+      callback(false, response.statusCode, null);
+    }
+
+    return response.statusCode;
+  }
+
+
+
+
+
+
+
+
+
   Future<List> getAvail(
       AvailabilityDetailsModel availability, Function callback) async {
     _isAvLoading = true;

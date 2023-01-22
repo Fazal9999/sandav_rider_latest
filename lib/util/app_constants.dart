@@ -30,6 +30,7 @@ class AppConstants {
   static const String PLACE_ORDER_URI = '/api/v1/customer/order/place';
   static const String CHECK_AVAILABILITY ='/api/v1/customer/availability/get_availability';
   static const String GET_AVAILABILITY ='/api/v1/customer/availability/check_availability';
+  static const String DELETE_AVAILABILITY ='/api/v1/customer/availability/delete_availability';
   static const String ADDRESS_LIST_URI = '/api/v1/customer/address/list';
   static const String ZONE_URI = '/api/v1/config/get-zone-id';
   static const String REMOVE_ADDRESS_URI =
