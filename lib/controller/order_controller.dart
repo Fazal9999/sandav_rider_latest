@@ -25,6 +25,7 @@ import '../data/model/response/availability_details_model.dart';
 
 class OrderController extends GetxController implements GetxService {
   final OrderRepo orderRepo;
+
   OrderController({@required this.orderRepo});
 
   List<OrderModel> _runningOrderList;
@@ -34,6 +35,8 @@ class OrderController extends GetxController implements GetxService {
   OrderModel _trackModel;
   ResponseModel _responseModel;
   bool _isLoading = false;
+  bool _isAvLoading = false;
+
   bool _showCancelled = false;
   String _orderType = 'delivery';
   List<TimeSlotModel> _timeSlots;
@@ -59,31 +62,58 @@ class OrderController extends GetxController implements GetxService {
   Timer _timer;
 
   List<OrderModel> get runningOrderList => _runningOrderList;
+
   List<OrderModel> get historyOrderList => _historyOrderList;
+
   List<OrderDetailsModel> get orderDetails => _orderDetails;
+
   int get paymentMethodIndex => _paymentMethodIndex;
+
   OrderModel get trackModel => _trackModel;
+
   ResponseModel get responseModel => _responseModel;
+
   bool get isLoading => _isLoading;
+  bool get isAvLoading => _isAvLoading;
+
   bool get showCancelled => _showCancelled;
+
   String get orderType => _orderType;
+
   List<TimeSlotModel> get timeSlots => _timeSlots;
+
   List<TimeSlotModel> get allTimeSlots => _allTimeSlots;
+
   List<int> get slotIndexList => _slotIndexList;
+
   int get selectedDateSlot => _selectedDateSlot;
+
   int get selectedTimeSlot => _selectedTimeSlot;
+
   int get selectedTips => _selectedTips;
+
   double get distance => _distance;
+
   bool get runningPaginate => _runningPaginate;
+
   int get runningPageSize => _runningPageSize;
+
   int get runningOffset => _runningOffset;
+
   bool get historyPaginate => _historyPaginate;
+
   int get historyPageSize => _historyPageSize;
+
   int get historyOffset => _historyOffset;
+
   int get addressIndex => _addressIndex;
+
   double get tips => _tips;
+
   bool get isRunningOrderViewShow => _isRunningOrderViewShow;
+
   int get runningOrderIndex => _runningOrderIndex;
+
   int get deliverySelectIndex => _deliverySelectIndex;
 
   void callTrackOrderApi(
@@ -103,8 +133,6 @@ class OrderController extends GetxController implements GetxService {
   void cancelTimer() {
     print('timer cancle------------');
     _timer?.cancel();
-              
-
   }
 
   void selectDelivery(int index) {
@@ -337,10 +365,10 @@ class OrderController extends GetxController implements GetxService {
       String message = response.body['message'];
       String foodId = response.body['food_id'].toString();
       print("food_id ${foodId}");
-      final Map parsed = json.decode(response.toString());
-      final availability = AvailabilityDetailsModel.fromJson(parsed);
+   //   final Map parsed = json.decode(response.toString());
+     // final availability = AvailabilityDetailsModel.fromJson(parsed);
 
-      callback(true,response.statusCode,availability);
+      callback(true, response.statusCode, null);
       print('-------- Order placed successfully $foodId ----------');
     } else {
       callback(false, response.statusCode);
@@ -349,34 +377,50 @@ class OrderController extends GetxController implements GetxService {
   }
 
   Future<int> getAvailability(
-      AvailabilityDetailsModel availability, Function callback, bool live,) async {
+    AvailabilityDetailsModel availability,
+    Function callback,
+    bool live,
+  ) async {
+    live ? _isLoading = false : _isLoading = true;
 
-    live ? _isLoading = false :  _isLoading = true;
-    print("bhatti4545 ${availability.order_amount}");
-    print("FazalStatus ${availability.status}");
     update();
-    print(availability.toJson());
     Response response = await orderRepo.getAvailability(availability);
-    live ? _isLoading = false :  _isLoading = false;
-    if (response.statusCode == 200) {
+    live ? _isLoading = false : _isLoading = false;
 
-      callback(true, response.statusCode,null);
+    if (response.statusCode == 200) {
+      callback(true, response.statusCode, null);
     } else {
-      final Map parsed = json.decode(response.toString());
-      final availability = AvailabilityDetailsModel.fromJson(parsed);
-      print("availfg ${availability.status}");
-      callback(false, response.statusCode,availability);
+      callback(false, response.statusCode, null);
     }
     update();
-   return response.statusCode;
+    return response.statusCode;
   }
 
+  Future<List> getAvail(
+      AvailabilityDetailsModel availability, Function callback) async {
+    _isAvLoading = true;
+    // update();
+    Response response = await orderRepo.getAvailability(availability);
+    _isAvLoading = false;
+    print("Doneee   ${response.statusCode}");
 
-
-
-
-
-
+    if (response.statusCode == 403) {
+      // final extractedData = json.decode(response.body);
+      List loadedCars = response.body['availability'];
+     // _isAvLoading = false;
+      callback(loadedCars);
+      loadedCars;
+    } else if (response.statusCode == 200) {
+      callback(null);
+      //_isAvLoading = false;
+      null;
+    } else {
+      //_isAvLoading = false;
+      null;
+    }
+    update();
+    return null;
+  }
 
   void stopLoader() {
     _isLoading = false;

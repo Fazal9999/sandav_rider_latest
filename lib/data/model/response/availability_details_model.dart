@@ -7,65 +7,71 @@ class AvailabilityDetailsModel {
   int restaurant_id;
   int userId;
   double price;
-  String status ;
+  String status;
+
   Product foodDetails;
   AddressModel deliveryAddress;
   double deliveryCharge;
-   int quantity;
- double order_amount;
-  int deliveryAddressId=null;
- String createdAt;
+  int quantity;
+  double order_amount;
+  int deliveryAddressId;
+  String createdAt;
   String updatedAt;
 
-   String address;
-   String latitude;
-   String longitude;
-   String contactPersonName;
-   String contactPersonNumber;
-   String addressType;
-   String road;
-   String house;
-   //String scheduleAt;
-   String floor;
-  AvailabilityDetailsModel(
-      {
-     this.food_id,
-      this.restaurant_id,
-      this.userId,
-      this.price,
-      this.status,
-      this.foodDetails,
-      this.deliveryAddress,
-     this.deliveryCharge,
-      this.quantity,
-     this.order_amount,
-     this.deliveryAddressId,
-      this.createdAt,
-      this.updatedAt,
-        this.address,
-        this.latitude,
-        this.longitude,
-        this.contactPersonName,
-        this.contactPersonNumber,
-        this.addressType,
-       // this.scheduleAt
-      });
+  String address;
+  String latitude;
+  String longitude;
+  String contactPersonName;
+  String contactPersonNumber;
+  String addressType;
+  String road;
+  String house;
+
+  //String scheduleAt;
+  String floor;
+
+  AvailabilityDetailsModel({
+    this.food_id,
+    this.restaurant_id,
+    this.userId,
+    this.price,
+    this.status,
+    this.foodDetails,
+    this.deliveryAddress,
+    this.deliveryCharge,
+    this.quantity,
+    this.order_amount,
+    this.deliveryAddressId,
+    this.createdAt,
+    this.updatedAt,
+    this.address,
+    this.latitude,
+    this.longitude,
+    this.contactPersonName,
+    this.contactPersonNumber,
+    this.addressType,
+    // this.scheduleAt
+  });
+
   AvailabilityDetailsModel.fromJson(Map<String, dynamic> json) {
-   // id = json['id'];
+    // id = json['id'];
     food_id = json['food_id'];
     restaurant_id = json['restaurant_id'];
     userId = json['user_id'];
-     status = json['status'];
-    price = json['price'].toDouble();
+    status = json['status'] as String;
+    price = json['price'];
     foodDetails = json['food_details'] != null
         ? new Product.fromJson(json['food_details'])
         : null;
     quantity = json['quantity'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    order_amount=json['order_amount'];
+    createdAt = json['created_at']  as String;
+    address = json['address']  as String;
+    updatedAt = json['updated_at']  as String;
+    order_amount = json['order_amount'];
+    if (this.deliveryAddress != null) {
+     deliveryAddress= json['delivery_address'].toJson();
+    }
     //scheduleAt=json['schedule_at'];
-   
   }
 
   Map<String, dynamic> toJson() {
@@ -86,10 +92,8 @@ class AvailabilityDetailsModel {
     data['address'] = this.address;
     data['latitude'] = this.latitude;
     data['longitude'] = this.longitude;
-  //  data['schedule_at'] = this.scheduleAt;
+    //  data['schedule_at'] = this.scheduleAt;
 
     return data;
   }
 }
-
- 
