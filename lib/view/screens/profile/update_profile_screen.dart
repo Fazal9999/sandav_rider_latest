@@ -19,6 +19,8 @@ import 'package:sandav/view/screens/profile/widget/profile_bg_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../base/custom_app_bar.dart';
+
 class UpdateProfileScreen extends StatefulWidget {
   @override
   State<UpdateProfileScreen> createState() => _UpdateProfileScreenState();
@@ -50,7 +52,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
-      appBar: ResponsiveHelper.isDesktop(context) ? WebMenuBar() : null,
+      appBar: ResponsiveHelper.isDesktop(context) ? WebMenuBar() : CustomAppBar(
+          title: "Update Profile"),
       body: GetBuilder<UserController>(builder: (userController) {
         if (userController.userInfoModel != null &&
             _phoneController.text.isEmpty) {

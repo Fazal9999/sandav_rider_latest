@@ -26,7 +26,7 @@ class _FavouriteScreenState extends State<FavouriteScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'favourite'.tr, isBackButtonExist: false),
+      appBar: CustomAppBar(title: 'favourite'.tr, isBackButtonExist: true),
       body: Get.find<AuthController>().isLoggedIn()
           ? SafeArea(
               child: Column(children: [

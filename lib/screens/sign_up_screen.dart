@@ -26,6 +26,7 @@ import '../helper/route_helper.dart';
 import '../store/AppStore.dart';
 import '../store/user_signup.dart';
 import '../util/dimensions.dart';
+import '../view/base/custom_app_bar.dart';
 import '../view/base/custom_snackbar.dart';
 import '../view/base/custom_text_field.dart';
 import '../view/base/web_menu_bar.dart';
@@ -98,7 +99,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           return true;
         },
         child: Scaffold(
-          appBar: ResponsiveHelper.isDesktop(context) ? WebMenuBar() : null,
+          appBar: ResponsiveHelper.isDesktop(context) ? WebMenuBar() : CustomAppBar(
+              title: "Sign Up"),
           body: SingleChildScrollView(
             child: Container(
               //padding: EdgeInsets.all(16),

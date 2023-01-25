@@ -20,9 +20,9 @@ class CartProductWidget extends StatelessWidget {
   final bool isAvailable;
   CartProductWidget(
       {@required this.cart,
-      @required this.cartIndex,
-      @required this.isAvailable,
-      @required this.addOns});
+        @required this.cartIndex,
+        @required this.isAvailable,
+        @required this.addOns});
 
   @override
   Widget build(BuildContext context) {
@@ -63,20 +63,20 @@ class CartProductWidget extends StatelessWidget {
         onTap: () {
           ResponsiveHelper.isMobile(context)
               ? showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (con) => ProductBottomSheet(
-                      product: cart.product, cartIndex: cartIndex, cart: cart),
-                )
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (con) => ProductBottomSheet(
+                product: cart.product, cartIndex: cartIndex, cart: cart),
+          )
               : showDialog(
-                  context: context,
-                  builder: (con) => Dialog(
-                        child: ProductBottomSheet(
-                            product: cart.product,
-                            cartIndex: cartIndex,
-                            cart: cart),
-                      ));
+              context: context,
+              builder: (con) => Dialog(
+                child: ProductBottomSheet(
+                    product: cart.product,
+                    cartIndex: cartIndex,
+                    cart: cart),
+              ));
         },
         child: Container(
           decoration: BoxDecoration(
@@ -113,46 +113,46 @@ class CartProductWidget extends StatelessWidget {
                   children: [
                     Row(children: [
                       (cart.product.image != null &&
-                              cart.product.image.isNotEmpty)
+                          cart.product.image.isNotEmpty)
                           ? Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                                Dimensions.RADIUS_SMALL),
+                            child: CustomImage(
+                              image:
+                              '${Get.find<SplashController>().configModel.baseUrls.productImageUrl}/${cart.product.image}',
+                              height: 65,
+                              width: 70,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          isAvailable
+                              ? SizedBox()
+                              : Positioned(
+                            top: 0,
+                            left: 0,
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                  BorderRadius.circular(
                                       Dimensions.RADIUS_SMALL),
-                                  child: CustomImage(
-                                    image:
-                                        '${Get.find<SplashController>().configModel.baseUrls.productImageUrl}/${cart.product.image}',
-                                    height: 65,
-                                    width: 70,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                isAvailable
-                                    ? SizedBox()
-                                    : Positioned(
-                                        top: 0,
-                                        left: 0,
-                                        bottom: 0,
-                                        right: 0,
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      Dimensions.RADIUS_SMALL),
-                                              color: Colors.black
-                                                  .withOpacity(0.6)),
-                                          child:
-                                              Text('not_available_now_break'.tr,
-                                                  textAlign: TextAlign.center,
-                                                  style: robotoRegular.copyWith(
-                                                    color: Colors.white,
-                                                    fontSize: 8,
-                                                  )),
-                                        ),
-                                      ),
-                              ],
-                            )
+                                  color: Colors.black
+                                      .withOpacity(0.6)),
+                              child:
+                              Text('not_available_now_break'.tr,
+                                  textAlign: TextAlign.center,
+                                  style: robotoRegular.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                  )),
+                            ),
+                          ),
+                        ],
+                      )
                           : SizedBox.shrink(),
                       SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
                       Expanded(
@@ -185,34 +185,34 @@ class CartProductWidget extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Get.find<SplashController>()
-                                    .configModel
-                                    .toggleVegNonVeg
+                                .configModel
+                                .toggleVegNonVeg
                                 ? Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical:
-                                            Dimensions.PADDING_SIZE_EXTRA_SMALL,
-                                        horizontal:
-                                            Dimensions.PADDING_SIZE_SMALL),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          Dimensions.RADIUS_SMALL),
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    child: Text(
-                                      cart.product.veg == 0
-                                          ? 'non_veg'.tr
-                                          : 'veg'.tr,
-                                      style: robotoRegular.copyWith(
-                                          fontSize:
-                                              Dimensions.fontSizeExtraSmall,
-                                          color: Colors.white),
-                                    ),
-                                  )
+                              padding: EdgeInsets.symmetric(
+                                  vertical:
+                                  Dimensions.PADDING_SIZE_EXTRA_SMALL,
+                                  horizontal:
+                                  Dimensions.PADDING_SIZE_SMALL),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                    Dimensions.RADIUS_SMALL),
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              child: Text(
+                                cart.product.veg == 0
+                                    ? 'non_veg'.tr
+                                    : 'veg'.tr,
+                                style: robotoRegular.copyWith(
+                                    fontSize:
+                                    Dimensions.fontSizeExtraSmall,
+                                    color: Colors.white),
+                              ),
+                            )
                                 : SizedBox(),
                             SizedBox(
                                 height: Get.find<SplashController>()
-                                        .configModel
-                                        .toggleVegNonVeg
+                                    .configModel
+                                    .toggleVegNonVeg
                                     ? Dimensions.PADDING_SIZE_EXTRA_SMALL
                                     : 0),
                             Row(children: [
@@ -240,55 +240,55 @@ class CartProductWidget extends StatelessWidget {
                           ]),
                       !ResponsiveHelper.isMobile(context)
                           ? Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: Dimensions.PADDING_SIZE_SMALL),
-                              child: IconButton(
-                                onPressed: () {
-                                  Get.find<CartController>()
-                                      .removeFromCart(cartIndex);
-                                },
-                                icon: Icon(Icons.delete, color: Colors.red),
-                              ),
-                            )
+                        padding: EdgeInsets.symmetric(
+                            horizontal: Dimensions.PADDING_SIZE_SMALL),
+                        child: IconButton(
+                          onPressed: () {
+                            Get.find<CartController>()
+                                .removeFromCart(cartIndex);
+                          },
+                          icon: Icon(Icons.delete, color: Colors.red),
+                        ),
+                      )
                           : SizedBox(),
                     ]),
                     _addOnText.isNotEmpty
                         ? Padding(
-                            padding: EdgeInsets.only(
-                                top: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                            child: Row(children: [
-                              SizedBox(width: 80),
-                              Text('${'addons'.tr}: ',
-                                  style: robotoMedium.copyWith(
-                                      fontSize: Dimensions.fontSizeSmall)),
-                              Flexible(
-                                  child: Text(
-                                _addOnText,
-                                style: robotoRegular.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                    color: Theme.of(context).disabledColor),
-                              )),
-                            ]),
-                          )
+                      padding: EdgeInsets.only(
+                          top: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                      child: Row(children: [
+                        SizedBox(width: 80),
+                        Text('${'addons'.tr}: ',
+                            style: robotoMedium.copyWith(
+                                fontSize: Dimensions.fontSizeSmall)),
+                        Flexible(
+                            child: Text(
+                              _addOnText,
+                              style: robotoRegular.copyWith(
+                                  fontSize: Dimensions.fontSizeSmall,
+                                  color: Theme.of(context).disabledColor),
+                            )),
+                      ]),
+                    )
                         : SizedBox(),
                     cart.product.variations.length > 0
                         ? Padding(
-                            padding: EdgeInsets.only(
-                                top: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                            child: Row(children: [
-                              SizedBox(width: 80),
-                              Text('${'variations'.tr}: ',
-                                  style: robotoMedium.copyWith(
-                                      fontSize: Dimensions.fontSizeSmall)),
-                              Flexible(
-                                  child: Text(
-                                _variationText,
-                                style: robotoRegular.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall,
-                                    color: Theme.of(context).disabledColor),
-                              )),
-                            ]),
-                          )
+                      padding: EdgeInsets.only(
+                          top: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                      child: Row(children: [
+                        SizedBox(width: 80),
+                        Text('${'variations'.tr}: ',
+                            style: robotoMedium.copyWith(
+                                fontSize: Dimensions.fontSizeSmall)),
+                        Flexible(
+                            child: Text(
+                              _variationText,
+                              style: robotoRegular.copyWith(
+                                  fontSize: Dimensions.fontSizeSmall,
+                                  color: Theme.of(context).disabledColor),
+                            )),
+                      ]),
+                    )
                         : SizedBox(),
 
                     /*addOns.length > 0 ? SizedBox(

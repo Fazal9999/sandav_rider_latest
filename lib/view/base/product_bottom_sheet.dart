@@ -68,16 +68,21 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
   bool error = false;
   bool requestSent = false;
   bool shouldShow = false;
+  bool timeShow = false;
+
   bool _isWalletActive;
   bool _todayClosed = false;
   int minutesBy = 1;
   bool _tomorrowClosed = false;
   String response_text = "";
+  String minutes = "";
+  String seconds = "";
 
   @override
   Future<void> initState() {
     super.initState();
-
+    minutes = strDigits(myDuration.inMinutes.remainder(minutesBy));
+    seconds = strDigits(myDuration.inSeconds.remainder(60));
     _isCashOnDeliveryActive =
         Get.find<SplashController>().configModel.cashOnDelivery;
     _isDigitalPaymentActive =
@@ -86,7 +91,10 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
         Get.find<SplashController>().configModel.customerWalletStatus == 1;
     Get.find<ProductController>().initData(widget.product, widget.cart);
     avail_availability();
+    delete_availability();
   }
+
+  String strDigits(int n) => n.toString().padLeft(2, '0');
 
   void startTimer() {
     countdownTimer =
@@ -101,13 +109,13 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
 
   void resetTimer() {
     if (this.mounted) {
-      stopTimer();
+      //stopTimer();
       setState(() => myDuration = Duration(days: 5));
     }
   }
 
   void setCountDown() {
-    final reduceSecondsBy = 1;
+    const reduceSecondsBy = 1;
     setState(() {
       final seconds = myDuration.inSeconds - reduceSecondsBy;
       if (seconds < 0) {
@@ -121,6 +129,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
   @override
   void dispose() {
     super.dispose();
+    requestSent = false;
     resetTimer();
     stopTimer();
   }
@@ -136,19 +145,27 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
             createdAt: currentDateTime,
             updatedAt: currentDateTime),
         _callback2));
-
-    print("sasss ${data}");
   }
 
   @override
   Widget build(BuildContext context) {
-    String strDigits(int n) => n.toString().padLeft(2, '0');
-    final days = strDigits(myDuration.inDays);
+    // final days = strDigits(myDuration.inDays);
     // Step 7
     //final hours = strDigits(myDuration.inHours.remainder(24));
-    final minutes = strDigits(myDuration.inMinutes.remainder(minutesBy));
-    final seconds = strDigits(myDuration.inSeconds.remainder(60));
 
+    print("Minutes ${minutes} --- Seconds ${seconds}");
+    // if(minutes =="00".trim() && seconds =="00".trim()){
+    // //  stopTimer();
+    //   Get.find<OrderController>().deleteAvailability(
+    //     AvailabilityDetailsModel(
+    //       userId: Get.find<UserController>().userInfoModel.id,
+    //       food_id: widget.product.id,
+    //     ),
+    //     _callback,
+    //   );
+    //
+    // }
+    //
     return Container(
       width: 550,
       margin: EdgeInsets.only(top: GetPlatform.isWeb ? 0 : 30),
@@ -939,14 +956,17 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                                                 Color>(
                                                             Colors.white),
                                                   ))
-                                          : CircularProgressIndicator(),
+                                          : CircularProgressIndicator(
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      Colors.white)),
                                     )
                                   : SizedBox(),
                             ]);
                           });
                         }),
                         SizedBox(height: 15),
-                        !Get.find<OrderController>().isAvLoading && requestSent
+                        timeShow
                             ? Row(
                                 children: [
                                   SizedBox(width: 44),
@@ -1144,6 +1164,12 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
         _callback,
         false));
 
+
+
+
+
+
+
     if (code != 200) {
       error = true;
       //disable button
@@ -1242,6 +1268,9 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
         ));
       }
     }
+
+
+
   }
 
   void _showCartSnackBar() {
@@ -1264,34 +1293,22 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
         style: robotoMedium.copyWith(color: Colors.white),
       ),
     ));
-    // Get.showSnackbar(GetSnackBar(
-    //   backgroundColor: Colors.green,
-    //   message: 'item_added_to_cart'.tr,
-    //   mainButton: TextButton(
-    //     onPressed: () => Get.toNamed(RouteHelper.getCartRoute()),
-    //     child: Text('view_cart'.tr, style: robotoMedium.copyWith(color: Theme.of(context).cardColor)),
-    //   ),
-    //   onTap: (_) => Get.toNamed(RouteHelper.getCartRoute()),
-    //   duration: Duration(seconds: 3),
-    //   maxWidth: Dimensions.WEB_MAX_WIDTH,
-    //   snackStyle: SnackStyle.FLOATING,
-    //   margin: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-    //   borderRadius: 10,
-    //   isDismissible: true,
-    //   dismissDirection: DismissDirection.horizontal,
-    // ));
+
+
   }
 
   void _callback(
       bool isSuccess, int code, AvailabilityDetailsModel availability) async {
     if (availability != null) {
       print("ghrr ${availability}");
+      setState(() {
+        requestSent = true;
+      });
     }
   }
 
   void _callback2(List loadedCars) async {
     if (loadedCars != null) {
-      requestSent = true;
       final DateTime now = DateTime.now();
       final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
       final String currentDateTime = formatter.format(now);
@@ -1304,10 +1321,8 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
       print(
           "food_id ${food_id} ,  user_id ${user_id} ---------${dt1} ---------${dt2}     ");
       minutesBy = diff.inMinutes;
-
-print("asasa ${minutesBy}");
-      if (minutesBy >= 500) {
-        //delete availability
+      print("Pant  ${minutesBy}");
+      if (minutesBy >= 5) {
         Get.find<OrderController>().deleteAvailability(
           AvailabilityDetailsModel(
             userId: Get.find<UserController>().userInfoModel.id,
@@ -1316,9 +1331,26 @@ print("asasa ${minutesBy}");
           _callback,
         );
       } else {
+        minutesBy = 5 - minutesBy;
         //timer
+        setState(() {
+          timeShow = true;
+          requestSent = true;
+        });
         startTimer();
       }
+    }
+  }
+
+  void delete_availability() {
+    if (minutes == "00" && seconds == "00") {
+      Get.find<OrderController>().deleteAvailability(
+        AvailabilityDetailsModel(
+          userId: Get.find<UserController>().userInfoModel.id,
+          food_id: widget.product.id,
+        ),
+        _callback,
+      );
     }
   }
 }
