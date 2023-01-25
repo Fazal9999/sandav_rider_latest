@@ -1296,7 +1296,6 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
 
 
   }
-
   void _callback(
       bool isSuccess, int code, AvailabilityDetailsModel availability) async {
     if (availability != null) {
