@@ -1293,7 +1293,6 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
         style: robotoMedium.copyWith(color: Colors.white),
       ),
     ));
-
   }
   void _callback(
       bool isSuccess, int code, AvailabilityDetailsModel availability) async {
