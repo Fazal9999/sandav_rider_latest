@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class PlaceOrderBody {
   List<Cart> _cart;
   double _couponDiscountAmount;
+  int _vehicleId;
   String _couponDiscountTitle;
   double _orderAmount;
   String _orderType;
@@ -25,6 +26,7 @@ class PlaceOrderBody {
   String _house;
   String _floor;
   String _dmTips;
+
 
   PlaceOrderBody({
     @required List<Cart> cart,
@@ -50,6 +52,7 @@ class PlaceOrderBody {
     @required String house,
     @required String floor,
     @required String dmTips,
+    @required int vehicleId
   }) {
     this._cart = cart;
     this._couponDiscountAmount = couponDiscountAmount;
@@ -74,6 +77,7 @@ class PlaceOrderBody {
     this._house = house;
     this._floor = floor;
     this._dmTips = dmTips;
+    this._vehicleId=vehicleId;
   }
 
   List<Cart> get cart => _cart;
@@ -85,6 +89,7 @@ class PlaceOrderBody {
   String get orderNote => _orderNote;
   String get couponCode => _couponCode;
   int get restaurantId => _restaurantId;
+  int get vehicletId => _vehicleId;
   double get distance => _distance;
   String get scheduleAt => _scheduleAt;
   double get discountAmount => _discountAmount;
@@ -128,6 +133,7 @@ class PlaceOrderBody {
     _house = json['house'];
     _floor = json['floor'];
     _dmTips = json['dm_tips'];
+    _vehicleId=json['vehicle_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -157,6 +163,7 @@ class PlaceOrderBody {
     data['house'] = this._house;
     data['floor'] = this._floor;
     data['dm_tips'] = this._dmTips;
+    data['vehicle_id'] = this._vehicleId;
     return data;
   }
 }

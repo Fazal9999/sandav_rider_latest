@@ -60,7 +60,7 @@ class ProfileBgWidget extends StatelessWidget {
               )
             : SizedBox(),
         Positioned(
-          top: 150,
+          top: 70,
           left: 0,
           right: 0,
           child: circularImage,

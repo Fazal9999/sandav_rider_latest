@@ -49,7 +49,7 @@ class ProductBottomSheet extends StatefulWidget {
 
   final bool inRestaurantPage;
 
-  ProductBottomSheet(
+  const ProductBottomSheet(
       {@required this.product,
       this.isCampaign = false,
       this.cart,
@@ -77,10 +77,13 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
   String response_text = "";
   String minutes = "";
   String seconds = "";
-
+  final DateTime now = DateTime.now();
+  final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+  String currentDateTime= "";
   @override
   Future<void> initState() {
     super.initState();
+    currentDateTime = formatter.format(now);
     minutes = strDigits(myDuration.inMinutes.remainder(minutesBy));
     seconds = strDigits(myDuration.inSeconds.remainder(60));
     _isCashOnDeliveryActive =
@@ -102,16 +105,16 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
   }
 
   void stopTimer() {
-    if (this.mounted) {
+
       setState(() => countdownTimer.cancel());
-    }
+
   }
 
   void resetTimer() {
-    if (this.mounted) {
+
       //stopTimer();
       setState(() => myDuration = Duration(days: 5));
-    }
+
   }
 
   void setCountDown() {
@@ -129,21 +132,23 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
   @override
   void dispose() {
     super.dispose();
-    requestSent = false;
-    resetTimer();
-    stopTimer();
+    if(this.mounted){
+      requestSent = false;
+      resetTimer();
+      stopTimer();
+    }
+
   }
 
   Future<void> avail_availability() async {
-    final DateTime now = DateTime.now();
-    final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
-    final String currentDateTime = formatter.format(now);
+
     List data = (await Get.find<OrderController>().getAvail(
         AvailabilityDetailsModel(
             userId: Get.find<UserController>().userInfoModel.id,
             food_id: widget.product.id,
             createdAt: currentDateTime,
-            updatedAt: currentDateTime),
+            updatedAt: currentDateTime
+        ),
         _callback2));
   }
 
@@ -423,7 +428,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                             .configModel
                                             .toggleVegNonVeg
                                         ? Container(
-                                            padding: EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                                 vertical: Dimensions
                                                     .PADDING_SIZE_EXTRA_SMALL,
                                                 horizontal: Dimensions
@@ -804,7 +809,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                                                             index);
                                                                   }
                                                                 },
-                                                                child: Center(
+                                                                child: const Center(
                                                                     child: Icon(
                                                                         Icons
                                                                             .remove,
@@ -894,13 +899,13 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                             return Row(children: [
                               Text('${'total_amount'.tr}:',
                                   style: robotoMedium),
-                              SizedBox(
+                              const SizedBox(
                                   width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
                               Text(PriceConverter.convertPrice(priceWithAddons),
                                   style: robotoBold.copyWith(
                                       color: Theme.of(context).primaryColor)),
-                              SizedBox(width: Dimensions.PADDING_SIZE_LARGE),
-                              Expanded(child: SizedBox()),
+                              const SizedBox(width: Dimensions.PADDING_SIZE_LARGE),
+                              const Expanded(child: SizedBox()),
                               Get.find<AuthController>().isLoggedIn()
                                   ? ElevatedButton(
                                       style: ElevatedButton.styleFrom(
@@ -911,7 +916,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                               Dimensions.RADIUS_SMALL),
-                                          side: BorderSide(
+                                          side: const BorderSide(
                                               width: 2, color: Colors.red),
                                         ),
                                       ),
@@ -1160,21 +1165,17 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
         AvailabilityDetailsModel(
           userId: Get.find<UserController>().userInfoModel.id,
           food_id: widget.product.id,
+            // createdAt: currentDateTime,
+            // updatedAt: currentDateTime
         ),
         _callback,
         false));
-
-
-
-
-
-
-
     if (code != 200) {
       error = true;
       //disable button
-      response_text = "Already sent availability request";
+
       setState(() {
+        response_text = "Already sent availability request";
         shouldShow = true;
       });
 
@@ -1189,12 +1190,12 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
       // print("Fazalsmcfs ${code} ");
     } else {
       error = false;
-      response_text = "Availability Request Sent";
       setState(() {
+        response_text = "Availability Request Sent";
         shouldShow = true;
       });
 
-      Timer timer = Timer(Duration(seconds: 3), () {
+      Timer timer = Timer(const Duration(seconds: 3), () {
         setState(() {
           shouldShow = false;
         });
@@ -1222,6 +1223,8 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
           quantity: productController.quantity,
           order_amount: _total.toDouble(),
           deliveryAddressId: null,
+            createdAt: currentDateTime,
+            updatedAt: currentDateTime
         ),
         _callback,
       );
@@ -1306,17 +1309,15 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
 
   void _callback2(List loadedCars) async {
     if (loadedCars != null) {
-      final DateTime now = DateTime.now();
-      final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
-      final String currentDateTime = formatter.format(now);
-      String created_at = loadedCars[0]['created_at'];
-      int food_id = loadedCars[0]['food_id'];
-      int user_id = loadedCars[0]['user_id'];
-      DateTime dt1 = DateTime.parse(created_at);
+
+      String createdAt = loadedCars[0]['created_at'];
+      int foodId = loadedCars[0]['food_id'];
+      int userId = loadedCars[0]['user_id'];
+       DateTime dt1 = DateTime.parse(createdAt);
       DateTime dt2 = DateTime.parse(currentDateTime);
       Duration diff = dt2.difference(dt1);
       print(
-          "food_id ${food_id} ,  user_id ${user_id} ---------${dt1} ---------${dt2}     ");
+          "food_id ${foodId} ,  user_id ${userId} ---------${dt1} ---------${dt2}     ");
       minutesBy = diff.inMinutes;
       print("Pant  ${minutesBy}");
       if (minutesBy >= 5) {
@@ -1338,9 +1339,16 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
       }
     }
   }
-
+  // @override
+  // void setState(fn) {
+  //   if(mounted) {
+  //     resetTimer();
+  //     stopTimer();
+  //     super.setState(fn);
+  //   }
+  // }
   void delete_availability() {
-    if (minutes == "00" && seconds == "00") {
+    if (minutes == "00" && seconds == "00" && timeShow) {
       Get.find<OrderController>().deleteAvailability(
         AvailabilityDetailsModel(
           userId: Get.find<UserController>().userInfoModel.id,
@@ -1350,4 +1358,9 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
       );
     }
   }
+
+
+
+
+
 }

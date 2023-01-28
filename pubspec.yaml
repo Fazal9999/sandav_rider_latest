@@ -48,6 +48,7 @@ dependencies:
   custom_map_markers: ^0.0.2+1
   image_compression_flutter: ^1.0.2
   fwfh_text_style: ^2.22.8+1
+  auto_size_text: ^3.0.0
 
   cupertino_icons: ^1.0.5
   nb_utils: ^4.6.21

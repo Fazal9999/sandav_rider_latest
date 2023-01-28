@@ -97,6 +97,32 @@ class ApiClient extends GetxService {
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
+  Future<Response> getVehicles(String uri,
+      {Map<String, String> headers}) async {
+    try {
+      debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
+
+      Http.Response _response = await Http.post(
+        Uri.parse(appBaseUrl + uri),
+        body: jsonEncode(""),
+        headers: headers ?? _mainHeaders,
+      ).timeout(Duration(seconds: timeoutInSeconds));
+      return handleResponse(_response, uri);
+    } catch (e) {
+      return Response(statusCode: 1, statusText: noInternetMessage);
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   Future<Response> deleteAvailability(String uri, dynamic body,
       {Map<String, String> headers}) async {

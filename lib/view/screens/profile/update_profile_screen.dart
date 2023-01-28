@@ -62,7 +62,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           _phoneController.text = userController.userInfoModel.phone ?? '';
           _emailController.text = userController.userInfoModel.email ?? '';
         }
-
         return _isLoggedIn
             ? userController.userInfoModel != null
                 ? ProfileBgWidget(
@@ -116,49 +115,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                 ),
                               ],
                             ),
-                      // : CustomImage(
-                      //     image:
-                      //         '${Get.find<SplashController>().configModel.baseUrls.customerImageUrl}/${userController.userInfoModel.image}',
-                      //     height: 100,
-                      //     width: 100,
-                      //     fit: BoxFit.cover,
-                      //   )
-                      //),
-                      // Positioned(
-                      //   bottom: 0,
-                      //   right: 0,
-                      //   top: 0,
-                      //   left: 0,
-                      //   child: InkWell(
-                      //     onTap: () => userController.pickImage(),
-                      //     child: Container(
-                      //       decoration: BoxDecoration(
-                      //         color: Colors.black.withOpacity(0.3),
-                      //         shape: BoxShape.circle,
-                      //         border: Border.all(
-                      //             width: 1,
-                      //             color: Theme.of(context).primaryColor),
-                      //       ),
-                      //       child: Container(
-                      //         margin: EdgeInsets.all(25),
-                      //         decoration: BoxDecoration(
-                      //           border:
-                      //               Border.all(width: 2, color: Colors.white),
-                      //           shape: BoxShape.circle,
-                      //         ),
-                      //         child:
-                      //             Icon(Icons.camera_alt, color: Colors.white),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
                     ])),
                     mainWidget: Column(children: [
+
                       Expanded(
                           child: Scrollbar(
                               child: SingleChildScrollView(
                         physics: BouncingScrollPhysics(),
-                        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                        padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
                         child: Center(
                             child: SizedBox(
                                 width: Dimensions.WEB_MAX_WIDTH,

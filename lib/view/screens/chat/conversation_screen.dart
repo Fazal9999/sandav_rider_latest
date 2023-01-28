@@ -110,7 +110,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                           },
                         )))
                 : SizedBox(),
-            SizedBox(
+              SizedBox(
                 height: (Get.find<AuthController>().isLoggedIn() &&
                         _conversation != null &&
                         _conversation.conversations != null &&
@@ -118,7 +118,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             .conversationModel.conversations.isNotEmpty)
                     ? Dimensions.PADDING_SIZE_SMALL
                     : 0),
-            Expanded(
+              Expanded(
                 child: Get.find<AuthController>().isLoggedIn()
                     ? (_conversation != null &&
                             _conversation.conversations != null)

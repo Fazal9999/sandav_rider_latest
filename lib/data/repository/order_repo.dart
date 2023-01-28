@@ -44,6 +44,10 @@ class OrderRepo {
     return await apiClient.postAvailability(
         AppConstants.CHECK_AVAILABILITY, orderBody.toJson());
   }
+  Future<Response> getVehicles() async {
+    return await apiClient.getVehicles(
+        AppConstants.GET_VEHICLES);
+  }
 
   Future<Response> getAvailability(AvailabilityDetailsModel orderBody) async {
     return await apiClient.postAvailability(

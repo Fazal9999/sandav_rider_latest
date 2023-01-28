@@ -22,6 +22,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../data/model/response/availability_details_model.dart';
+import '../data/model/response/vehicles.dart';
 
 class OrderController extends GetxController implements GetxService {
   final OrderRepo orderRepo;
@@ -36,7 +37,7 @@ class OrderController extends GetxController implements GetxService {
   ResponseModel _responseModel;
   bool _isLoading = false;
   bool _isAvLoading = false;
-
+  bool _isVehLoading = false;
   bool _showCancelled = false;
   String _orderType = 'delivery';
   List<TimeSlotModel> _timeSlots;
@@ -75,6 +76,8 @@ class OrderController extends GetxController implements GetxService {
 
   bool get isLoading => _isLoading;
   bool get isAvLoading => _isAvLoading;
+
+  bool get isVehLoading => _isVehLoading;
 
   bool get showCancelled => _showCancelled;
 
@@ -365,8 +368,6 @@ class OrderController extends GetxController implements GetxService {
       String message = response.body['message'];
       String foodId = response.body['food_id'].toString();
       print("food_id ${foodId}");
-   //   final Map parsed = json.decode(response.toString());
-     // final availability = AvailabilityDetailsModel.fromJson(parsed);
 
       callback(true, response.statusCode, null);
       print('-------- Order placed successfully $foodId ----------');
@@ -375,7 +376,21 @@ class OrderController extends GetxController implements GetxService {
     }
     update();
   }
+  Future<List> get_Vehicles(
+     ) async {
+    // update();
+    Response response = await orderRepo.getVehicles();
 
+    if (response.statusCode == 200) {
+      List loadedCars = response.body['vehicles'];
+      print("Fazalbin ${loadedCars}");
+     return loadedCars;
+    }
+    else {
+      null;
+    }
+    return null;
+  }
   Future<int> getAvailability(
     AvailabilityDetailsModel availability,
     Function callback,

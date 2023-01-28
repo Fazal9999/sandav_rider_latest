@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sandav/controller/auth_controller.dart';
 import 'package:sandav/controller/cart_controller.dart';
 import 'package:sandav/controller/coupon_controller.dart';
@@ -36,10 +40,12 @@ import 'package:universal_html/html.dart' as html;
 import 'package:flutter/material.dart';
 
 import '../../../commons/images.dart';
+import '../../../data/model/response/vehicles.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final List<CartModel> cartList;
   final bool fromCart;
+
   CheckoutScreen({@required this.fromCart, @required this.cartList});
 
   @override
@@ -62,7 +68,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _isWalletActive;
   bool _isLoggedIn;
   List<CartModel> _cartList;
-
+  List data;
+  static const kSubtitleStyle = TextStyle(
+    fontSize: 18.0,
+    height: 1.2,
+  );
+int vehicleTypeSelected=0;
+String base_price="0.0";
+List selectedVehicle;
+  bool selected=false;
   @override
   void initState() {
     super.initState();
@@ -97,7 +111,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           : _cartList.addAll(widget.cartList);
       Get.find<RestaurantController>()
           .initCheckoutData(_cartList[0].product.restaurantId);
+      avail_vehicles();
     }
+  }
+
+  Future<void> avail_vehicles() async {
+
+    data = (await Get.find<OrderController>().get_Vehicles());
+
   }
 
   @override
@@ -283,12 +304,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                     return (orderController.distance != null &&
                             locationController.addressList != null)
-                        ? Column(
+                        ?
+                    Column(
                             children: [
                               Expanded(
                                   child: Scrollbar(
                                       child: SingleChildScrollView(
-                                physics: BouncingScrollPhysics(),
+                                physics: const BouncingScrollPhysics(),
                                 // padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
                                 child: Center(
                                     child: SizedBox(
@@ -300,7 +322,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                         Container(
                                           width: context.width,
                                           color: Theme.of(context).cardColor,
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               vertical:
                                                   Dimensions.PADDING_SIZE_SMALL,
                                               horizontal: Dimensions
@@ -311,7 +333,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                               children: [
                                                 Text('delivery_type'.tr,
                                                     style: robotoMedium),
-                                                SizedBox(
+                                                const SizedBox(
                                                     height: Dimensions
                                                         .PADDING_SIZE_DEFAULT),
                                                 SingleChildScrollView(
@@ -320,21 +342,148 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                     child: Row(children: [
                                                       restController.restaurant
                                                               .delivery
-                                                          ? DeliveryOptionButton(
-                                                              value: 'delivery',
-                                                              title:'Scooter Delivery',
-                                                                  // 'home_delivery'
-                                                                  //     .tr,
-                                                              charge: _charge,
-                                                              isFree: restController
-                                                                  .restaurant
-                                                                  .freeDelivery,
-                                                              image: 
-                                                                  bike,
-                                                              index: 0,
-                                                            )
+                                                          ? Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: [
+                                                                  Container(
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: Theme.of(context)
+                                                                            .cardColor,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(20),
+                                                                        boxShadow: const [
+                                                                          BoxShadow(
+                                                                            offset:
+                                                                                Offset(0, 0),
+                                                                            blurRadius:
+                                                                                1,
+                                                                            spreadRadius:
+                                                                                1,
+                                                                            color:
+                                                                                Colors.black12,
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      margin: const EdgeInsets
+                                                                              .only(
+                                                                          top:
+                                                                              40,
+                                                                          right:
+                                                                              20,
+                                                                          left:
+                                                                              10),
+                                                                      height:
+                                                                          85,
+                                                                      child: FutureBuilder(
+                                                                          future: orderController.get_Vehicles(),
+                                                                          builder: (context, AsyncSnapshot<List> snapshot) {
+                                                                            if (!snapshot.hasData) {
+                                                                              return Container(
+                                                                                  height: 60,
+                                                                                  width: 80,
+                                                                                  decoration: const BoxDecoration(
+                                                                                    color: Colors.transparent,
+
+                                                                                    borderRadius: BorderRadius.horizontal(
+                                                                                      left: Radius.circular(20) ,
+                                                                                      right: Radius.circular(20) ,
+                                                                                    ),
+                                                                                  ),
+                                                                                  padding: EdgeInsets.all(8),
+                                                                                child: CircularProgressIndicator());
+                                                                            } else {
+                                                                              return SizedBox(
+                                                                                  height: 55,
+                                                                                  child: ListView.separated(
+                                                                                    physics: ClampingScrollPhysics(),
+                                                                                    scrollDirection: Axis.horizontal,
+                                                                                    itemCount: snapshot.data?.length ?? 0,
+                                                                                    separatorBuilder: (context, index) {
+                                                                                      return VerticalDivider(
+                                                                                        color: Theme.of(context).primaryColor,
+                                                                                        width: 0,
+                                                                                      );
+                                                                                    },
+                                                                                    shrinkWrap: true,
+                                                                                    itemBuilder: (context, index) {
+                                                                                      // bool selected =
+                                                                                      //     vehicleTypeSelected?.id == vehicleType.id;
+                                                                                      int id = snapshot.data[index]['id'];
+                                                                                        selected =
+                                                                                          vehicleTypeSelected ==id;
+                                                                                      return InkWell(
+                                                                                        onTap: () async {
+
+                                                                                          if (selected) {
+                                                                                            setState(() {
+
+                                                                                              vehicleTypeSelected = null;
+                                                                                            });
+                                                                                          } else {
+                                                                                            setState(() {
+                                                                                              vehicleTypeSelected = snapshot.data[index]['id'];
+                                                                                              base_price=snapshot.data[index]['base_price'];
+
+                                                                                            });
+
+                                                                                          }
+                                                                                        },
+                                                                                        child: Container(
+                                                                                          width: 80,
+                                                                                          decoration: BoxDecoration(
+                                                                                            color:
+                                                                                            vehicleTypeSelected == id
+                                                                                                ? Theme.of(context).primaryColor
+                                                                                                : Colors.transparent,
+                                                                                            borderRadius: BorderRadius.horizontal(
+                                                                                              left: index == 0 ? Radius.circular(20) : Radius.zero,
+                                                                                              right: index == snapshot.data.length - 1 ? Radius.circular(20) : Radius.zero,
+                                                                                            ),
+                                                                                          ),
+                                                                                          padding: EdgeInsets.all(8),
+                                                                                          child: Column(
+                                                                                            children: [
+                                                                                              AutoSizeText(
+                                                                                                snapshot.data[index]['name'],
+                                                                                                style: kSubtitleStyle.copyWith(
+                                                                                                  color: selected
+                                                                                                      ? Colors.white
+                                                                                                      : Colors.black,
+                                                                                                ),
+                                                                                                minFontSize: 8,
+                                                                                                maxLines: 1,
+                                                                                              ),
+                                                                                              if (snapshot.data[index]['logo'] != null)
+                                                                                                CachedNetworkImage(
+                                                                                                  progressIndicatorBuilder: (context, url, progress) => Center(
+                                                                                                    child: SizedBox(
+                                                                                                      width: 55,
+                                                                                                      height: 55,
+                                                                                                      child: CircularProgressIndicator(
+                                                                                                        value: progress.progress,
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                  imageUrl: '${AppConstants.BASE_URL}/storage/app/public/vehicles/${snapshot.data[index]['logo']}',
+                                                                                                  height: 44,
+                                                                                                  fit: BoxFit.contain,
+                                                                                                  alignment: Alignment.bottomCenter,
+                                                                                                  color: selected ? Colors.white : Colors.black,
+                                                                                                ),
+                                                                                            ],
+                                                                                          ),
+                                                                                        ),
+                                                                                      );
+                                                                                    },
+                                                                                  ));
+                                                                            }
+                                                                          })),
+                                                                ])
                                                           : SizedBox(),
-                                                      SizedBox(
+                                                      const SizedBox(
                                                           width: Dimensions
                                                               .PADDING_SIZE_DEFAULT),
                                                       restController.restaurant
@@ -347,24 +496,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                               charge:
                                                                   _deliveryCharge,
                                                               isFree: true,
-                                                              image:
-                                                              take_away,
+                                                              image: take_away,
                                                               index: 1,
                                                             )
-                                                          : SizedBox(),
+                                                          : const SizedBox(),
                                                     ])),
-                                                SizedBox(
+                                                const SizedBox(
                                                     height: Dimensions
                                                         .PADDING_SIZE_LARGE),
                                                 Center(
-                                                  child: Text('delivery_charge'
-                                                          .tr +
-                                                      ': ' +
-                                                      '${(orderController.orderType == 'take_away' || (orderController.deliverySelectIndex == 0 ? restController.restaurant.freeDelivery : true)) ? 'free'.tr : _charge != -1 ? PriceConverter.convertPrice(orderController.deliverySelectIndex == 0 ? _charge : _deliveryCharge) : 'calculating'.tr}'),
+
+
+                                                  child: Text(
+                                                      '${'delivery_charge'.tr}:'
+                                                          ' ${(orderController.orderType == 'take_away' || (orderController.deliverySelectIndex == 0 ?
+                                                      restController.restaurant.freeDelivery : true)) ? 'free'.tr : _charge != -1 ?
+                                                      PriceConverter.convertPrice(orderController.deliverySelectIndex == 0 ? _charge : _deliveryCharge)
+                                                          : 'calculating'.tr}  ${"+ ${base_price} Per KM"}'
+
+                                                  ),
                                                 )
                                               ]),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                             height: Dimensions
                                                 .PADDING_SIZE_EXTRA_SMALL),
 
@@ -593,17 +747,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                     children: [
                                                       Text('delivery_time'.tr,
                                                           style: robotoMedium),
-                                                      SizedBox(
+                                                      const SizedBox(
                                                           height: Dimensions
                                                               .PADDING_SIZE_SMALL),
                                                       Row(children: [
                                                         Expanded(
                                                             child: Container(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      Dimensions
-                                                                          .PADDING_SIZE_SMALL),
+                                                          padding: const EdgeInsets
+                                                                  .symmetric(
+                                                              horizontal: Dimensions
+                                                                  .PADDING_SIZE_SMALL),
                                                           decoration: BoxDecoration(
                                                               color: Theme.of(
                                                                       context)
@@ -917,7 +1070,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                                             color:
                                                                                 Theme.of(context).cardColor),
                                                                   )
-                                                                : CircularProgressIndicator(
+                                                                : const CircularProgressIndicator(
                                                                     valueColor: AlwaysStoppedAnimation<
                                                                             Color>(
                                                                         Colors
@@ -929,7 +1082,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                     ),
                                                   ]),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                     height: Dimensions
                                                         .PADDING_SIZE_LARGE),
                                               ]),
@@ -1107,7 +1260,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                     child: Row(children: [
                                                       _isCashOnDeliveryActive
                                                           ? PaymentButton(
-                                                              icon: 
+                                                              icon:
                                                                   cash_on_delivery,
                                                               title:
                                                                   'cash_on_delivery'
@@ -1120,7 +1273,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                           : SizedBox(),
                                                       _isDigitalPaymentActive
                                                           ? PaymentButton(
-                                                              icon: 
+                                                              icon:
                                                                   digital_payment,
                                                               title:
                                                                   'digital_payment'
@@ -1133,8 +1286,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                           : SizedBox(),
                                                       _isWalletActive
                                                           ? PaymentButton(
-                                                              icon:
-                                                                  wallet,
+                                                              icon: wallet,
                                                               title:
                                                                   'wallet_payment'
                                                                       .tr,
@@ -1395,7 +1547,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 padding: EdgeInsets.all(
                                     Dimensions.PADDING_SIZE_SMALL),
                                 child: !orderController.isLoading
-                                    ? CustomButton(
+                                    ?
+                                CustomButton(
                                         buttonText: 'confirm_order'.tr,
                                         onPressed: () {
                                           bool _isAvailable = true;
@@ -1496,11 +1649,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                 .restaurant.scheduleOrder) {
                                               showCustomSnackBar(
                                                   'select_a_time'.tr);
-                                            } else {
+                                            }
+                                            else {
                                               showCustomSnackBar(
                                                   'restaurant_is_closed'.tr);
                                             }
-                                          } else if (!_isAvailable) {
+                                          }
+                                          else if (!_isAvailable) {
                                             showCustomSnackBar(
                                                 'one_or_more_products_are_not_available_for_this_selected_time'
                                                     .tr);
@@ -1511,7 +1666,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                               _deliveryCharge == -1) {
                                             showCustomSnackBar(
                                                 'delivery_fee_not_set_yet'.tr);
-                                          } else if (orderController
+                                          }
+
+                                          else if (orderController
                                                       .paymentMethodIndex ==
                                                   2 &&
                                               Get.find<UserController>()
@@ -1524,7 +1681,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                             showCustomSnackBar(
                                                 'you_do_not_have_sufficient_balance_in_wallet'
                                                     .tr);
-                                          } else {
+                                          }
+                                          // else if(vehicleTypeSelected==0){
+                                          //   showCustomSnackBar(
+                                          //       'Vehicle is not selected'
+                                          //           .tr);
+                                          // }
+
+
+                                          else {
                                             List<Cart> carts = [];
                                             for (int index = 0;
                                                 index < _cartList.length;
@@ -1648,23 +1813,36 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                       .trim(),
                                                   dmTips: _tipController.text
                                                       .trim(),
+                                                  vehicleId: vehicleTypeSelected,
                                                 ),
                                                 _callback,
                                                 _total);
                                           }
                                         })
-                                    : Center(
-                                        child: CircularProgressIndicator()),
+                                    : const Center(
+                                        child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      )),
                               ),
                             ],
                           )
-                        : Center(child: CircularProgressIndicator());
+                        : const Center(
+                            child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ));
                   });
                 });
               });
             })
           : NotLoggedInScreen(),
     );
+  }
+
+  void _callback2(List loadedCars) async {
+    if (loadedCars != null) {}
   }
 
   void _callback(
