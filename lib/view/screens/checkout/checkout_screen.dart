@@ -419,6 +419,8 @@ List selectedVehicle;
 
                                                                                           if (selected) {
                                                                                             setState(() {
+                                                                                              vehicleTypeSelected = snapshot.data[index]['id'];
+                                                                                              base_price=snapshot.data[index]['base_price'];
 
                                                                                               vehicleTypeSelected = null;
                                                                                             });
