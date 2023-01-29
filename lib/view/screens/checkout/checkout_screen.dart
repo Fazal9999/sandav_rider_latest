@@ -74,8 +74,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     height: 1.2,
   );
 int vehicleTypeSelected=0;
-String base_price="0.0";
-  String additional_distance_price="0.0";
+  double base_price=0.0;
+  double additional_distance_price=0.0;
 List selectedVehicle;
   bool selected=false;
   @override
@@ -421,16 +421,16 @@ List selectedVehicle;
                                                                                           if (selected) {
                                                                                             setState(() {
                                                                                               vehicleTypeSelected = snapshot.data[index]['id'];
-                                                                                              base_price=snapshot.data[index]['base_price'];
-                                                                                              additional_distance_price=snapshot.data[index]['additional_distance_price'];
+                                                                                              base_price=snapshot.data[index]['base_price'].toString().toDouble();
+                                                                                              additional_distance_price=snapshot.data[index]['additional_distance_pricing'].toString().toDouble();
 
                                                                                               vehicleTypeSelected = null;
                                                                                             });
                                                                                           } else {
                                                                                             setState(() {
                                                                                               vehicleTypeSelected = snapshot.data[index]['id'];
-                                                                                              base_price=snapshot.data[index]['base_price'];
-                                                                                              additional_distance_price=snapshot.data[index]['additional_distance_price'];
+                                                                                              base_price=snapshot.data[index]['base_price'].toString().toDouble();
+                                                                                              additional_distance_price=snapshot.data[index]['additional_distance_pricing'].toString().toDouble();
 
 
                                                                                             });
@@ -511,21 +511,29 @@ List selectedVehicle;
                                                     height: Dimensions
                                                         .PADDING_SIZE_LARGE),
                                                 Center(
-
-
-                                                  child: Text(
+                                                  child:
+                                                  Text(
                                                       '${'delivery_charge'.tr}:'
                                                           ' ${(orderController.orderType == 'take_away' || (orderController.deliverySelectIndex == 0 ?
                                                       restController.restaurant.freeDelivery : true)) ? 'free'.tr : _charge != -1 ?
-                                                      PriceConverter.convertPrice(orderController.deliverySelectIndex == 0 ? _charge :
+                                                      PriceConverter.convertPrice(orderController.deliverySelectIndex == 0 ? base_price :
                                                       base_price
-                                                          //_deliveryCharge
-
 
                                                       )
                                                           : 'calculating'.tr}  ${"+ ${additional_distance_price.toDouble()} Per KM"}'
 
                                                   ),
+                                                  // Text(
+                                                  //     '${'delivery_charge'.tr}:'
+                                                  //         ' ${(orderController.orderType == 'take_away' || (orderController.deliverySelectIndex == 0 ?
+                                                  //     restController.restaurant.freeDelivery : true)) ? 'free'.tr : _charge != -1 ?
+                                                  //     PriceConverter.convertPrice(orderController.deliverySelectIndex == 0 ? _charge :
+                                                  //     base_price
+                                                  //         //_deliveryCharge
+                                                  //     )
+                                                  //         : 'calculating'.tr}  ${"+ ${additional_distance_price.toDouble()} Per KM"}'
+                                                  //
+                                                  // ),
                                                 )
                                               ]),
                                         ),
@@ -1317,7 +1325,7 @@ List selectedVehicle;
 
                                         Container(
                                           color: Theme.of(context).cardColor,
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               vertical:
                                                   Dimensions.PADDING_SIZE_SMALL,
                                               horizontal: Dimensions
@@ -1329,7 +1337,7 @@ List selectedVehicle;
                                                 children: [
                                                   Text('additional_note'.tr,
                                                       style: robotoMedium),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                       height: Dimensions
                                                           .PADDING_SIZE_DEFAULT),
                                                   Container(
@@ -1431,7 +1439,7 @@ List selectedVehicle;
                                                         height: Dimensions
                                                             .PADDING_SIZE_SMALL),
                                                   ])
-                                                : SizedBox(),
+                                                : const SizedBox(),
                                             Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
@@ -1525,7 +1533,7 @@ List selectedVehicle;
                                                 MainAxisAlignment
                                                     .spaceBetween,
                                                 children: [
-                                                  Text('Vehicle Fee'.tr,
+                                                  Text('Vehicle Fee Per KM'.tr,
                                                       style: robotoRegular),
                                                   _deliveryCharge == -1
                                                       ? Text(
