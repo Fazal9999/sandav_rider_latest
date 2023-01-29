@@ -1,7 +1,7 @@
 import 'dart:convert';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:nb_utils/nb_utils.dart';
 import 'package:sandav/controller/auth_controller.dart';
 import 'package:sandav/controller/cart_controller.dart';
 import 'package:sandav/controller/coupon_controller.dart';
@@ -75,6 +75,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   );
 int vehicleTypeSelected=0;
 String base_price="0.0";
+  String additional_distance_price="0.0";
 List selectedVehicle;
   bool selected=false;
   @override
@@ -292,11 +293,11 @@ List selectedVehicle;
                         _deliveryCharge = 0;
                       }
                     }
-
+                     double vehicle_fee =(additional_distance_price+base_price).toDouble();
                     _tax = PriceConverter.calculation(
                         _orderAmount, _taxPercent, 'percent', 1);
                     double _total = _subTotal +
-                        _deliveryCharge -
+                        vehicle_fee -
                         _discount -
                         _couponDiscount +
                         _tax +
@@ -320,7 +321,7 @@ List selectedVehicle;
                                           CrossAxisAlignment.start,
                                       children: [
                                         Container(
-                                          width: context.width,
+                                          width: Get.width,
                                           color: Theme.of(context).cardColor,
                                           padding: const EdgeInsets.symmetric(
                                               vertical:
@@ -421,6 +422,7 @@ List selectedVehicle;
                                                                                             setState(() {
                                                                                               vehicleTypeSelected = snapshot.data[index]['id'];
                                                                                               base_price=snapshot.data[index]['base_price'];
+                                                                                              additional_distance_price=snapshot.data[index]['additional_distance_price'];
 
                                                                                               vehicleTypeSelected = null;
                                                                                             });
@@ -428,6 +430,8 @@ List selectedVehicle;
                                                                                             setState(() {
                                                                                               vehicleTypeSelected = snapshot.data[index]['id'];
                                                                                               base_price=snapshot.data[index]['base_price'];
+                                                                                              additional_distance_price=snapshot.data[index]['additional_distance_price'];
+
 
                                                                                             });
 
@@ -513,8 +517,13 @@ List selectedVehicle;
                                                       '${'delivery_charge'.tr}:'
                                                           ' ${(orderController.orderType == 'take_away' || (orderController.deliverySelectIndex == 0 ?
                                                       restController.restaurant.freeDelivery : true)) ? 'free'.tr : _charge != -1 ?
-                                                      PriceConverter.convertPrice(orderController.deliverySelectIndex == 0 ? _charge : _deliveryCharge)
-                                                          : 'calculating'.tr}  ${"+ ${base_price} Per KM"}'
+                                                      PriceConverter.convertPrice(orderController.deliverySelectIndex == 0 ? _charge :
+                                                      base_price
+                                                          //_deliveryCharge
+
+
+                                                      )
+                                                          : 'calculating'.tr}  ${"+ ${additional_distance_price.toDouble()} Per KM"}'
 
                                                   ),
                                                 )
@@ -1480,7 +1489,7 @@ List selectedVehicle;
                                                                   color: Colors
                                                                       .red),
                                                         )
-                                                      : (_deliveryCharge == 0 ||
+                                                      : ((base_price).toDouble() == 0 ||
                                                               (couponController
                                                                           .coupon !=
                                                                       null &&
@@ -1496,7 +1505,7 @@ List selectedVehicle;
                                                                       .primaryColor),
                                                             )
                                                           : Text(
-                                                              '(+) ${PriceConverter.convertPrice(_deliveryCharge)}',
+                                                              '(+) ${PriceConverter.convertPrice((base_price).toDouble())}',
                                                               style:
                                                                   robotoRegular,
                                                             ),
@@ -1511,6 +1520,54 @@ List selectedVehicle;
                                                       .hintColor
                                                       .withOpacity(0.5)),
                                             ),
+                                            Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                                children: [
+                                                  Text('Vehicle Fee'.tr,
+                                                      style: robotoRegular),
+                                                  _deliveryCharge == -1
+                                                      ? Text(
+                                                    'calculating'.tr,
+                                                    style: robotoRegular
+                                                        .copyWith(
+                                                        color: Colors
+                                                            .red),
+                                                  )
+                                                      : ((additional_distance_price).toDouble() == 0 ||
+                                                      (couponController
+                                                          .coupon !=
+                                                          null &&
+                                                          couponController
+                                                              .coupon
+                                                              .couponType ==
+                                                              'free_delivery'))
+                                                      ? Text(
+                                                    'free'.tr,
+                                                    style: robotoRegular.copyWith(
+                                                        color: Theme.of(
+                                                            context)
+                                                            .primaryColor),
+                                                  )
+                                                      : Text(
+                                                    '(+) ${PriceConverter.convertPrice((additional_distance_price).toDouble())}',
+                                                    style:
+                                                    robotoRegular,
+                                                  ),
+                                                ]),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: Dimensions
+                                                      .PADDING_SIZE_SMALL),
+                                              child: Divider(
+                                                  thickness: 1,
+                                                  color: Theme.of(context)
+                                                      .hintColor
+                                                      .withOpacity(0.5)),
+                                            ),
+
+
                                             Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
