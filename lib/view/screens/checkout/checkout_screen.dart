@@ -306,12 +306,22 @@ List selectedVehicle;
 
                     _tax = PriceConverter.calculation(
                         _orderAmount, _taxPercent, 'percent', 1);
+
+
                     double _total = _subTotal +
                         vehicle_fee -
                         _discount -
                         _couponDiscount +
                         _tax +
                         orderController.tips;
+                    RegExp reg = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+                    String Function(Match) mathFunc = (Match match) => '${match[1]},';
+                   String inDoublePrice= _total.toStringAsFixed(2).replaceAllMapped(reg, mathFunc);
+
+                   // double inDoublePrice = double.parse(indecTotal);
+
+
+
 
                     return (orderController.distance != null &&
                             locationController.addressList != null)
@@ -544,7 +554,247 @@ List selectedVehicle;
                                                   //         : 'calculating'.tr}  ${"+ ${additional_distance_price.toDouble()} Per KM"}'
                                                   //
                                                   // ),
+                                                ),
+                                                SizedBox(
+                                                    height: Dimensions
+                                                        .PADDING_SIZE_LARGE),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                    children: [
+                                                      Text('subtotal'.tr,
+                                                          style: robotoMedium),
+                                                      Text(
+                                                          PriceConverter
+                                                              .convertPrice(
+                                                              _subTotal),
+                                                          style: robotoMedium),
+                                                    ]),
+                                                SizedBox(
+                                                    height: Dimensions
+                                                        .PADDING_SIZE_SMALL),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                    children: [
+                                                      Text('discount'.tr,
+                                                          style: robotoRegular),
+                                                      Text(
+                                                          '(-) ${PriceConverter.convertPrice(_discount)}',
+                                                          style: robotoRegular),
+                                                    ]),
+                                                SizedBox(
+                                                    height: Dimensions
+                                                        .PADDING_SIZE_SMALL),
+                                                (couponController.discount > 0 ||
+                                                    couponController
+                                                        .freeDelivery)
+                                                    ? Column(children: [
+                                                  Row(
+                                                      mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                            'coupon_discount'
+                                                                .tr,
+                                                            style:
+                                                            robotoRegular),
+                                                        (couponController
+                                                            .coupon !=
+                                                            null &&
+                                                            couponController
+                                                                .coupon
+                                                                .couponType ==
+                                                                'free_delivery')
+                                                            ? Text(
+                                                          'free_delivery'
+                                                              .tr,
+                                                          style: robotoRegular
+                                                              .copyWith(
+                                                              color:
+                                                              Theme.of(context).primaryColor),
+                                                        )
+                                                            : Text(
+                                                          '(-) ${PriceConverter.convertPrice(couponController.discount)}',
+                                                          style:
+                                                          robotoRegular,
+                                                        ),
+                                                      ]),
+                                                  SizedBox(
+                                                      height: Dimensions
+                                                          .PADDING_SIZE_SMALL),
+                                                ])
+                                                    : const SizedBox(),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                    children: [
+                                                      Text('vat_tax'.tr,
+                                                          style: robotoRegular),
+                                                      Text(
+                                                          '(+) ${PriceConverter.convertPrice(_tax)}',
+                                                          style: robotoRegular),
+                                                    ]),
+                                                SizedBox(
+                                                    height: Dimensions
+                                                        .PADDING_SIZE_SMALL),
+                                                (orderController.orderType !=
+                                                    'take_away' &&
+                                                    Get.find<SplashController>()
+                                                        .configModel
+                                                        .dmTipsStatus ==
+                                                        1)
+                                                    ? Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                        'delivery_man_tips'
+                                                            .tr,
+                                                        style: robotoRegular),
+                                                    Text(
+                                                        '(+) ${PriceConverter.convertPrice(orderController.tips)}',
+                                                        style: robotoRegular),
+                                                  ],
                                                 )
+                                                    : SizedBox.shrink(),
+                                                SizedBox(
+                                                    height:
+                                                    orderController.orderType !=
+                                                        'take_away'
+                                                        ? Dimensions
+                                                        .PADDING_SIZE_SMALL
+                                                        : 0.0),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                    children: [
+                                                      Text('delivery_fee'.tr,
+                                                          style: robotoRegular),
+                                                      _deliveryCharge == -1
+                                                          ? Text(
+                                                        'calculating'.tr,
+                                                        style: robotoRegular
+                                                            .copyWith(
+                                                            color: Colors
+                                                                .red),
+                                                      )
+                                                          :
+                                                      (
+                                                          // (base_price).toDouble() == 0 ||
+                                                          (couponController
+                                                              .coupon !=
+                                                              null &&
+                                                              couponController
+                                                                  .coupon
+                                                                  .couponType ==
+                                                                  'free_delivery'))
+                                                          ? Text(
+                                                        'free'.tr,
+                                                        style: robotoRegular.copyWith(
+                                                            color: Theme.of(
+                                                                context)
+                                                                .primaryColor),
+                                                      )
+                                                          : Text(
+                                                        '(+) ${PriceConverter.convertPrice((base_price).toDouble())}',
+                                                        style:
+                                                        robotoRegular,
+                                                      ),
+                                                    ]),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: Dimensions
+                                                          .PADDING_SIZE_SMALL),
+                                                  child: Divider(
+                                                      thickness: 1,
+                                                      color: Theme.of(context)
+                                                          .hintColor
+                                                          .withOpacity(0.5)),
+                                                ),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                    children: [
+                                                      Text('Total Vehicle Fee'.tr,
+                                                          style: robotoRegular),
+                                                      _deliveryCharge == -1
+                                                          ? Text(
+                                                        'calculating'.tr,
+                                                        style: robotoRegular
+                                                            .copyWith(
+                                                            color: Colors
+                                                                .red),
+                                                      )
+                                                          :
+                                                      (
+                                                          // (additional_distance_price).toDouble() == 0 ||
+                                                          (couponController
+                                                              .coupon !=
+                                                              null &&
+                                                              couponController
+                                                                  .coupon
+                                                                  .couponType ==
+                                                                  'free_delivery'))
+                                                          ? Text(
+                                                        'free'.tr,
+                                                        style: robotoRegular.copyWith(
+                                                            color: Theme.of(
+                                                                context)
+                                                                .primaryColor),
+                                                      )
+                                                          : Text(
+                                                        '(+) $vehicle_fee_per_km',
+                                                        style:
+                                                        robotoRegular,
+                                                      ),
+                                                    ]),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: Dimensions
+                                                          .PADDING_SIZE_SMALL),
+                                                  child: Divider(
+                                                      thickness: 1,
+                                                      color: Theme.of(context)
+                                                          .hintColor
+                                                          .withOpacity(0.5)),
+                                                ),
+
+
+                                                // Row(
+                                                //     mainAxisAlignment:
+                                                //     MainAxisAlignment
+                                                //         .spaceBetween,
+                                                //     children: [
+                                                //       Text(
+                                                //         'total_amount'.tr,
+                                                //         style:
+                                                //         robotoMedium.copyWith(
+                                                //             fontSize: Dimensions
+                                                //                 .fontSizeLarge,
+                                                //             color: Theme.of(
+                                                //                 context)
+                                                //                 .primaryColor),
+                                                //       ),
+                                                //       Text(
+                                                //         PriceConverter.convertPrice(
+                                                //             _total),
+                                                //         style:
+                                                //         robotoMedium.copyWith(
+                                                //             fontSize: Dimensions
+                                                //                 .fontSizeLarge,
+                                                //             color: Theme.of(
+                                                //                 context)
+                                                //                 .primaryColor),
+                                                //       ),
+                                                //     ]),
                                               ]),
                                         ),
                                         const SizedBox(
@@ -1377,242 +1627,242 @@ List selectedVehicle;
                                                     ),
                                                   ),
                                                 ]),
-                                            SizedBox(
-                                                height: Dimensions
-                                                    .PADDING_SIZE_LARGE),
-                                            Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text('subtotal'.tr,
-                                                      style: robotoMedium),
-                                                  Text(
-                                                      PriceConverter
-                                                          .convertPrice(
-                                                              _subTotal),
-                                                      style: robotoMedium),
-                                                ]),
-                                            SizedBox(
-                                                height: Dimensions
-                                                    .PADDING_SIZE_SMALL),
-                                            Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text('discount'.tr,
-                                                      style: robotoRegular),
-                                                  Text(
-                                                      '(-) ${PriceConverter.convertPrice(_discount)}',
-                                                      style: robotoRegular),
-                                                ]),
-                                            SizedBox(
-                                                height: Dimensions
-                                                    .PADDING_SIZE_SMALL),
-                                            (couponController.discount > 0 ||
-                                                    couponController
-                                                        .freeDelivery)
-                                                ? Column(children: [
-                                                    Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Text(
-                                                              'coupon_discount'
-                                                                  .tr,
-                                                              style:
-                                                                  robotoRegular),
-                                                          (couponController
-                                                                          .coupon !=
-                                                                      null &&
-                                                                  couponController
-                                                                          .coupon
-                                                                          .couponType ==
-                                                                      'free_delivery')
-                                                              ? Text(
-                                                                  'free_delivery'
-                                                                      .tr,
-                                                                  style: robotoRegular
-                                                                      .copyWith(
-                                                                          color:
-                                                                              Theme.of(context).primaryColor),
-                                                                )
-                                                              : Text(
-                                                                  '(-) ${PriceConverter.convertPrice(couponController.discount)}',
-                                                                  style:
-                                                                      robotoRegular,
-                                                                ),
-                                                        ]),
-                                                    SizedBox(
-                                                        height: Dimensions
-                                                            .PADDING_SIZE_SMALL),
-                                                  ])
-                                                : const SizedBox(),
-                                            Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text('vat_tax'.tr,
-                                                      style: robotoRegular),
-                                                  Text(
-                                                      '(+) ${PriceConverter.convertPrice(_tax)}',
-                                                      style: robotoRegular),
-                                                ]),
-                                            SizedBox(
-                                                height: Dimensions
-                                                    .PADDING_SIZE_SMALL),
-                                            (orderController.orderType !=
-                                                        'take_away' &&
-                                                    Get.find<SplashController>()
-                                                            .configModel
-                                                            .dmTipsStatus ==
-                                                        1)
-                                                ? Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                          'delivery_man_tips'
-                                                              .tr,
-                                                          style: robotoRegular),
-                                                      Text(
-                                                          '(+) ${PriceConverter.convertPrice(orderController.tips)}',
-                                                          style: robotoRegular),
-                                                    ],
-                                                  )
-                                                : SizedBox.shrink(),
-                                            SizedBox(
-                                                height:
-                                                    orderController.orderType !=
-                                                            'take_away'
-                                                        ? Dimensions
-                                                            .PADDING_SIZE_SMALL
-                                                        : 0.0),
-                                            Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text('delivery_fee'.tr,
-                                                      style: robotoRegular),
-                                                  _deliveryCharge == -1
-                                                      ? Text(
-                                                          'calculating'.tr,
-                                                          style: robotoRegular
-                                                              .copyWith(
-                                                                  color: Colors
-                                                                      .red),
-                                                        )
-                                                      : ((base_price).toDouble() == 0 ||
-                                                              (couponController
-                                                                          .coupon !=
-                                                                      null &&
-                                                                  couponController
-                                                                          .coupon
-                                                                          .couponType ==
-                                                                      'free_delivery'))
-                                                          ? Text(
-                                                              'free'.tr,
-                                                              style: robotoRegular.copyWith(
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .primaryColor),
-                                                            )
-                                                          : Text(
-                                                              '(+) ${PriceConverter.convertPrice((base_price).toDouble())}',
-                                                              style:
-                                                                  robotoRegular,
-                                                            ),
-                                                ]),
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: Dimensions
-                                                      .PADDING_SIZE_SMALL),
-                                              child: Divider(
-                                                  thickness: 1,
-                                                  color: Theme.of(context)
-                                                      .hintColor
-                                                      .withOpacity(0.5)),
-                                            ),
-                                            Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
-                                                children: [
-                                                  Text('Total Vehicle Fee'.tr,
-                                                      style: robotoRegular),
-                                                  _deliveryCharge == -1
-                                                      ? Text(
-                                                    'calculating'.tr,
-                                                    style: robotoRegular
-                                                        .copyWith(
-                                                        color: Colors
-                                                            .red),
-                                                  )
-                                                      : ((additional_distance_price).toDouble() == 0 ||
-                                                      (couponController
-                                                          .coupon !=
-                                                          null &&
-                                                          couponController
-                                                              .coupon
-                                                              .couponType ==
-                                                              'free_delivery'))
-                                                      ? Text(
-                                                    'free'.tr,
-                                                    style: robotoRegular.copyWith(
-                                                        color: Theme.of(
-                                                            context)
-                                                            .primaryColor),
-                                                  )
-                                                      : Text(
-                                                    '(+) $vehicle_fee_per_km',
-                                                    style:
-                                                    robotoRegular,
-                                                  ),
-                                                ]),
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: Dimensions
-                                                      .PADDING_SIZE_SMALL),
-                                              child: Divider(
-                                                  thickness: 1,
-                                                  color: Theme.of(context)
-                                                      .hintColor
-                                                      .withOpacity(0.5)),
-                                            ),
-
-
-                                            Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    'total_amount'.tr,
-                                                    style:
-                                                        robotoMedium.copyWith(
-                                                            fontSize: Dimensions
-                                                                .fontSizeLarge,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor),
-                                                  ),
-                                                  Text(
-                                                    PriceConverter.convertPrice(
-                                                        _total),
-                                                    style:
-                                                        robotoMedium.copyWith(
-                                                            fontSize: Dimensions
-                                                                .fontSizeLarge,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor),
-                                                  ),
-                                                ]),
+                                            // SizedBox(
+                                            //     height: Dimensions
+                                            //         .PADDING_SIZE_LARGE),
+                                            // Row(
+                                            //     mainAxisAlignment:
+                                            //         MainAxisAlignment
+                                            //             .spaceBetween,
+                                            //     children: [
+                                            //       Text('subtotal'.tr,
+                                            //           style: robotoMedium),
+                                            //       Text(
+                                            //           PriceConverter
+                                            //               .convertPrice(
+                                            //                   _subTotal),
+                                            //           style: robotoMedium),
+                                            //     ]),
+                                            // SizedBox(
+                                            //     height: Dimensions
+                                            //         .PADDING_SIZE_SMALL),
+                                            // Row(
+                                            //     mainAxisAlignment:
+                                            //         MainAxisAlignment
+                                            //             .spaceBetween,
+                                            //     children: [
+                                            //       Text('discount'.tr,
+                                            //           style: robotoRegular),
+                                            //       Text(
+                                            //           '(-) ${PriceConverter.convertPrice(_discount)}',
+                                            //           style: robotoRegular),
+                                            //     ]),
+                                            // SizedBox(
+                                            //     height: Dimensions
+                                            //         .PADDING_SIZE_SMALL),
+                                            // (couponController.discount > 0 ||
+                                            //         couponController
+                                            //             .freeDelivery)
+                                            //     ? Column(children: [
+                                            //         Row(
+                                            //             mainAxisAlignment:
+                                            //                 MainAxisAlignment
+                                            //                     .spaceBetween,
+                                            //             children: [
+                                            //               Text(
+                                            //                   'coupon_discount'
+                                            //                       .tr,
+                                            //                   style:
+                                            //                       robotoRegular),
+                                            //               (couponController
+                                            //                               .coupon !=
+                                            //                           null &&
+                                            //                       couponController
+                                            //                               .coupon
+                                            //                               .couponType ==
+                                            //                           'free_delivery')
+                                            //                   ? Text(
+                                            //                       'free_delivery'
+                                            //                           .tr,
+                                            //                       style: robotoRegular
+                                            //                           .copyWith(
+                                            //                               color:
+                                            //                                   Theme.of(context).primaryColor),
+                                            //                     )
+                                            //                   : Text(
+                                            //                       '(-) ${PriceConverter.convertPrice(couponController.discount)}',
+                                            //                       style:
+                                            //                           robotoRegular,
+                                            //                     ),
+                                            //             ]),
+                                            //         SizedBox(
+                                            //             height: Dimensions
+                                            //                 .PADDING_SIZE_SMALL),
+                                            //       ])
+                                            //     : const SizedBox(),
+                                            // Row(
+                                            //     mainAxisAlignment:
+                                            //         MainAxisAlignment
+                                            //             .spaceBetween,
+                                            //     children: [
+                                            //       Text('vat_tax'.tr,
+                                            //           style: robotoRegular),
+                                            //       Text(
+                                            //           '(+) ${PriceConverter.convertPrice(_tax)}',
+                                            //           style: robotoRegular),
+                                            //     ]),
+                                            // SizedBox(
+                                            //     height: Dimensions
+                                            //         .PADDING_SIZE_SMALL),
+                                            // (orderController.orderType !=
+                                            //             'take_away' &&
+                                            //         Get.find<SplashController>()
+                                            //                 .configModel
+                                            //                 .dmTipsStatus ==
+                                            //             1)
+                                            //     ? Row(
+                                            //         mainAxisAlignment:
+                                            //             MainAxisAlignment
+                                            //                 .spaceBetween,
+                                            //         children: [
+                                            //           Text(
+                                            //               'delivery_man_tips'
+                                            //                   .tr,
+                                            //               style: robotoRegular),
+                                            //           Text(
+                                            //               '(+) ${PriceConverter.convertPrice(orderController.tips)}',
+                                            //               style: robotoRegular),
+                                            //         ],
+                                            //       )
+                                            //     : SizedBox.shrink(),
+                                            // SizedBox(
+                                            //     height:
+                                            //         orderController.orderType !=
+                                            //                 'take_away'
+                                            //             ? Dimensions
+                                            //                 .PADDING_SIZE_SMALL
+                                            //             : 0.0),
+                                            // Row(
+                                            //     mainAxisAlignment:
+                                            //         MainAxisAlignment
+                                            //             .spaceBetween,
+                                            //     children: [
+                                            //       Text('delivery_fee'.tr,
+                                            //           style: robotoRegular),
+                                            //       _deliveryCharge == -1
+                                            //           ? Text(
+                                            //               'calculating'.tr,
+                                            //               style: robotoRegular
+                                            //                   .copyWith(
+                                            //                       color: Colors
+                                            //                           .red),
+                                            //             )
+                                            //           : ((base_price).toDouble() == 0 ||
+                                            //                   (couponController
+                                            //                               .coupon !=
+                                            //                           null &&
+                                            //                       couponController
+                                            //                               .coupon
+                                            //                               .couponType ==
+                                            //                           'free_delivery'))
+                                            //               ? Text(
+                                            //                   'free'.tr,
+                                            //                   style: robotoRegular.copyWith(
+                                            //                       color: Theme.of(
+                                            //                               context)
+                                            //                           .primaryColor),
+                                            //                 )
+                                            //               : Text(
+                                            //                   '(+) ${PriceConverter.convertPrice((base_price).toDouble())}',
+                                            //                   style:
+                                            //                       robotoRegular,
+                                            //                 ),
+                                            //     ]),
+                                            // Padding(
+                                            //   padding: EdgeInsets.symmetric(
+                                            //       vertical: Dimensions
+                                            //           .PADDING_SIZE_SMALL),
+                                            //   child: Divider(
+                                            //       thickness: 1,
+                                            //       color: Theme.of(context)
+                                            //           .hintColor
+                                            //           .withOpacity(0.5)),
+                                            // ),
+                                            // Row(
+                                            //     mainAxisAlignment:
+                                            //     MainAxisAlignment
+                                            //         .spaceBetween,
+                                            //     children: [
+                                            //       Text('Total Vehicle Fee'.tr,
+                                            //           style: robotoRegular),
+                                            //       _deliveryCharge == -1
+                                            //           ? Text(
+                                            //         'calculating'.tr,
+                                            //         style: robotoRegular
+                                            //             .copyWith(
+                                            //             color: Colors
+                                            //                 .red),
+                                            //       )
+                                            //           : ((additional_distance_price).toDouble() == 0 ||
+                                            //           (couponController
+                                            //               .coupon !=
+                                            //               null &&
+                                            //               couponController
+                                            //                   .coupon
+                                            //                   .couponType ==
+                                            //                   'free_delivery'))
+                                            //           ? Text(
+                                            //         'free'.tr,
+                                            //         style: robotoRegular.copyWith(
+                                            //             color: Theme.of(
+                                            //                 context)
+                                            //                 .primaryColor),
+                                            //       )
+                                            //           : Text(
+                                            //         '(+) $vehicle_fee_per_km',
+                                            //         style:
+                                            //         robotoRegular,
+                                            //       ),
+                                            //     ]),
+                                            // Padding(
+                                            //   padding: EdgeInsets.symmetric(
+                                            //       vertical: Dimensions
+                                            //           .PADDING_SIZE_SMALL),
+                                            //   child: Divider(
+                                            //       thickness: 1,
+                                            //       color: Theme.of(context)
+                                            //           .hintColor
+                                            //           .withOpacity(0.5)),
+                                            // ),
+                                            //
+                                            //
+                                            // Row(
+                                            //     mainAxisAlignment:
+                                            //         MainAxisAlignment
+                                            //             .spaceBetween,
+                                            //     children: [
+                                            //       Text(
+                                            //         'total_amount'.tr,
+                                            //         style:
+                                            //             robotoMedium.copyWith(
+                                            //                 fontSize: Dimensions
+                                            //                     .fontSizeLarge,
+                                            //                 color: Theme.of(
+                                            //                         context)
+                                            //                     .primaryColor),
+                                            //       ),
+                                            //       Text(
+                                            //         PriceConverter.convertPrice(
+                                            //             _total),
+                                            //         style:
+                                            //             robotoMedium.copyWith(
+                                            //                 fontSize: Dimensions
+                                            //                     .fontSizeLarge,
+                                            //                 color: Theme.of(
+                                            //                         context)
+                                            //                     .primaryColor),
+                                            //       ),
+                                            //     ]),
                                           ]),
                                         ),
                                       ]),
@@ -1626,7 +1876,10 @@ List selectedVehicle;
                                 child: !orderController.isLoading
                                     ?
                                 CustomButton(
-                                        buttonText: 'confirm_order'.tr,
+                                        // buttonText: 'confirm_order'.tr,
+
+                                    buttonText:"Order Now R$inDoublePrice",
+                                        icon:Icons.arrow_forward,
                                         onPressed: () {
                                           bool _isAvailable = true;
                                           DateTime _scheduleStartDate =
@@ -1896,6 +2149,8 @@ List selectedVehicle;
                                                 _total);
                                           }
                                         })
+
+
                                     : const Center(
                                         child: CircularProgressIndicator(
                                         valueColor:

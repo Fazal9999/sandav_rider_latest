@@ -451,8 +451,8 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  //  BannerView(),
-                                  DiscountBanners(),
+                                  BannerView(),
+                                  //DiscountBanners(),
                                   CategoryView(),
                                   //NewCategoryView(),
                                   _configModel.popularRestaurant == 1

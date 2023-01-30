@@ -61,6 +61,7 @@ class CustomButton extends StatelessWidget {
                       : SizedBox(),
                   Text(buttonText ?? '',
                       textAlign: TextAlign.center,
+
                       style: robotoBold.copyWith(
                         color: transparent
                             ? Theme.of(context).primaryColor
