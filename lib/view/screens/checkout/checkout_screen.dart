@@ -293,7 +293,17 @@ List selectedVehicle;
                         _deliveryCharge = 0;
                       }
                     }
-                     double vehicle_fee =(additional_distance_price+base_price).toDouble();
+                     double vehicle_fee =0.0;
+                    double vehicle_fee_per_km=0.0;
+                    if(orderController.distance!=null){
+                      vehicle_fee_per_km=   double.parse(((orderController.distance * (additional_distance_price).toDouble()).toStringAsFixed(2)));
+                      vehicle_fee=  double.parse(((
+                          orderController.distance * (additional_distance_price).toDouble()).toStringAsFixed(2)))
+                          + base_price;
+
+                    }
+
+
                     _tax = PriceConverter.calculation(
                         _orderAmount, _taxPercent, 'percent', 1);
                     double _total = _subTotal +
@@ -1533,7 +1543,7 @@ List selectedVehicle;
                                                 MainAxisAlignment
                                                     .spaceBetween,
                                                 children: [
-                                                  Text('Vehicle Fee Per KM'.tr,
+                                                  Text('Total Vehicle Fee'.tr,
                                                       style: robotoRegular),
                                                   _deliveryCharge == -1
                                                       ? Text(
@@ -1559,7 +1569,7 @@ List selectedVehicle;
                                                             .primaryColor),
                                                   )
                                                       : Text(
-                                                    '(+) ${PriceConverter.convertPrice((additional_distance_price).toDouble())}',
+                                                    '(+) $vehicle_fee_per_km',
                                                     style:
                                                     robotoRegular,
                                                   ),
