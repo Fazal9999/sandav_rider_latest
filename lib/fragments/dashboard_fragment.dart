@@ -443,7 +443,6 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                           ),
                         ),
                         // App Bar
-
                         SliverToBoxAdapter(
                           child: Center(
                               child: SizedBox(
