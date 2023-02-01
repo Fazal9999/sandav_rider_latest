@@ -1,3 +1,5 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:sandav/controller/location_controller.dart';
 import 'package:sandav/controller/splash_controller.dart';
 import 'package:sandav/data/api/api_checker.dart';
@@ -22,7 +24,20 @@ class AuthController extends GetxController implements GetxService {
   AuthController({@required this.authRepo}) {
     _notification = authRepo.isNotificationActive();
   }
+  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  String _fileName;
+  String _bankingName;
 
+
+  String _saveAsFileName;
+  //List<PlatformFile> _paths;
+  String _directoryPath;
+  String _extension="jpg, pdf, doc";
+  bool _isImgLoading = false;
+  bool _userAborted = false;
+  bool _multiPick = false;
+  FileType _pickingType = FileType.any;
+  TextEditingController _controller = TextEditingController();
   bool _isLoading = false;
   bool _notification = true;
   bool _acceptTerms = true;
@@ -33,7 +48,19 @@ class AuthController extends GetxController implements GetxService {
   LatLng _restaurantLocation;
   List<int> _zoneIds;
   XFile _pickedImage;
+  XFile _licensedImage;
+  XFile _residenceImage;
+  XFile _frontImage;
+  XFile _vehicleImage;
+
+
   List<XFile> _pickedIdentities = [];
+  List<XFile> _pickedLicenseIdentities = [];
+  List<XFile> _pickedFrontIdentities = [];
+  List<XFile> _pickedVehicleIdentities = [];
+  List<PlatformFile> pickedResidenceIdentities = [];
+  List<PlatformFile> pickedBankingIdentities = [];
+
   List<String> _identityTypeList = ['passport', 'driving_license', 'nid'];
   int _identityTypeIndex = 0;
   List<String> _dmTypeList = ['freelancer', 'salary_based'];
@@ -49,7 +76,21 @@ class AuthController extends GetxController implements GetxService {
   LatLng get restaurantLocation => _restaurantLocation;
   List<int> get zoneIds => _zoneIds;
   XFile get pickedImage => _pickedImage;
+
+  XFile get license =>  _licensedImage;
+
+  XFile get residence =>  _residenceImage;
+
   List<XFile> get pickedIdentities => _pickedIdentities;
+  List<XFile> get pickedLicenseIdentities => _pickedLicenseIdentities;
+
+  List<XFile> get pickedFrontIdentities => _pickedFrontIdentities;
+  List<XFile> get pickedVhicleIdentities => _pickedVehicleIdentities;
+
+
+  //List<PlatformFile> get pickedResidenceIdentities => _pickedResidenceIdentities;
+
+
   List<String> get identityTypeList => _identityTypeList;
   int get identityTypeIndex => _identityTypeIndex;
   List<String> get dmTypeList => _dmTypeList;
@@ -478,10 +519,186 @@ class AuthController extends GetxController implements GetxService {
     }
   }
 
+  void pickRegImage(bool isLogo, bool isRemove, String s) async {
+    if (isRemove) {
+      if(s == "license"){
+        _licensedImage = null;
+        _pickedLicenseIdentities = [];
+      }
+      if(s == "front"){
+        _frontImage = null;
+        _pickedFrontIdentities = [];
+      }
+      if(s == "vehicle"){
+        _vehicleImage = null;
+        _pickedVehicleIdentities = [];
+      }
+
+    } else {
+      if (isLogo) {
+        if(s == "license"){
+          _licensedImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+         print("Faziysss ${_licensedImage.path}");
+        }
+        if(s == "front"){
+          _frontImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+        }
+        if(s == "vehicle"){
+          _vehicleImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+        }
+      } else {
+        if(s == "license"){
+          XFile _xFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+          if (_xFile != null) {
+            _pickedLicenseIdentities.add(_xFile);
+          }
+        }
+        if(s == "front"){
+          XFile _xFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+          if (_xFile != null) {
+            _pickedFrontIdentities.add(_xFile);
+          }
+        }
+        if(s == "vehicle"){
+          XFile _xFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+          if (_xFile != null) {
+            _pickedVehicleIdentities.add(_xFile);
+          }
+        }
+
+      }
+      update();
+    }
+  }
+
+
+
+
+
+
+
+
+
   void removeIdentityImage(int index) {
     _pickedIdentities.removeAt(index);
     update();
   }
+
+  void removeResidenceImage(int index) {
+    pickedResidenceIdentities.removeAt(index);
+    update();
+  }
+
+  void removeBankingImage(int index) {
+    pickedBankingIdentities.removeAt(index);
+    update();
+  }
+
+  void removeLicenseImage(int index) {
+
+    _pickedLicenseIdentities.removeAt(index);
+    update();
+  }
+
+  void removeFrontImage(int index) {
+
+    _pickedFrontIdentities.removeAt(index);
+    update();
+  }
+
+  void removeVehicleImage(int index) {
+    _pickedVehicleIdentities.removeAt(index);
+    update();
+  }
+
+  void _resetState() {
+    if (!this.isClosed) {
+      return;
+    }
+ 
+
+    Obx((){
+        _isImgLoading = true;
+        _directoryPath = null;
+        _fileName = null;
+        _bankingName=null;
+        pickedResidenceIdentities = null;
+        pickedBankingIdentities=null;
+        _saveAsFileName = null;
+        _userAborted = false;
+      });
+
+  }
+
+
+  void pickFiles(String s) async {
+    _resetState();
+
+    try {
+      _directoryPath = null;
+     if(s=="residence"){
+       pickedResidenceIdentities = (await FilePicker.platform.pickFiles(
+         type: _pickingType,
+         allowMultiple: _multiPick,
+         onFileLoading: (FilePickerStatus status) => print(status),
+
+       ))
+           ?.files;
+     }
+     if(s=="banking"){
+       pickedBankingIdentities = (await FilePicker.platform.pickFiles(
+         type: _pickingType,
+         allowMultiple: _multiPick,
+         onFileLoading: (FilePickerStatus status) => print(status),
+
+       ))
+           ?.files;
+     }
+
+    } on PlatformException catch (e) {
+      _logException('Unsupported operation' + e.toString());
+    } catch (e) {
+      _logException(e.toString());
+      print("Fazal ${e.toString()}");
+    }
+    if (!this.isClosed) return;
+    Obx((){
+      if(s=="residence"){
+        _isImgLoading = false;
+        _fileName =
+        pickedResidenceIdentities != null ? pickedResidenceIdentities.map((e) => e.name).toString() : '...';
+        _userAborted = pickedResidenceIdentities == null;
+      }
+      if(s=="banking"){
+        _isImgLoading = false;
+        _bankingName =
+        pickedBankingIdentities != null ? pickedBankingIdentities.map((e) => e.name).toString() : '...';
+        _userAborted = pickedBankingIdentities == null;
+      }
+    });
+    print("Faziy ${pickedResidenceIdentities.toString()}");
+  }
+
+
+
+  void _logException(String message) {
+    print(message);
+    _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
+    _scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+
+
 
   Future<void> registerDeliveryMan(DeliveryManBody deliveryManBody) async {
     _isLoading = true;

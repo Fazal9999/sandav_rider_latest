@@ -1,3 +1,8 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:nb_utils/nb_utils.dart';
+
+
 const car = 'assets/logo.png';
 const home_delivery = 'assets/home_delivery.png';
 const take_away = 'assets/takeaway.png';
@@ -68,3 +73,39 @@ const fav = 'assets/fav.gif';
 const easy = 'assets/easy.gif';
 const delivery = 'assets/delivery.gif';
 const wrongkeyword = 'assets/wrongkeyword.png';
+
+Widget indicator({@required bool isActive}) {
+  return AnimatedContainer(
+    duration: Duration(milliseconds: 150),
+    margin: EdgeInsets.symmetric(horizontal: 4.0),
+    height: isActive ? 6.0 : 4.0,
+    width: isActive ? 6.0 : 4.0,
+    decoration: BoxDecoration(
+      color: isActive ? Colors.white : Color(0xFF929794),
+      borderRadius: BorderRadius.all(Radius.circular(50)),
+    ),
+  );
+}
+const opBackgroundColor = Color(0xFFFFFFFF);
+Widget applogo() {
+  return Image.asset(
+    car,
+    width: 36,
+    height: 36,
+    fit: BoxFit.fill,
+  );
+}
+Widget textField({String title, IconData image, TextInputType textInputType}) {
+  return TextField(
+    keyboardType: textInputType,
+    style: primaryTextStyle(),
+    decoration: InputDecoration(
+      hintText: title,
+      hintStyle: secondaryTextStyle(size: 16),
+      fillColor: Colors.grey,
+      suffixIcon: Icon(image, color: Colors.grey, size: 20),
+    ),
+  );
+}
+
+

@@ -10,6 +10,7 @@ import 'package:sandav/view/base/custom_app_bar.dart';
 import 'package:sandav/view/base/custom_button.dart';
 import 'package:sandav/view/base/custom_snackbar.dart';
 import 'package:sandav/view/base/custom_text_field.dart';
+import 'package:sandav/view/screens/auth/registration_details_screen.dart';
 import 'package:sandav/view/screens/auth/widget/code_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -60,7 +61,8 @@ class _DeliveryManRegistrationScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'delivery_man_registration'.tr),
-      body: GetBuilder<AuthController>(builder: (authController) {
+      body:
+      GetBuilder<AuthController>(builder: (authController) {
         List<int> _zoneIndexList = [];
         if (authController.zoneList != null) {
           for (int index = 0; index < authController.zoneList.length; index++) {
@@ -522,6 +524,7 @@ class _DeliveryManRegistrationScreenState
   }
 
   void _addDeliveryMan(AuthController authController) async {
+
     String _fName = _fNameController.text.trim();
     String _lName = _lNameController.text.trim();
     String _email = _emailController.text.trim();
@@ -531,49 +534,86 @@ class _DeliveryManRegistrationScreenState
 
     String _numberWithCountryCode = _countryDialCode + _phone;
     bool _isValid = GetPlatform.isWeb ? true : false;
-    if (!GetPlatform.isWeb) {
-      try {
-        PhoneNumber phoneNumber =
-            await PhoneNumberUtil().parse(_numberWithCountryCode);
-        _numberWithCountryCode =
-            '+' + phoneNumber.countryCode + phoneNumber.nationalNumber;
-        _isValid = true;
-      } catch (e) {}
-    }
-    if (_fName.isEmpty) {
-      showCustomSnackBar('enter_delivery_man_first_name'.tr);
-    } else if (_lName.isEmpty) {
-      showCustomSnackBar('enter_delivery_man_last_name'.tr);
-    } else if (_email.isEmpty) {
-      showCustomSnackBar('enter_delivery_man_email_address'.tr);
-    } else if (!GetUtils.isEmail(_email)) {
-      showCustomSnackBar('enter_a_valid_email_address'.tr);
-    } else if (_phone.isEmpty) {
-      showCustomSnackBar('enter_delivery_man_phone_number'.tr);
-    } else if (!_isValid) {
-      showCustomSnackBar('enter_a_valid_phone_number'.tr);
-    } else if (_password.isEmpty) {
-      showCustomSnackBar('enter_password_for_delivery_man'.tr);
-    } else if (_password.length < 6) {
-      showCustomSnackBar('password_should_be'.tr);
-    } else if (_identityNumber.isEmpty) {
-      showCustomSnackBar('enter_delivery_man_identity_number'.tr);
-    } else if (authController.pickedImage == null) {
-      showCustomSnackBar('upload_delivery_man_image'.tr);
-    } else {
-      authController.registerDeliveryMan(DeliveryManBody(
-        fName: _fName,
-        lName: _lName,
-        password: _password,
-        phone: _numberWithCountryCode,
-        email: _email,
-        identityNumber: _identityNumber,
-        identityType:
-            authController.identityTypeList[authController.identityTypeIndex],
-        earning: authController.dmTypeIndex == 0 ? '1' : '0',
-        zoneId: authController.zoneList[authController.selectedZoneIndex].id
-            .toString(),
-      ));
-    }
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                RegistrationDetailsScreen(DeliveryManBody(
+              fName: _fName,
+              lName: _lName,
+              password: _password,
+              phone: _numberWithCountryCode,
+              email: _email,
+              identityNumber: _identityNumber,
+              identityType:
+              authController.identityTypeList[authController.identityTypeIndex],
+              earning: authController.dmTypeIndex == 0 ? '1' : '0',
+              zoneId: authController.zoneList[authController.selectedZoneIndex].id
+                  .toString(),
+            )
+            )));
+    // if (!GetPlatform.isWeb) {
+    //   try {
+    //     PhoneNumber phoneNumber =
+    //         await PhoneNumberUtil().parse(_numberWithCountryCode);
+    //     _numberWithCountryCode =
+    //         '+' + phoneNumber.countryCode + phoneNumber.nationalNumber;
+    //     _isValid = true;
+    //   } catch (e) {}
+    // }
+    // if (_fName.isEmpty) {
+    //   showCustomSnackBar('enter_delivery_man_first_name'.tr);
+    // } else if (_lName.isEmpty) {
+    //   showCustomSnackBar('enter_delivery_man_last_name'.tr);
+    // } else if (_email.isEmpty) {
+    //   showCustomSnackBar('enter_delivery_man_email_address'.tr);
+    // } else if (!GetUtils.isEmail(_email)) {
+    //   showCustomSnackBar('enter_a_valid_email_address'.tr);
+    // } else if (_phone.isEmpty) {
+    //   showCustomSnackBar('enter_delivery_man_phone_number'.tr);
+    // } else if (!_isValid) {
+    //   showCustomSnackBar('enter_a_valid_phone_number'.tr);
+    // } else if (_password.isEmpty) {
+    //   showCustomSnackBar('enter_password_for_delivery_man'.tr);
+    // } else if (_password.length < 6) {
+    //   showCustomSnackBar('password_should_be'.tr);
+    // } else if (_identityNumber.isEmpty) {
+    //   showCustomSnackBar('enter_delivery_man_identity_number'.tr);
+    // } else if (authController.pickedImage == null) {
+    //   showCustomSnackBar('upload_delivery_man_image'.tr);
+    // }
+    // else {
+    //   // authController.registerDeliveryMan(DeliveryManBody(
+    //   //   fName: _fName,
+    //   //   lName: _lName,
+    //   //   password: _password,
+    //   //   phone: _numberWithCountryCode,
+    //   //   email: _email,
+    //   //   identityNumber: _identityNumber,
+    //   //   identityType:
+    //   //       authController.identityTypeList[authController.identityTypeIndex],
+    //   //   earning: authController.dmTypeIndex == 0 ? '1' : '0',
+    //   //   zoneId: authController.zoneList[authController.selectedZoneIndex].id
+    //   //       .toString(),
+    //   // ));
+    //
+    //   Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //           builder: (context) => RegistrationDetailsScreen(DeliveryManBody(
+    //             fName: _fName,
+    //             lName: _lName,
+    //             password: _password,
+    //             phone: _numberWithCountryCode,
+    //             email: _email,
+    //             identityNumber: _identityNumber,
+    //             identityType:
+    //             authController.identityTypeList[authController.identityTypeIndex],
+    //             earning: authController.dmTypeIndex == 0 ? '1' : '0',
+    //             zoneId: authController.zoneList[authController.selectedZoneIndex].id
+    //                 .toString(),
+    //           )
+    //           )));
+    // }
   }
 }
