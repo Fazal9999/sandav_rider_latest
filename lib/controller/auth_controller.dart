@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:sandav/controller/location_controller.dart';
@@ -24,9 +26,7 @@ class AuthController extends GetxController implements GetxService {
   AuthController({@required this.authRepo}) {
     _notification = authRepo.isNotificationActive();
   }
-  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  String _fileName;
-  String _bankingName;
+
 
 
   String _saveAsFileName;
@@ -58,10 +58,8 @@ class AuthController extends GetxController implements GetxService {
   List<XFile> _pickedLicenseIdentities = [];
   List<XFile> _pickedFrontIdentities = [];
   List<XFile> _pickedVehicleIdentities = [];
-  List<PlatformFile> pickedResidenceIdentities = [];
-  List<PlatformFile> pickedBankingIdentities = [];
 
-  List<String> _identityTypeList = ['passport', 'driving_license', 'nid'];
+  List<String> _identityTypeList = ['passport', 'nid'];
   int _identityTypeIndex = 0;
   List<String> _dmTypeList = ['freelancer', 'salary_based'];
   int _dmTypeIndex = 0;
@@ -590,15 +588,7 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
-  void removeResidenceImage(int index) {
-    pickedResidenceIdentities.removeAt(index);
-    update();
-  }
 
-  void removeBankingImage(int index) {
-    pickedBankingIdentities.removeAt(index);
-    update();
-  }
 
   void removeLicenseImage(int index) {
 
@@ -617,99 +607,54 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
-  void _resetState() {
-    if (!this.isClosed) {
-      return;
-    }
- 
-
-    Obx((){
-        _isImgLoading = true;
-        _directoryPath = null;
-        _fileName = null;
-        _bankingName=null;
-        pickedResidenceIdentities = null;
-        pickedBankingIdentities=null;
-        _saveAsFileName = null;
-        _userAborted = false;
-      });
-
-  }
-
-
-  void pickFiles(String s) async {
-    _resetState();
-
-    try {
-      _directoryPath = null;
-     if(s=="residence"){
-       pickedResidenceIdentities = (await FilePicker.platform.pickFiles(
-         type: _pickingType,
-         allowMultiple: _multiPick,
-         onFileLoading: (FilePickerStatus status) => print(status),
-
-       ))
-           ?.files;
-     }
-     if(s=="banking"){
-       pickedBankingIdentities = (await FilePicker.platform.pickFiles(
-         type: _pickingType,
-         allowMultiple: _multiPick,
-         onFileLoading: (FilePickerStatus status) => print(status),
-
-       ))
-           ?.files;
-     }
-
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation' + e.toString());
-    } catch (e) {
-      _logException(e.toString());
-      print("Fazal ${e.toString()}");
-    }
-    if (!this.isClosed) return;
-    Obx((){
-      if(s=="residence"){
-        _isImgLoading = false;
-        _fileName =
-        pickedResidenceIdentities != null ? pickedResidenceIdentities.map((e) => e.name).toString() : '...';
-        _userAborted = pickedResidenceIdentities == null;
-      }
-      if(s=="banking"){
-        _isImgLoading = false;
-        _bankingName =
-        pickedBankingIdentities != null ? pickedBankingIdentities.map((e) => e.name).toString() : '...';
-        _userAborted = pickedBankingIdentities == null;
-      }
-    });
-    print("Faziy ${pickedResidenceIdentities.toString()}");
-  }
-
-
-
-  void _logException(String message) {
-    print(message);
-    _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
-    _scaffoldMessengerKey.currentState?.showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
-  }
 
 
 
 
-  Future<void> registerDeliveryMan(DeliveryManBody deliveryManBody) async {
+
+
+
+
+
+
+
+
+  Future<void> registerDeliveryMan(DeliveryManBody deliveryManBody,
+      List<PlatformFile> pickedResidenceIdentities,
+      List<PlatformFile> pickedBankingIdentities) async {
     _isLoading = true;
     update();
     List<MultipartBody> _multiParts = [];
+    List<MultipartBody> _LicensemultiParts = [];
+    List<MultipartBody> _DriverLicensemultiParts = [];
+    List<MultipartBody> _VehiclemultiParts = [];
+    List<MultipartBody2> pickedResidenceParts = [];
+    List<MultipartBody2> pickedBankingParts = [];
+
     _multiParts.add(MultipartBody('image', _pickedImage));
     for (XFile file in _pickedIdentities) {
       _multiParts.add(MultipartBody('identity_image[]', file));
     }
+    for (XFile file in pickedLicenseIdentities) {
+      _LicensemultiParts.add(MultipartBody('vehicle_license_image[]', file));
+    }
+    for (XFile file in pickedFrontIdentities) {
+      _DriverLicensemultiParts.add(MultipartBody('driver_license_image[]', file));
+    }
+    for (XFile file in pickedVhicleIdentities) {
+      _VehiclemultiParts.add(MultipartBody('vehicle_plate_image[]', file));
+    }
+    for (PlatformFile file in pickedResidenceIdentities) {
+      pickedResidenceParts.add(MultipartBody2('resident_image[]',  file));
+    }
+    for (PlatformFile file in pickedBankingIdentities) {
+      pickedBankingParts.add(MultipartBody2('banking_image[]',  file));
+    }
+
+
     Response response =
-        await authRepo.registerDeliveryMan(deliveryManBody, _multiParts);
+        await authRepo.registerDeliveryMan(deliveryManBody, _multiParts,_LicensemultiParts,
+            _DriverLicensemultiParts,_VehiclemultiParts,pickedResidenceParts,pickedBankingParts);
     if (response.statusCode == 200) {
       Get.offAllNamed(RouteHelper.getInitialRoute());
       showCustomSnackBar('delivery_man_registration_successful'.tr,

@@ -14,7 +14,6 @@ import 'package:sandav/util/styles.dart';
 import 'package:sandav/view/base/confirmation_dialog.dart';
 import 'package:sandav/view/base/custom_image.dart';
 import 'package:sandav/view/screens/address/address_screen.dart';
-import 'package:sandav/view/screens/auth/delivery_man_registration_screen.dart';
 import 'package:sandav/view/screens/auth/restaurant_registration_screen.dart';
 import 'package:sandav/view/screens/coupon/coupon_screen.dart';
 import 'package:sandav/view/screens/html/html_viewer_screen.dart';
@@ -33,6 +32,7 @@ import 'package:get/get.dart';
 
 import '../util/dimensions.dart';
 import '../util/html_type.dart';
+import '../view/screens/auth/registration_details_screen.dart';
 
 class SettingFragment extends StatefulWidget {
   @override
@@ -510,7 +510,7 @@ class _SettingFragmentState extends State<SettingFragment> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          DeliveryManRegistrationScreen()));
+                                          RegistrationDetailsScreen()));
                             },
                             trailing: Icon(Icons.arrow_forward_ios_rounded,
                                 size: 18, color: Get.iconColor),

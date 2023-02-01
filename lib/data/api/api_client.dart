@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 
 import 'package:sandav/data/model/response/address_model.dart';
@@ -10,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as Http;
+import 'package:image/image.dart' as Img;
 
 class ApiClient extends GetxService {
   final String appBaseUrl;
@@ -141,13 +143,22 @@ class ApiClient extends GetxService {
   }
 
 
-
   Future<Response> postMultipartData(
-      String uri, Map<String, String> body, List<MultipartBody> multipartBody,
+      String uri, Map<String, String> body,
+      List<MultipartBody> multipartBody,
+      List<MultipartBody> licensemultiParts,
+      List<MultipartBody> driverLicensemultiParts,
+      List<MultipartBody> vehiclemultiParts, List<MultipartBody2> pickedResidenceParts,
+      List<MultipartBody2> pickedBankingParts,
       {Map<String, String> headers}) async {
     try {
       debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
       debugPrint('====> API Body: $body with ${multipartBody.length} files');
+      debugPrint('====> API Body: $body with ${licensemultiParts.length} files');
+      debugPrint('====> API Body: $body with ${driverLicensemultiParts.length} files');
+      debugPrint('====> API Body: $body with ${vehiclemultiParts.length} files');
+      debugPrint('====> API Body: $body with ${pickedResidenceParts.length} files');
+      debugPrint('====> API Body: $body with ${pickedBankingParts.length} files');
       Http.MultipartRequest _request =
           Http.MultipartRequest('POST', Uri.parse(appBaseUrl + uri));
       _request.headers.addAll(headers ?? _mainHeaders);
@@ -157,6 +168,61 @@ class ApiClient extends GetxService {
           _request.files.add(Http.MultipartFile(
             multipart.key,
             multipart.file.readAsBytes().asStream(),
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      for (MultipartBody multipart in licensemultiParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.readAsBytes();
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readAsBytes().asStream(),
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      for (MultipartBody multipart in driverLicensemultiParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.readAsBytes();
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readAsBytes().asStream(),
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      for (MultipartBody multipart in vehiclemultiParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.readAsBytes();
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readAsBytes().asStream(),
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      for (MultipartBody2 multipart in pickedResidenceParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.bytes;
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readStream,
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      for (MultipartBody2 multipart in pickedBankingParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.bytes;
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readStream,
             _list.length,
             filename: '${DateTime.now().toString()}.png',
           ));
@@ -248,4 +314,10 @@ class MultipartBody {
   XFile file;
 
   MultipartBody(this.key, this.file);
+}
+class MultipartBody2 {
+  String key;
+  PlatformFile file;
+
+  MultipartBody2(this.key, this.file);
 }

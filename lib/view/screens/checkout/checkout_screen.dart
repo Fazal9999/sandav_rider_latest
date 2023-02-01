@@ -363,7 +363,8 @@ List selectedVehicle;
                                                     child: Row(children: [
                                                       restController.restaurant
                                                               .delivery
-                                                          ? Row(
+                                                          ?
+                                                      Row(
                                                               mainAxisAlignment:
                                                                   MainAxisAlignment
                                                                       .spaceBetween,
@@ -398,7 +399,8 @@ List selectedVehicle;
                                                                               10),
                                                                       height:
                                                                           85,
-                                                                      child: FutureBuilder(
+                                                                      child:
+                                                                      FutureBuilder(
                                                                           future: orderController.get_Vehicles(),
                                                                           builder: (context, AsyncSnapshot<List> snapshot) {
                                                                             if (!snapshot.hasData) {
@@ -506,7 +508,8 @@ List selectedVehicle;
                                                                                     },
                                                                                   ));
                                                                             }
-                                                                          })),
+                                                                          })
+                                                                  ),
                                                                 ])
                                                           : SizedBox(),
                                                       const SizedBox(
@@ -2173,9 +2176,9 @@ List selectedVehicle;
     );
   }
 
-  void _callback2(List loadedCars) async {
-    if (loadedCars != null) {}
-  }
+  // void _callback2(List loadedCars) async {
+  //   if (loadedCars != null) {}
+  // }
 
   void _callback(
       bool isSuccess, String message, String orderID, double amount) async {

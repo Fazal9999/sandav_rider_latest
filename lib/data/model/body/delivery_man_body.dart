@@ -8,18 +8,42 @@ class DeliveryManBody {
   String identityNumber;
   String earning;
   String zoneId;
+  int vehicle_id;
+  String is_criminal_bg_check;
+  String is_total_amount;
+  String is_paid_every_week;
+  String is_vehicle_reponsibility;
+  String is_paid_per_km;
+  String is_max_order;
+  String is_track_event;
+  String is_max_waiting_period;
+  String is_version_seven_plus;
+  String is_agree_terms;
+  String is_agree_privacy;
 
-  DeliveryManBody(
-      {this.fName,
-        this.lName,
-        this.phone,
-        this.email,
-        this.password,
-        this.identityType,
-        this.identityNumber,
-        this.earning,
-        this.zoneId,
-      });
+  DeliveryManBody({
+    this.fName,
+    this.lName,
+    this.phone,
+    this.email,
+    this.password,
+    this.identityType,
+    this.identityNumber,
+    this.earning,
+    this.zoneId,
+    this.vehicle_id,
+    this.is_criminal_bg_check,
+    this.is_total_amount,
+    this.is_paid_every_week,
+    this.is_vehicle_reponsibility,
+    this.is_paid_per_km,
+    this.is_max_order,
+    this.is_track_event,
+    this.is_max_waiting_period,
+    this.is_version_seven_plus,
+    this.is_agree_terms,
+    this.is_agree_privacy,
+  });
 
   DeliveryManBody.fromJson(Map<String, dynamic> json) {
     fName = json['f_name'];
@@ -31,6 +55,21 @@ class DeliveryManBody {
     identityNumber = json['identity_number'];
     earning = json['earning'];
     zoneId = json['zone_id'];
+
+    vehicle_id= json['vehicle_id'];
+    is_criminal_bg_check= json['is_criminal_bg_check'];
+    is_total_amount= json['is_total_amount'];
+    is_paid_every_week= json['is_paid_every_week'];
+    is_vehicle_reponsibility= json['is_vehicle_reponsibility'];
+    is_paid_per_km= json['is_paid_per_km'];
+    is_max_order= json['is_max_order'];
+    is_track_event= json['is_track_event'];
+    is_max_waiting_period= json['is_max_waiting_period'];
+    is_version_seven_plus= json['is_version_seven_plus'];
+    is_agree_terms= json['is_agree_terms'];
+    is_agree_privacy= json['is_agree_privacy'];
+
+
   }
 
   Map<String, String> toJson() {
@@ -44,6 +83,18 @@ class DeliveryManBody {
     data['identity_number'] = this.identityNumber;
     data['earning'] = this.earning;
     data['zone_id'] = this.zoneId;
+    data['vehicle_id'] = this.vehicle_id.toString();
+    data['is_criminal_bg_check'] = this.is_criminal_bg_check;
+    data['is_total_amount'] =  this.is_total_amount;
+    data['is_paid_every_week'] =this.is_paid_every_week;
+    data['is_vehicle_reponsibility'] = this.is_vehicle_reponsibility;
+    data['is_paid_per_km'] =  this.is_paid_per_km;
+    data['is_max_order'] =  this.is_max_order;
+    data['is_track_event'] = this.is_track_event;
+    data['is_max_waiting_period'] =  this.is_max_waiting_period;
+    data['is_version_seven_plus'] =  this.is_version_seven_plus;
+    data['is_agree_terms'] =  this.is_agree_terms;
+    data['is_agree_privacy'] =  this.is_agree_privacy;
     return data;
   }
 }

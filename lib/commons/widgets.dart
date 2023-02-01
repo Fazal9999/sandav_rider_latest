@@ -201,12 +201,13 @@ InputDecoration inputDecoration(
 
   return InputDecoration(
     counterText: "",
-    contentPadding: EdgeInsets.only(left: 12, bottom: 10, top: 10, right: 10),
+    contentPadding: EdgeInsets.only(left: 2, bottom: 2, top: 2, right: 2),
     labelText: labelText,
     labelStyle: secondaryTextStyle(),
     alignLabelWithHint: true,
     hintText: hintText.validate(),
     hintStyle: secondaryTextStyle(),
+
     isDense: true,
     prefixIcon: prefixIcon == null
         ? Icon(prefixIcon,

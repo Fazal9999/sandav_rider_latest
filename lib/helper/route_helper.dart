@@ -19,7 +19,6 @@ import 'package:sandav/view/base/image_viewer_screen.dart';
 import 'package:sandav/view/base/not_found.dart';
 import 'package:sandav/view/screens/address/add_address_screen.dart';
 import 'package:sandav/view/screens/address/address_screen.dart';
-import 'package:sandav/view/screens/auth/delivery_man_registration_screen.dart';
 import 'package:sandav/view/screens/auth/restaurant_registration_screen.dart';
 import 'package:sandav/view/screens/cart/cart_screen.dart';
 import 'package:sandav/view/screens/category/category_product_screen.dart';
@@ -65,6 +64,7 @@ import 'package:get/get.dart';
 import '../screens/forgotpass_otp.dart';
 import '../screens/login_with_pass_screen.dart';
 import '../screens/sign_up_screen.dart';
+import '../view/screens/auth/registration_details_screen.dart';
 
 class RouteHelper {
   static const String initial = '/';
@@ -525,7 +525,7 @@ class RouteHelper {
         page: () => RestaurantRegistrationScreen()),
     GetPage(
         name: deliveryManRegistration,
-        page: () => DeliveryManRegistrationScreen()),
+        page: () => RegistrationDetailsScreen()),
   ];
 
   static getRoute(Widget navigateTo) {
