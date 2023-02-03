@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
@@ -36,7 +37,9 @@ class ApiClient extends GetxService {
       } else {
         print(sharedAddress);
       }
-    } catch (e) {}
+    } catch (e) {
+      print("ApiError1 ${e.toString()}");
+    }
     updateHeader(
       token,
       _addressModel == null ? null : _addressModel.zoneIds,
@@ -64,6 +67,7 @@ class ApiClient extends GetxService {
       ).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(_response, uri);
     } catch (e) {
+      print("ApiError2 ${e.toString()}");
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
@@ -79,7 +83,9 @@ class ApiClient extends GetxService {
         headers: headers ?? _mainHeaders,
       ).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(_response, uri);
-    } catch (e) {
+    }
+    catch (e) {
+      print("ApiError4 ${e.toString()}");
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
@@ -96,6 +102,7 @@ class ApiClient extends GetxService {
       ).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(_response, uri);
     } catch (e) {
+      print("ApiError5 ${e.toString()}");
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
@@ -111,6 +118,7 @@ class ApiClient extends GetxService {
       ).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(_response, uri);
     } catch (e) {
+      print("ApiError6 ${e.toString()}");
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
@@ -138,6 +146,7 @@ class ApiClient extends GetxService {
       ).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(_response, uri);
     } catch (e) {
+      print("ApiError7 ${e.toString()}");
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
@@ -151,7 +160,12 @@ class ApiClient extends GetxService {
       List<MultipartBody> vehiclemultiParts, List<MultipartBody2> pickedResidenceParts,
       List<MultipartBody2> pickedBankingParts,
       {Map<String, String> headers}) async {
+    debugPrint('====> Fazal1: $body with ${pickedResidenceParts.length} files');
+    debugPrint('====> Fazal2: $body with ${pickedBankingParts.length} files');
+    debugPrint('====> Fazal3: $body with ${multipartBody.length} files');
+    debugPrint('====> Fazal3: $body with ${licensemultiParts.length} files');
     try {
+
       debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
       debugPrint('====> API Body: $body with ${multipartBody.length} files');
       debugPrint('====> API Body: $body with ${licensemultiParts.length} files');
@@ -207,24 +221,36 @@ class ApiClient extends GetxService {
         }
       }
       for (MultipartBody2 multipart in pickedResidenceParts) {
-        if (multipart.file != null) {
-          Uint8List _list = await multipart.file.bytes;
+        if (multipart != null) {
+          Uint8List _list = await _readFileByte(multipart.file.path);
+
+
           _request.files.add(Http.MultipartFile(
             multipart.key,
             multipart.file.readStream,
             _list.length,
-            filename: '${DateTime.now().toString()}.png',
+            filename: '${DateTime.now().toString()}.pdf',
+
           ));
+
+
+
+
+
+
+
+
+
         }
       }
       for (MultipartBody2 multipart in pickedBankingParts) {
         if (multipart.file != null) {
-          Uint8List _list = await multipart.file.bytes;
+          Uint8List _list = await _readFileByte(multipart.file.path);
           _request.files.add(Http.MultipartFile(
             multipart.key,
             multipart.file.readStream,
             _list.length,
-            filename: '${DateTime.now().toString()}.png',
+            filename: '${DateTime.now().toString()}.pdf',
           ));
         }
       }
@@ -233,6 +259,7 @@ class ApiClient extends GetxService {
           await Http.Response.fromStream(await _request.send());
       return handleResponse(_response, uri);
     } catch (e) {
+      print("ApiError8 ${e.toString()}");
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
@@ -249,6 +276,7 @@ class ApiClient extends GetxService {
       ).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(_response, uri);
     } catch (e) {
+      print("ApiError10 ${e.toString()}");
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
@@ -262,10 +290,23 @@ class ApiClient extends GetxService {
       ).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(_response, uri);
     } catch (e) {
+      print("ApiError12 ${e.toString()}");
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
-
+  Future<Uint8List> _readFileByte(String filePath) async {
+    Uri myUri = Uri.parse(filePath);
+    File audioFile = new File.fromUri(myUri);
+    Uint8List bytes;
+    await audioFile.readAsBytes().then((value) {
+      bytes = Uint8List.fromList(value);
+      print('reading of bytes is completed');
+    }).catchError((onError) {
+      print('Exception Error while reading audio from path:' +
+          onError.toString());
+    });
+    return bytes;
+  }
   Response handleResponse(Http.Response response, String uri) {
     dynamic _body;
     try {

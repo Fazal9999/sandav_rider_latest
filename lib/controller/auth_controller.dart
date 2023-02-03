@@ -82,8 +82,16 @@ class AuthController extends GetxController implements GetxService {
   List<XFile> get pickedIdentities => _pickedIdentities;
   List<XFile> get pickedLicenseIdentities => _pickedLicenseIdentities;
 
+
+  List<PlatformFile> pickedResidenceIdent  = [];
+  List<PlatformFile> pickedBankingIdent = [];
+
+
   List<XFile> get pickedFrontIdentities => _pickedFrontIdentities;
   List<XFile> get pickedVhicleIdentities => _pickedVehicleIdentities;
+
+  List<PlatformFile> get pickedResidenceIdentities => pickedResidenceIdent;
+  List<PlatformFile> get pickedBankingIdentities => pickedBankingIdent;
 
 
   //List<PlatformFile> get pickedResidenceIdentities => _pickedResidenceIdentities;

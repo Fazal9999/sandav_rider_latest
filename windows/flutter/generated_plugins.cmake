@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   geolocator_windows
   image_compression_flutter
   nb_utils
+  permission_handler_windows
   url_launcher_windows
 )
 

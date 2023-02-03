@@ -12,7 +12,7 @@ class DeliveryManBody {
   String is_criminal_bg_check;
   String is_total_amount;
   String is_paid_every_week;
-  String is_vehicle_reponsibility;
+  String is_vehicle_responsibility;
   String is_paid_per_km;
   String is_max_order;
   String is_track_event;
@@ -35,7 +35,7 @@ class DeliveryManBody {
     this.is_criminal_bg_check,
     this.is_total_amount,
     this.is_paid_every_week,
-    this.is_vehicle_reponsibility,
+    this.is_vehicle_responsibility,
     this.is_paid_per_km,
     this.is_max_order,
     this.is_track_event,
@@ -60,7 +60,7 @@ class DeliveryManBody {
     is_criminal_bg_check= json['is_criminal_bg_check'];
     is_total_amount= json['is_total_amount'];
     is_paid_every_week= json['is_paid_every_week'];
-    is_vehicle_reponsibility= json['is_vehicle_reponsibility'];
+    is_vehicle_responsibility= json['is_vehicle_responsibility'];
     is_paid_per_km= json['is_paid_per_km'];
     is_max_order= json['is_max_order'];
     is_track_event= json['is_track_event'];
@@ -87,7 +87,7 @@ class DeliveryManBody {
     data['is_criminal_bg_check'] = this.is_criminal_bg_check;
     data['is_total_amount'] =  this.is_total_amount;
     data['is_paid_every_week'] =this.is_paid_every_week;
-    data['is_vehicle_reponsibility'] = this.is_vehicle_reponsibility;
+    data['is_vehicle_responsibility'] = this.is_vehicle_responsibility;
     data['is_paid_per_km'] =  this.is_paid_per_km;
     data['is_max_order'] =  this.is_max_order;
     data['is_track_event'] = this.is_track_event;

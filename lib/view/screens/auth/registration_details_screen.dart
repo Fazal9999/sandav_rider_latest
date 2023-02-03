@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:iconsax/iconsax.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:country_code_picker/country_code.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,7 +45,7 @@ class RegistrationDetailsScreen extends StatefulWidget {
       _RegistrationDetailsScreenState();
 }
 
-class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
+class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  with SingleTickerProviderStateMixin {
   int vehicleTypeSelected = 0;
   double base_price = 0.0;
   double additional_distance_price = 0.0;
@@ -68,8 +70,32 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
   int pageNumber = 0;
   String _fileName;
   String _bankingName;
-  List<PlatformFile> pickedResidenceIdentities = [];
+
+   AnimationController loadingController;
+
+  File _file;
+  PlatformFile _platformFile;
+
+  selectFile() async {
+
+    final file = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: [ 'pdf']
+    );
+
+    if (file != null) {
+      setState(() {
+        _file = File(file.files.single.path);
+        _platformFile = file.files.first;
+      });
+    }
+
+    loadingController.forward();
+  }
+
+  List<PlatformFile> pickedResidenceIdentities  = [];
   List<PlatformFile> pickedBankingIdentities = [];
+
   bool isIconCheck2 = false;
   String _saveAsFileName;
 
@@ -259,7 +285,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
   }
 
   void _clearCachedFiles() async {
-    _resetState();
+    _resetState("");
     try {
       bool result = await FilePicker.platform.clearTemporaryFiles();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -282,6 +308,12 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    loadingController = AnimationController(
+      vsync:this,
+      duration: const Duration(seconds: 10),
+    )..addListener(() { setState(() {}); });
+
+
     _countryDialCode = CountryCode.fromCountryCode(
             Get.find<SplashController>().configModel.country)
         .dialCode;
@@ -308,12 +340,13 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
   }
 
   void pickFiles(String s) async {
-    _resetState();
+    _resetState(s);
 
     try {
       _directoryPath = null;
       if (s == "residence") {
-        pickedResidenceIdentities = (await FilePicker.platform.pickFiles(
+        pickedResidenceIdentities = (await
+        FilePicker.platform.pickFiles(
           type: _pickingType,
           allowMultiple: _multiPick,
           onFileLoading: (FilePickerStatus status) => print(status),
@@ -364,7 +397,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
     Get.find<AuthController>().update();
   }
 
-  void _resetState() {
+  void _resetState(String s) {
     if (!this.mounted) {
       return;
     }
@@ -374,8 +407,14 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
       _directoryPath = null;
       _fileName = null;
       _bankingName = null;
-      pickedResidenceIdentities = null;
-      pickedBankingIdentities = null;
+      if(s=='banking'){
+       // pickedBankingIdentities = null;
+      }
+      else{
+        //pickedResidenceIdentities = null;
+      }
+
+
       _saveAsFileName = null;
       _userAborted = false;
     });
@@ -1438,7 +1477,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
                           left: 16,
                           bottom: 70,
                           right: 19,
-                          top: size.height * 0.1),
+                          top: 5),
                       child: SingleChildScrollView(
                         padding: EdgeInsets.only(bottom: 60),
                         child: Column(
@@ -1497,7 +1536,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
                           left: 16,
                           bottom: 100,
                           right: 16,
-                          top: size.height * 0.05),
+                          top:5),
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1551,7 +1590,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
                           left: 16,
                           bottom: 100,
                           right: 16,
-                          top: size.height * 0.05),
+                          top:5),
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1709,12 +1748,13 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
                           left: 16,
                           bottom: 100,
                           right: 16,
-                          top: size.height * 0.05),
+                          top:5),
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
+
                           children: [
                             applogo(),
                             24.height,
@@ -1724,126 +1764,231 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
                                   letterSpacing: 0.2,
                                   weight: FontWeight.bold,
                                 )),
-                            10.height,
-                            SizedBox(
-                              height: 80,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                physics: BouncingScrollPhysics(),
-                                itemCount: pickedResidenceIdentities != null
-                                    ? pickedResidenceIdentities.length + 1
-                                    : 1,
-                                itemBuilder: (context, index) {
-                                  PlatformFile _file =
-                                      index == pickedResidenceIdentities.length
-                                          ? null
-                                          : pickedResidenceIdentities[index];
-                                  if (index ==
-                                      pickedResidenceIdentities.length) {
-                                    return InkWell(
-                                      onTap: () => pickFiles("residence"),
-                                      child: Container(
-                                        height: 120,
-                                        width: 150,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                              Dimensions.RADIUS_SMALL),
-                                          border: Border.all(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              width: 2),
-                                        ),
-                                        child: Container(
-                                          padding: EdgeInsets.all(Dimensions
-                                              .PADDING_SIZE_EXTRA_SMALL),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                width: 2,
-                                                color: Theme.of(context)
-                                                    .primaryColor),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: _file != null
-                                              ? Text(
-                                                  _file != null
-                                                      ? _file.name
-                                                      : "",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subtitle1,
-                                                  textAlign: TextAlign.center,
-                                                  textScaleFactor:
-                                                      ScaleSize.textScaleFactor(
-                                                          context),
-                                                )
-                                              : Icon(Icons.file_copy, size: 18),
-                                        ),
+                           // 10.height,
+                            // SizedBox(
+                            //   height: 80,
+                            //   child: ListView.builder(
+                            //     scrollDirection: Axis.horizontal,
+                            //     physics: BouncingScrollPhysics(),
+                            //     itemCount: pickedResidenceIdentities != null
+                            //         ? pickedResidenceIdentities.length + 1
+                            //         : 1,
+                            //     itemBuilder: (context, index) {
+                            //       PlatformFile _file;
+                            //       if(pickedResidenceIdentities!=null){
+                            //         _file =
+                            //         index == pickedResidenceIdentities.length
+                            //             ? null
+                            //             : pickedResidenceIdentities[index];
+                            //       }
+                            //
+                            //       if (index ==
+                            //           pickedResidenceIdentities.length) {
+                            //         return InkWell(
+                            //           onTap: () => pickFiles("residence"),
+                            //           child: Container(
+                            //             height: 120,
+                            //             width: 150,
+                            //             alignment: Alignment.center,
+                            //             decoration: BoxDecoration(
+                            //               borderRadius: BorderRadius.circular(
+                            //                   Dimensions.RADIUS_SMALL),
+                            //               border: Border.all(
+                            //                   color: Theme.of(context)
+                            //                       .primaryColor,
+                            //                   width: 2),
+                            //             ),
+                            //             child: Container(
+                            //               padding: EdgeInsets.all(Dimensions
+                            //                   .PADDING_SIZE_EXTRA_SMALL),
+                            //               decoration: BoxDecoration(
+                            //                 border: Border.all(
+                            //                     width: 2,
+                            //                     color: Theme.of(context)
+                            //                         .primaryColor),
+                            //                 shape: BoxShape.circle,
+                            //               ),
+                            //               child: _file != null
+                            //                   ? Text(
+                            //                       _file != null
+                            //                           ? _file.name
+                            //                           : "",
+                            //                       style: Theme.of(context)
+                            //                           .textTheme
+                            //                           .subtitle1,
+                            //                       textAlign: TextAlign.center,
+                            //                       textScaleFactor:
+                            //                           ScaleSize.textScaleFactor(
+                            //                               context),
+                            //                     )
+                            //                   : Icon(Icons.file_copy, size: 18),
+                            //             ),
+                            //           ),
+                            //         );
+                            //       }
+                            //       return Container(
+                            //         margin: EdgeInsets.only(
+                            //             right: Dimensions.PADDING_SIZE_SMALL),
+                            //         decoration: BoxDecoration(
+                            //           border: Border.all(
+                            //               color: Theme.of(context).primaryColor,
+                            //               width: 2),
+                            //           borderRadius: BorderRadius.circular(
+                            //               Dimensions.RADIUS_SMALL),
+                            //         ),
+                            //         child: Padding(
+                            //           padding: const EdgeInsets.symmetric(
+                            //               vertical: 2, horizontal: 5),
+                            //           child: Stack(children: [
+                            //             ClipRRect(
+                            //                 borderRadius: BorderRadius.circular(
+                            //                     Dimensions.RADIUS_SMALL),
+                            //                 child: GetPlatform.isWeb
+                            //                     ? Text(
+                            //                         _file != null
+                            //                             ? _file.name
+                            //                             : "",
+                            //                         style: Theme.of(context)
+                            //                             .textTheme
+                            //                             .subtitle1,
+                            //                         textAlign: TextAlign.center,
+                            //                         textScaleFactor: ScaleSize
+                            //                             .textScaleFactor(
+                            //                                 context),
+                            //                       )
+                            //                     : Text(
+                            //                         _file != null
+                            //                             ? _file.name
+                            //                             : "",
+                            //                         style: Theme.of(context)
+                            //                             .textTheme
+                            //                             .subtitle1,
+                            //                         textAlign: TextAlign.center,
+                            //                         textScaleFactor: ScaleSize
+                            //                             .textScaleFactor(
+                            //                                 context),
+                            //                       )),
+                            //             Positioned(
+                            //               right: 0,
+                            //               bottom: 0,
+                            //               child: InkWell(
+                            //                 onTap: () =>
+                            //                     removeResidenceImage(index),
+                            //                 child: const Padding(
+                            //                   padding: EdgeInsets.all(Dimensions
+                            //                       .PADDING_SIZE_SMALL),
+                            //                   child: Icon(Icons.delete_forever,
+                            //                       color: Colors.red),
+                            //                 ),
+                            //               ),
+                            //             ),
+                            //           ]),
+                            //         ),
+                            //       );
+                            //     },
+                            //   ),
+                            // ),
+                            GestureDetector(
+                              onTap: selectFile,
+
+                              child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 60.0, vertical: 50.0),
+                                  child: DottedBorder(
+                                    borderType: BorderType.RRect,
+                                    radius: Radius.circular(10),
+                                    dashPattern: [10, 4],
+                                    strokeCap: StrokeCap.round,
+                                    color: Colors.blue.shade400,
+                                    child: Container(
+                                      width: double.infinity,
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                          color: Colors.blue.shade50.withOpacity(.3),
+                                          borderRadius: BorderRadius.circular(10)
                                       ),
-                                    );
-                                  }
-                                  return Container(
-                                    margin: EdgeInsets.only(
-                                        right: Dimensions.PADDING_SIZE_SMALL),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Theme.of(context).primaryColor,
-                                          width: 2),
-                                      borderRadius: BorderRadius.circular(
-                                          Dimensions.RADIUS_SMALL),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Iconsax.folder_open, color: Colors.blue, size: 40,),
+                                          SizedBox(height: 15,),
+                                          Text('Select your file', style: TextStyle(fontSize: 15, color: Colors.grey.shade400),),
+                                        ],
+                                      ),
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2, horizontal: 5),
-                                      child: Stack(children: [
-                                        ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                                Dimensions.RADIUS_SMALL),
-                                            child: GetPlatform.isWeb
-                                                ? Text(
-                                                    _file != null
-                                                        ? _file.name
-                                                        : "",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle1,
-                                                    textAlign: TextAlign.center,
-                                                    textScaleFactor: ScaleSize
-                                                        .textScaleFactor(
-                                                            context),
-                                                  )
-                                                : Text(
-                                                    _file != null
-                                                        ? _file.name
-                                                        : "",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle1,
-                                                    textAlign: TextAlign.center,
-                                                    textScaleFactor: ScaleSize
-                                                        .textScaleFactor(
-                                                            context),
-                                                  )),
-                                        Positioned(
-                                          right: 0,
-                                          bottom: 0,
-                                          child: InkWell(
-                                            onTap: () =>
-                                                removeResidenceImage(index),
-                                            child: const Padding(
-                                              padding: EdgeInsets.all(Dimensions
-                                                  .PADDING_SIZE_SMALL),
-                                              child: Icon(Icons.delete_forever,
-                                                  color: Colors.red),
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                    ),
-                                  );
-                                },
+                                  )
                               ),
                             ),
+                            _platformFile != null
+                                    ? Container(
+                                padding: EdgeInsets.all(20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Selected File',
+                                      style: TextStyle(color: Colors.grey.shade400, fontSize: 15, ),),
+                                    SizedBox(height: 10,),
+                                    Container(
+                                        padding: EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey.shade200,
+                                                offset: Offset(0, 1),
+                                                blurRadius: 3,
+                                                spreadRadius: 2,
+                                              )
+                                            ]
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            ClipRRect(
+                                                borderRadius: BorderRadius.circular(8),
+                                                child: Image.file(_file, width: 70,)
+                                            ),
+                                            SizedBox(width: 10,),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(_platformFile.name,
+                                                    style: TextStyle(fontSize: 13, color: Colors.black),),
+                                                  SizedBox(height: 5,),
+                                                  Text('${(_platformFile.size / 1024).ceil()} KB',
+                                                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                                                  ),
+                                                  SizedBox(height: 5,),
+                                                  Container(
+                                                      height: 5,
+                                                      clipBehavior: Clip.hardEdge,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(5),
+                                                        color: Colors.blue.shade50,
+                                                      ),
+                                                      child: LinearProgressIndicator(
+                                                        value: loadingController.value,
+                                                      )
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 10,),
+                                          ],
+                                        )
+                                    ),
+                                    SizedBox(height: 20,),
+                                    // MaterialButton(
+                                    //   minWidth: double.infinity,
+                                    //   height: 45,
+                                    //   onPressed: () {},
+                                    //   color: Colors.black,
+                                    //   child: Text('Upload', style: TextStyle(color: Colors.white),),
+                                    // )
+                                  ],
+                                ))
+                                : Container(),
+                            SizedBox(height: 150,),
                             10.height,
                             Text(
                                 "Upload Banking details (bank confirmation letter or bank statement).",
@@ -1862,10 +2007,15 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
                                     ? pickedBankingIdentities.length + 1
                                     : 1,
                                 itemBuilder: (context, index) {
-                                  PlatformFile _file =
-                                      index == pickedBankingIdentities.length
+                                  PlatformFile _file;
+
+                                  if(pickedBankingIdentities!=null)
+                                    {
+                                      _file=  index == pickedBankingIdentities.length
                                           ? null
                                           : pickedBankingIdentities[index];
+                                    }
+
                                   if (index == pickedBankingIdentities.length) {
                                     return InkWell(
                                       onTap: () => pickFiles("banking"),
@@ -2233,65 +2383,65 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
                                   _countryDialCode + _phone;
                               bool _isValid = GetPlatform.isWeb ? true : false;
 
-                              if (pageNumber == 0) {
-                                bool isOk = (await _addDeliveryMan(
-                                    _fName,
-                                    _lName,
-                                    _email,
-                                    _phone,
-                                    _password,
-                                    _identityNumber,
-                                    _numberWithCountryCode,
-                                    _isValid,
-                                    authController));
-                                if (!isOk) {
-                                  return;
-                                }
-                              }
-
-                              if (pageNumber == 3) {
-                                if (vehicle == "" ||
-                                    bg == "" ||
-                                    percent_hu == "") {
-                                  showCustomSnackBar(
-                                      "One or more selections are missings",
-                                      isError: true);
-                                  return;
-                                }
-                              }
-                              if (pageNumber == 4) {
-                                if (paid_week == "" ||
-                                    responsibility == "" ||
-                                    paidR7 == "") {
-                                  showCustomSnackBar(
-                                      "One or more selections are missings",
-                                      isError: true);
-                                  return;
-                                }
-                              }
-                              if (pageNumber == 5) {
-                                if (max_order == "" ||
-                                    track_event == "" ||
-                                    waiting_period == "") {
-                                  showCustomSnackBar(
-                                      "One or more selections are missings",
-                                      isError: true);
-                                  return;
-                                }
-                              }
-                              if (pageNumber == 6) {
-                                if (sevenplus == "" ||
-                                    terms == "" ||
-                                    privacy == "" ||
-                                    authController.license == null ||
-                                    authController
-                                        .pickedLicenseIdentities.isEmpty) {
-                                  showCustomSnackBar(
-                                      "One or more selections are missings",
-                                      isError: true);
-                                  return;
-                                }
-                              }
+                              // if (pageNumber == 0) {
+                              //   bool isOk = (await _addDeliveryMan(
+                              //       _fName,
+                              //       _lName,
+                              //       _email,
+                              //       _phone,
+                              //       _password,
+                              //       _identityNumber,
+                              //       _numberWithCountryCode,
+                              //       _isValid,
+                              //       authController));
+                              //   if (!isOk) {
+                              //     return;
+                              //   }
+                              // }
+                              //
+                              // if (pageNumber == 3) {
+                              //   if (vehicle == "" ||
+                              //       bg == "" ||
+                              //       percent_hu == "") {
+                              //     showCustomSnackBar(
+                              //         "One or more selections are missings",
+                              //         isError: true);
+                              //     return;
+                              //   }
+                              // }
+                              // if (pageNumber == 4) {
+                              //   if (paid_week == "" ||
+                              //       responsibility == "" ||
+                              //       paidR7 == "") {
+                              //     showCustomSnackBar(
+                              //         "One or more selections are missings",
+                              //         isError: true);
+                              //     return;
+                              //   }
+                              // }
+                              // if (pageNumber == 5) {
+                              //   if (max_order == "" ||
+                              //       track_event == "" ||
+                              //       waiting_period == "") {
+                              //     showCustomSnackBar(
+                              //         "One or more selections are missings",
+                              //         isError: true);
+                              //     return;
+                              //   }
+                              // }
+                              // if (pageNumber == 6) {
+                              //   if (sevenplus == "" ||
+                              //       terms == "" ||
+                              //       privacy == "" ||
+                              //       authController.license == null ||
+                              //       authController
+                              //           .pickedLicenseIdentities.isEmpty) {
+                              //     showCustomSnackBar(
+                              //         "One or more selections are missings",
+                              //         isError: true);
+                              //     return;
+                              //   }
+                              // }
                               pageController.nextPage(
                                   duration: const Duration(milliseconds: 250),
                                   curve: Curves.fastOutSlowIn);
@@ -2335,11 +2485,11 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
                                             authController.selectedZoneIndex]
                                         .id
                                         .toString(),
-                                    vehicle_id: 2,
+                                    vehicle_id: vehicleTypeSelected,
                                     is_criminal_bg_check: bg,
                                     is_total_amount: percent_hu,
                                     is_paid_every_week: paid_week,
-                                    is_vehicle_reponsibility: responsibility,
+                                    is_vehicle_responsibility: responsibility,
                                     is_paid_per_km: paidR7,
                                     is_max_order: max_order,
                                     is_track_event: track_event,
