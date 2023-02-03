@@ -210,9 +210,13 @@ InputDecoration inputDecoration(
 
     isDense: true,
     prefixIcon: prefixIcon == null
-        ? Icon(prefixIcon,
+        ?
+    Icon(prefixIcon,
             size: 16, color: appStore.isDarkModeOn ? white : gray)
-        : null,
+        :
+    Icon(prefixIcon,
+        size: 16, color: appStore.isDarkModeOn ? white : gray)
+    ,
     suffixIcon: suffixIcon.validate(),
     enabledBorder: OutlineInputBorder(
       borderRadius: radius(borderRadius ?? defaultRadius),

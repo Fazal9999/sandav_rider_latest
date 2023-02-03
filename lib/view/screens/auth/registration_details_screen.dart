@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:flutter_document_picker/flutter_document_picker.dart';
 import 'package:iconsax/iconsax.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -45,7 +46,8 @@ class RegistrationDetailsScreen extends StatefulWidget {
       _RegistrationDetailsScreenState();
 }
 
-class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  with SingleTickerProviderStateMixin {
+class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
+    with SingleTickerProviderStateMixin {
   int vehicleTypeSelected = 0;
   double base_price = 0.0;
   double additional_distance_price = 0.0;
@@ -71,29 +73,29 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
   String _fileName;
   String _bankingName;
 
-   AnimationController loadingController;
+  AnimationController loadingController;
+  String _path = '-';
+  String _path_bank = '-';
+  bool _pickFileInProgress = false;
+  bool _pickBankFileInProgress = false;
+  bool _iosPublicDataUTI = true;
+  bool _checkByCustomExtension = false;
+  bool _checkByMimeType = false;
 
-  File _file;
-  PlatformFile _platformFile;
+  final _utiController = TextEditingController(
+    text: 'com.sandav.customer',
+  );
 
-  selectFile() async {
+  final _extensionController = TextEditingController(
+    text: 'pdf,doc,png',
+  );
 
-    final file = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: [ 'pdf']
-    );
+  final _mimeTypeController = TextEditingController(
+    text: 'application/pdf image/png',
+  );
 
-    if (file != null) {
-      setState(() {
-        _file = File(file.files.single.path);
-        _platformFile = file.files.first;
-      });
-    }
 
-    loadingController.forward();
-  }
-
-  List<PlatformFile> pickedResidenceIdentities  = [];
+  List<PlatformFile> pickedResidenceIdentities = [];
   List<PlatformFile> pickedBankingIdentities = [];
 
   bool isIconCheck2 = false;
@@ -282,6 +284,8 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    _path=null;
+    _path_bank=null;
   }
 
   void _clearCachedFiles() async {
@@ -309,10 +313,11 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
   void initState() {
     super.initState();
     loadingController = AnimationController(
-      vsync:this,
+      vsync: this,
       duration: const Duration(seconds: 10),
-    )..addListener(() { setState(() {}); });
-
+    )..addListener(() {
+        setState(() {});
+      });
 
     _countryDialCode = CountryCode.fromCountryCode(
             Get.find<SplashController>().configModel.country)
@@ -345,8 +350,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
     try {
       _directoryPath = null;
       if (s == "residence") {
-        pickedResidenceIdentities = (await
-        FilePicker.platform.pickFiles(
+        pickedResidenceIdentities = (await FilePicker.platform.pickFiles(
           type: _pickingType,
           allowMultiple: _multiPick,
           onFileLoading: (FilePickerStatus status) => print(status),
@@ -407,13 +411,11 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
       _directoryPath = null;
       _fileName = null;
       _bankingName = null;
-      if(s=='banking'){
-       // pickedBankingIdentities = null;
-      }
-      else{
+      if (s == 'banking') {
+        // pickedBankingIdentities = null;
+      } else {
         //pickedResidenceIdentities = null;
       }
-
 
       _saveAsFileName = null;
       _userAborted = false;
@@ -450,7 +452,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
             alignment: Alignment.bottomCenter,
             children: [
               Container(
-                margin: EdgeInsets.only(left: 0, right: 0, bottom: 70, top: 40),
+                margin: EdgeInsets.only(left: 0, right: 0, bottom: 70, top: 20),
                 padding: EdgeInsets.only(left: 3, right: 3),
                 height: double.infinity,
                 child: PageView(
@@ -564,7 +566,13 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                                                   .requestFocus(_lNameNode);
                                             },
                                             decoration: inputDecoration(context,
-                                                hintText: "First name"),
+                                                hintText: "First name",
+                                              prefixIcon: Icons.person,
+
+
+
+
+                                            ),
                                           ),
                                         ),
                                         SizedBox(width: 2),
@@ -586,7 +594,8 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                                             },
                                             decoration: inputDecoration(
                                               context,
-                                              hintText: "Lastname",
+                                              hintText: "Last Name",
+                                              prefixIcon: Icons.person,
                                             ),
                                           ),
                                         ),
@@ -612,12 +621,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                                         decoration: inputDecoration(
                                           context,
                                           hintText: "Email",
-                                          suffixIcon: Icon(
-                                              Icons.mail_outline_rounded,
-                                              size: 16,
-                                              color: appStore.isDarkModeOn
-                                                  ? white
-                                                  : gray),
+                                          prefixIcon: Icons.mail_outline_rounded,
                                         ),
                                       ),
                                       SizedBox(
@@ -737,7 +741,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                                                   width: 0.0),
                                             ),
                                             prefixIcon: Icon(Icons.lock,
-                                                color: Get.iconColor, size: 22),
+                                                color: Get.iconColor, size: 18),
                                             suffixIcon: Theme(
                                               data: ThemeData(
                                                 splashColor: Colors.transparent,
@@ -750,7 +754,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                                                 color: Get.iconColor,
                                                 onPressed: () {
                                                   setState(() {
-                                                    isIconCheck2 = isIconCheck2;
+                                                    isIconCheck2 = !isIconCheck2;
                                                   });
                                                 },
                                                 icon: Icon(
@@ -784,7 +788,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                                         decoration: inputDecoration(
                                           context,
                                           hintText: 'identity_number'.tr,
-                                          suffixIcon: Icon(Icons.person),
+                                          prefixIcon: Icons.person_add_alt_1_sharp,
                                         ),
                                       ),
                                       SizedBox(
@@ -1128,77 +1132,76 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                             applogo(),
                             10.height,
                             Text("Delivery Man sign up",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                     size: 20, letterSpacing: 0.2)),
                             10.height,
                             Text("Lets get driving...",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 18,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             13.height,
                             Text(
                                 "Please ensure you have the following documents on hand:",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 17,
                                   letterSpacing: 0.2,
                                   weight: FontWeight.normal,
                                 )),
                             16.height,
                             Text("1: ID book, ID card or passport",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             Text(
                                 "2: Work permit or asylum document (non-SA citizens)",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             Text("3: Drivers license card",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             Text(
                                 "4: Vehicle license disk (vehicle model should not be older than 12 years)",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             Text("5: Drivers license card",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             Text("6: Proof of address document",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             16.height,
                             Text(
-                                "These documents will need to be photographed when completing the application, \n"
-                                "Please ensure that your Phone has access permissions to your camera and location. \n"
-                                "For us to approve your application you need to answer the following questions and \n"
-                                " comply with the terms.",
-                                style: boldTextStyle(
+                                "These documents will need to be photographed when completing the application,"
+                                "Please ensure that your Phone has access permissions to your camera and location."
+                                "For us to approve your application you need to answer the following questions and comply with the terms.",
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                           ],
                         ),
@@ -1217,14 +1220,14 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                             applogo(),
                             24.height,
                             Text("Section 1",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                     size: 15, letterSpacing: 0.2)),
                             10.height,
                             Text("Select a Vehicle.",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             Row(
@@ -1449,21 +1452,22 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                             Text(
                                 "Do you agree that your information will be used for background checks \n "
                                 "for any criminal records.?",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //two
                             checkBox(bgItems, bg, 2),
                             10.height,
                             Text(
-                                "Do you agree that you will only receive 100% of the total amount charged \nto each customer as delivery fee? ?",
-                                style: boldTextStyle(
+                                "Do you agree that you will only receive 100% of the total amount charged "
+                                    "to each customer as delivery fee? ?",
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //three
@@ -1474,10 +1478,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                     ),
                     Container(
                       padding: EdgeInsets.only(
-                          left: 16,
-                          bottom: 70,
-                          right: 19,
-                          top: 5),
+                          left: 16, bottom: 70, right: 19, top: 5),
                       child: SingleChildScrollView(
                         padding: EdgeInsets.only(bottom: 60),
                         child: Column(
@@ -1488,15 +1489,16 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                             applogo(),
                             24.height,
                             Text("Section 2",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                     size: 15, letterSpacing: 0.2)),
                             10.height,
                             Text(
-                                "Do you agree that by working as delivery man you will be paid every week and \n funds will reflect to your bank depending on which bank \nyou are using?",
-                                style: boldTextStyle(
+                                "Do you agree that by working as delivery man you will be paid every week and "
+                                    " funds will reflect to your bank depending on which bank you are using?",
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //four
@@ -1505,24 +1507,24 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                             10.height,
                             Text(
                                 "Do you agree that vehicle or scooter is at your full responsibility \n including maintenance and insurance and you will only be paid commission \n you earned?",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //five
                             checkBox(responsibilityFull, responsibility, 5),
                             10.height,
                             Text(
-                                "Do you agree that you will be paid R7 per kilometer and minimum delivery fee \n"
-                                " you going to earn per trip of each order will be R22 for a distance less then \n"
-                                " 3 KM. example if you accepted 3 orders sametime and they all at a perimeter \n"
+                                "Do you agree that you will be paid R7 per kilometer and minimum delivery fee "
+                                " you going to earn per trip of each order will be R22 for a distance less then "
+                                " 3 KM. example if you accepted 3 orders sametime and they all at a perimeter "
                                 " which is less then 3KM you will be payed 22x3= R66?",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //six
@@ -1533,10 +1535,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                     ),
                     Container(
                       padding: EdgeInsets.only(
-                          left: 16,
-                          bottom: 100,
-                          right: 16,
-                          top:5),
+                          left: 16, bottom: 100, right: 16, top: 5),
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1546,15 +1545,15 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                             applogo(),
                             24.height,
                             Text("Section 3",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                     size: 15, letterSpacing: 0.2)),
                             10.height,
                             Text(
-                                "Do you agree that Maximum orders you are allowed to take per trip will be 3 \n Orders and you will be paid per order delivered ?",
-                                style: boldTextStyle(
+                                "Do you agree that Maximum orders you are allowed to take per trip will be 3  Orders and you will be paid per order delivered ?",
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //seven
@@ -1562,21 +1561,22 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                             10.height,
                             Text(
                                 "Do you agree that we will track all events when delivering orders?",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //eight
                             checkBox(track_eventItems, track_event, 8),
                             10.height,
                             Text(
-                                "Do you agree with our maximum waiting period which is 5 minutes at customer \n destination if the customer doesn't show up you allowed \n to leave with the order?",
-                                style: boldTextStyle(
+                                "Do you agree with our maximum waiting period which is 5 minutes at customer "
+                                    " destination if the customer doesn't show up you allowed to leave with the order?",
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //nine
@@ -1587,10 +1587,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                     ),
                     Container(
                       padding: EdgeInsets.only(
-                          left: 16,
-                          bottom: 100,
-                          right: 16,
-                          top:5),
+                          left: 16, bottom: 100, right: 16, top: 5),
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1600,45 +1597,45 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                             applogo(),
                             24.height,
                             Text("Section 4",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                     size: 15, letterSpacing: 0.2)),
                             10.height,
                             Text(
-                                "Good luck at this point you answered most of the questions now we will like to \n know do you have adriod phone with version 7+?",
-                                style: boldTextStyle(
+                                "Good luck at this point you answered most of the questions now we will like to know do you have adriod phone with version 7+?",
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //ten
                             checkBox(sevenplusItems, sevenplus, 10),
                             10.height,
                             Text("Do you agree to our terms and conditions?",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //eleven
                             checkBox(termsItems, terms, 11),
                             10.height,
                             Text("Do you agree with our privacy policy?",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             //tweleve
                             checkBox(privacyItems, privacy, 12),
                             10.height,
                             Text("Upload Vehicle license img",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
                             10.height,
                             SizedBox(
@@ -1745,26 +1742,22 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                     ),
                     Container(
                       padding: EdgeInsets.only(
-                          left: 16,
-                          bottom: 100,
-                          right: 16,
-                          top:5),
+                          left: 16, bottom: 100, right: 16, top: 5),
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
-
                           children: [
                             applogo(),
                             24.height,
                             Text("Upload Proof Of Resident.",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                  
                                 )),
-                           // 10.height,
+                            // 10.height,
                             // SizedBox(
                             //   height: 80,
                             //   child: ListView.builder(
@@ -1889,10 +1882,11 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                             //   ),
                             // ),
                             GestureDetector(
-                              onTap: selectFile,
-
-                              child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 60.0, vertical: 50.0),
+                              onTap: _pickFileInProgress ? null : _pickDocument,
+                              child:
+                              Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10.0, vertical: 20.0),
                                   child: DottedBorder(
                                     borderType: BorderType.RRect,
                                     radius: Radius.circular(10),
@@ -1900,37 +1894,222 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                                     strokeCap: StrokeCap.round,
                                     color: Colors.blue.shade400,
                                     child: Container(
-                                      width: double.infinity,
-                                      height: 150,
+                                      width: 150,
+                                      height: 100,
                                       decoration: BoxDecoration(
-                                          color: Colors.blue.shade50.withOpacity(.3),
-                                          borderRadius: BorderRadius.circular(10)
-                                      ),
+                                          color: Colors.blue.shade50
+                                              .withOpacity(.3),
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Icon(Iconsax.folder_open, color: Colors.blue, size: 40,),
-                                          SizedBox(height: 15,),
-                                          Text('Select your file', style: TextStyle(fontSize: 15, color: Colors.grey.shade400),),
+                                          Icon(
+                                            Iconsax.folder_open,
+                                            color: Colors.blue,
+                                            size: 40,
+                                          ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          Text(
+                                            'Select your file',
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.grey.shade400),
+                                          ),
                                         ],
                                       ),
                                     ),
-                                  )
-                              ),
+                                  )),
                             ),
-                            _platformFile != null
-                                    ? Container(
-                                padding: EdgeInsets.all(20),
+                            _path != null
+                                ? Container(
+                                    padding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Selected File',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade400,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Container(
+                                            padding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey.shade200,
+                                                    offset: Offset(0, 1),
+                                                    blurRadius: 3,
+                                                    spreadRadius: 2,
+                                                  )
+                                                ]),
+                                            child: Row(
+                                              children: [
+                                                // ClipRRect(
+                                                //     borderRadius:
+                                                //         BorderRadius.circular(
+                                                //             8),
+                                                //     child: Image.file(
+                                                //       _file,
+                                                //       width: 70,
+                                                //     )),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        _path,
+                                                        style: TextStyle(
+                                                            fontSize: 13,
+                                                            color:
+                                                                Colors.black),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      Text(
+                                                        '${(_path.length / 1024).ceil()} KB',
+                                                        style: TextStyle(
+                                                            fontSize: 13,
+                                                            color: Colors
+                                                                .grey.shade500),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      Container(
+                                                          height: 5,
+                                                          clipBehavior:
+                                                              Clip.hardEdge,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                            color: Colors
+                                                                .blue.shade50,
+                                                          ),
+                                                          child:
+                                                              LinearProgressIndicator(
+                                                            value:
+                                                                loadingController
+                                                                    .value,
+                                                          )),
+                                                    ],
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                              ],
+                                            )),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        // MaterialButton(
+                                        //   minWidth: double.infinity,
+                                        //   height: 45,
+                                        //   onPressed: () {},
+                                        //   color: Colors.black,
+                                        //   child: Text('Upload', style: TextStyle(color: Colors.white),),
+                                        // )
+                                      ],
+                                    ))
+                                : Container(),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                                "Upload Banking details (bank confirmation letter or bank statement).",
+                                style: primaryTextStyle(
+                                  size: 15,
+                                  letterSpacing: 0.2,
+                                  
+                                )),
+                            10.height,
+                            GestureDetector(
+                              onTap: _pickBankFileInProgress ? null : _pickBankDocument,
+                              child:
+                              Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10.0, vertical: 20.0),
+                                  child: DottedBorder(
+                                    borderType: BorderType.RRect,
+                                    radius: Radius.circular(10),
+                                    dashPattern: [10, 4],
+                                    strokeCap: StrokeCap.round,
+                                    color: Colors.blue.shade400,
+                                    child: Container(
+                                      width: 150,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                          color: Colors.blue.shade50
+                                              .withOpacity(.3),
+                                          borderRadius:
+                                          BorderRadius.circular(10)),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Iconsax.folder_open,
+                                            color: Colors.blue,
+                                            size: 40,
+                                          ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          Text(
+                                            'Select your file',
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.grey.shade400),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )),
+                            ),
+                            _path_bank != null
+                                ? Container(
+                                padding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                                   children: [
-                                    Text('Selected File',
-                                      style: TextStyle(color: Colors.grey.shade400, fontSize: 15, ),),
-                                    SizedBox(height: 10,),
+                                    Text(
+                                      'Selected File',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade400,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
                                     Container(
-                                        padding: EdgeInsets.all(8),
+                                        padding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
                                         decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                            BorderRadius.circular(10),
                                             color: Colors.white,
                                             boxShadow: [
                                               BoxShadow(
@@ -1939,45 +2118,76 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                                                 blurRadius: 3,
                                                 spreadRadius: 2,
                                               )
-                                            ]
-                                        ),
+                                            ]),
                                         child: Row(
                                           children: [
-                                            ClipRRect(
-                                                borderRadius: BorderRadius.circular(8),
-                                                child: Image.file(_file, width: 70,)
+                                            // ClipRRect(
+                                            //     borderRadius:
+                                            //         BorderRadius.circular(
+                                            //             8),
+                                            //     child: Image.file(
+                                            //       _file,
+                                            //       width: 70,
+                                            //     )),
+                                            SizedBox(
+                                              width: 10,
                                             ),
-                                            SizedBox(width: 10,),
                                             Expanded(
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .start,
                                                 children: [
-                                                  Text(_platformFile.name,
-                                                    style: TextStyle(fontSize: 13, color: Colors.black),),
-                                                  SizedBox(height: 5,),
-                                                  Text('${(_platformFile.size / 1024).ceil()} KB',
-                                                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                                                  Text(
+                                                    _path_bank,
+                                                    style: TextStyle(
+                                                        fontSize: 13,
+                                                        color:
+                                                        Colors.black),
                                                   ),
-                                                  SizedBox(height: 5,),
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Text(
+                                                    '${(_path_bank.length / 1024).ceil()} KB',
+                                                    style: TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors
+                                                            .grey.shade500),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
                                                   Container(
                                                       height: 5,
-                                                      clipBehavior: Clip.hardEdge,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(5),
-                                                        color: Colors.blue.shade50,
+                                                      clipBehavior:
+                                                      Clip.hardEdge,
+                                                      decoration:
+                                                      BoxDecoration(
+                                                        borderRadius:
+                                                        BorderRadius
+                                                            .circular(
+                                                            5),
+                                                        color: Colors
+                                                            .blue.shade50,
                                                       ),
-                                                      child: LinearProgressIndicator(
-                                                        value: loadingController.value,
-                                                      )
-                                                  ),
+                                                      child:
+                                                      LinearProgressIndicator(
+                                                        value:
+                                                        loadingController
+                                                            .value,
+                                                      )),
                                                 ],
                                               ),
                                             ),
-                                            SizedBox(width: 10,),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
                                           ],
-                                        )
+                                        )),
+                                    SizedBox(
+                                      height: 20,
                                     ),
-                                    SizedBox(height: 20,),
                                     // MaterialButton(
                                     //   minWidth: double.infinity,
                                     //   height: 45,
@@ -1988,146 +2198,16 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                                   ],
                                 ))
                                 : Container(),
-                            SizedBox(height: 150,),
-                            10.height,
-                            Text(
-                                "Upload Banking details (bank confirmation letter or bank statement).",
-                                style: boldTextStyle(
-                                  size: 15,
-                                  letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
-                                )),
-                            10.height,
                             SizedBox(
-                              height: 80,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                physics: BouncingScrollPhysics(),
-                                itemCount: pickedBankingIdentities != null
-                                    ? pickedBankingIdentities.length + 1
-                                    : 1,
-                                itemBuilder: (context, index) {
-                                  PlatformFile _file;
-
-                                  if(pickedBankingIdentities!=null)
-                                    {
-                                      _file=  index == pickedBankingIdentities.length
-                                          ? null
-                                          : pickedBankingIdentities[index];
-                                    }
-
-                                  if (index == pickedBankingIdentities.length) {
-                                    return InkWell(
-                                      onTap: () => pickFiles("banking"),
-                                      child: Container(
-                                        height: 120,
-                                        width: 150,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                              Dimensions.RADIUS_SMALL),
-                                          border: Border.all(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              width: 2),
-                                        ),
-                                        child: Container(
-                                          padding: EdgeInsets.all(Dimensions
-                                              .PADDING_SIZE_EXTRA_SMALL),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                width: 2,
-                                                color: Theme.of(context)
-                                                    .primaryColor),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: _file != null
-                                              ? Text(
-                                                  _file != null
-                                                      ? _file.name
-                                                      : "",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subtitle1,
-                                                  textAlign: TextAlign.center,
-                                                  textScaleFactor:
-                                                      ScaleSize.textScaleFactor(
-                                                          context),
-                                                )
-                                              : Icon(Icons.file_copy, size: 18),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  return Container(
-                                    margin: EdgeInsets.only(
-                                        right: Dimensions.PADDING_SIZE_SMALL),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Theme.of(context).primaryColor,
-                                          width: 2),
-                                      borderRadius: BorderRadius.circular(
-                                          Dimensions.RADIUS_SMALL),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2, horizontal: 5),
-                                      child: Stack(children: [
-                                        ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                                Dimensions.RADIUS_SMALL),
-                                            child: GetPlatform.isWeb
-                                                ? Text(
-                                                    _file != null
-                                                        ? _file.name
-                                                        : "",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle1,
-                                                    textAlign: TextAlign.center,
-                                                    textScaleFactor: ScaleSize
-                                                        .textScaleFactor(
-                                                            context),
-                                                  )
-                                                : Text(
-                                                    _file != null
-                                                        ? _file.name
-                                                        : "",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle1,
-                                                    textAlign: TextAlign.center,
-                                                    textScaleFactor: ScaleSize
-                                                        .textScaleFactor(
-                                                            context),
-                                                  )),
-                                        Positioned(
-                                          right: 0,
-                                          bottom: 0,
-                                          child: InkWell(
-                                            onTap: () =>
-                                                removeBankingImage(index),
-                                            child: const Padding(
-                                              padding: EdgeInsets.all(Dimensions
-                                                  .PADDING_SIZE_SMALL),
-                                              child: Icon(Icons.delete_forever,
-                                                  color: Colors.red),
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                    ),
-                                  );
-                                },
-                              ),
+                              height: 5,
                             ),
                             10.height,
                             Text(
                                 "Upload Picture of your drivers license(front).",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                 
                                 )),
                             10.height,
                             SizedBox(
@@ -2230,10 +2310,10 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
                             10.height,
                             Text(
                                 "Upload picture of your vehicle or scooter, make sure your number plate is clearly visible.",
-                                style: boldTextStyle(
+                                style: primaryTextStyle(
                                   size: 15,
                                   letterSpacing: 0.2,
-                                  weight: FontWeight.bold,
+                                 
                                 )),
                             10.height,
                             SizedBox(
@@ -2645,6 +2725,180 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>  
       ),
     );
   }
+
+
+
+
+
+
+  _pickDocument() async {
+    String result;
+    try {
+      setState(() {
+        _path = '-';
+        _pickFileInProgress = true;
+      });
+
+      FlutterDocumentPickerParams params = FlutterDocumentPickerParams(
+        allowedFileExtensions: _checkByCustomExtension
+            ? _extensionController.text
+            .split(' ')
+            .where((x) => x.isNotEmpty)
+            .toList()
+            : null,
+        allowedUtiTypes: _iosPublicDataUTI
+            ? null
+            : _utiController.text
+            .split(' ')
+            .where((x) => x.isNotEmpty)
+            .toList(),
+        allowedMimeTypes: _checkByMimeType
+            ? _mimeTypeController.text
+            .split(' ')
+            .where((x) => x.isNotEmpty)
+            .toList()
+            : null,
+      );
+
+      result = await FlutterDocumentPicker.openDocument(params: params);
+    } catch (e) {
+      print(e);
+      result = 'Error: $e';
+    } finally {
+      setState(() {
+        _pickFileInProgress = false;
+      });
+    }
+
+    setState(() {
+      _path = result;
+    });
+  }
+  _pickBankDocument() async {
+    String result;
+    try {
+      setState(() {
+        _path_bank = '-';
+        _pickBankFileInProgress = true;
+      });
+
+      FlutterDocumentPickerParams params = FlutterDocumentPickerParams(
+        allowedFileExtensions: _checkByCustomExtension
+            ? _extensionController.text
+            .split(' ')
+            .where((x) => x.isNotEmpty)
+            .toList()
+            : null,
+        allowedUtiTypes: _iosPublicDataUTI
+            ? null
+            : _utiController.text
+            .split(' ')
+            .where((x) => x.isNotEmpty)
+            .toList(),
+        allowedMimeTypes: _checkByMimeType
+            ? _mimeTypeController.text
+            .split(' ')
+            .where((x) => x.isNotEmpty)
+            .toList()
+            : null,
+      );
+
+      result = await FlutterDocumentPicker.openDocument(params: params);
+    } catch (e) {
+      print(e);
+      result = 'Error: $e';
+    } finally {
+      setState(() {
+        _pickBankFileInProgress = false;
+      });
+    }
+
+    setState(() {
+      _path_bank = result;
+    });
+  }
+
+  // _buildIOSParams() {
+  //   return ParamsCard(
+  //     title: 'iOS Params',
+  //     children: <Widget>[
+  //       Text(
+  //         'Example app is configured to pick custom document type with extension ".mwfbak"',
+  //         style: Theme.of(context).textTheme.bodyText2,
+  //       ),
+  //       Param(
+  //         isEnabled: !_iosPublicDataUTI,
+  //         description:
+  //         'Allow pick all documents("public.data" UTI will be used).',
+  //         controller: _utiController,
+  //         onEnabledChanged: (value) {
+  //           if (value != null) {
+  //             setState(() {
+  //               _iosPublicDataUTI = value;
+  //             });
+  //           }
+  //         },
+  //         textLabel: 'Uniform Type Identifier to pick:',
+  //       ),
+  //     ],
+  //   );
+  // }
+  //
+  // _buildAndroidParams() {
+  //   return ParamsCard(
+  //     title: 'Android Params',
+  //     children: <Widget>[
+  //       Param(
+  //         isEnabled: _checkByMimeType,
+  //         description: 'Filter files by MIME type',
+  //         controller: _mimeTypeController,
+  //         onEnabledChanged: (value) {
+  //           if (value != null) {
+  //             setState(() {
+  //               _checkByMimeType = value;
+  //             });
+  //           }
+  //         },
+  //         textLabel: 'Allowed MIME types (separated by space):',
+  //       ),
+  //     ],
+  //   );
+  // }
+  //
+  // _buildCommonParams() {
+  //   return ParamsCard(
+  //     title: 'Common Params',
+  //     children: <Widget>[
+  //       Param(
+  //         isEnabled: _checkByCustomExtension,
+  //         description:
+  //         'Check file by extension - if picked file does not have wantent extension - return "extension_mismatch" error',
+  //         controller: _extensionController,
+  //         onEnabledChanged: (value) {
+  //           if (value != null) {
+  //             setState(() {
+  //               _checkByCustomExtension = value;
+  //             });
+  //           }
+  //         },
+  //         textLabel: 'File extensions (separated by space):',
+  //       ),
+  //     ],
+  //   );
+  // }
+  //
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 // authController.registerDeliveryMan(
@@ -2678,4 +2932,97 @@ class Veh {
   final String title;
 
   Veh(this.id, this.value, this.title);
+}
+// - Subscription transaction and other related issues solved.
+// - Order edit issue solved.
+// - Order Refund Improved.
+// - Some notification issues fixed.
+// - Social Login issue solved.
+// - Fixed some page export issues.
+// - Best reviewed food price-related issue fixed in user app.
+// - Some order request-related issues solved.
+// - Fixed some other small issues
+// - Make compatible for react web version
+
+class Param extends StatelessWidget {
+  final bool isEnabled;
+  final ValueChanged<bool> onEnabledChanged;
+  final TextEditingController controller;
+  final String description;
+  final String textLabel;
+
+  Param({
+    @required this.isEnabled,
+    @required this.onEnabledChanged,
+    @required this.controller,
+    @required this.description,
+    @required this.textLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  description,
+                  softWrap: true,
+                ),
+              ),
+            ),
+            Checkbox(
+              value: isEnabled,
+              onChanged: onEnabledChanged,
+            ),
+          ],
+        ),
+        TextField(
+          controller: controller,
+          enabled: isEnabled,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: textLabel,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ParamsCard extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+
+  ParamsCard({
+    @required this.title,
+    @required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 24.0),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.headline5,
+                ),
+              ),
+            ]..addAll(children),
+          ),
+        ),
+      ),
+    );
+  }
 }

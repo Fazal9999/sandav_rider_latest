@@ -34,10 +34,9 @@ dependencies:
   universal_ui: ^0.0.8
 
   loading_indicator: ^3.0.2
-  file_picker: ^3.0.0
+  file_picker: 3.0.0-nullsafety.4
   dio: ^4.0.0
-
-
+  flutter_document_picker: ^5.1.0
   flutter_inappwebview: ^5.4.3+7
   flutter_widget_from_html_core: ^0.8.5+3
   url_launcher: ^6.0.17
