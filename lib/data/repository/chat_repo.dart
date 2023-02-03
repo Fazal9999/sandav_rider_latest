@@ -41,6 +41,6 @@ class ChatRepo {
       _fields.addAll({'receiver_id': userID.toString()});
     }
     return await apiClient.postMultipartData(
-        AppConstants.SEND_MESSAGE_URI, _fields, images,null,null,null,null,null);
+        AppConstants.SEND_MESSAGE_URI, _fields, images,null,null,null,"","");
   }
 }

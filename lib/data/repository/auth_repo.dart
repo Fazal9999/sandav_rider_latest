@@ -219,7 +219,7 @@ class AuthRepo {
       restaurant.toJson(),
       [MultipartBody('logo', logo), MultipartBody('cover_photo', cover)],
       null,
-      null,null,null,null
+      null,null,"",""
     );
   }
 
@@ -228,11 +228,10 @@ class AuthRepo {
       List<MultipartBody> licensemultiParts,
       List<MultipartBody> driverLicensemultiParts,
       List<MultipartBody> vehiclemultiParts,
-      List<MultipartBody2> pickedResidenceParts,
-      List<MultipartBody2> pickedBankingParts) async {
+
+      String path, String path_bank) async {
     return apiClient.postMultipartData(
         AppConstants.DM_REGISTER_URI, deliveryManBody.toJson(), multiParts,licensemultiParts
-        ,driverLicensemultiParts,vehiclemultiParts,pickedResidenceParts,
-        pickedBankingParts );
+        ,driverLicensemultiParts,vehiclemultiParts,path,path_bank );
   }
 }

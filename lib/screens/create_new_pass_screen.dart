@@ -47,6 +47,10 @@ class _CreateNewPassScreenState extends State<CreateNewPassScreen> {
   bool isIconCheck1 = false;
   bool isIconCheck2 = false;
 
+  bool is2IconCheck1 = false;
+  bool is2IconCheck2 = false;
+
+
   bool isLoading = false;
   // void toggleSubmitState() {
   //   setState(() {

@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:sandav/controller/location_controller.dart';
 import 'package:sandav/controller/splash_controller.dart';
@@ -36,7 +34,6 @@ class AuthController extends GetxController implements GetxService {
   bool _isImgLoading = false;
   bool _userAborted = false;
   bool _multiPick = false;
-  FileType _pickingType = FileType.any;
   TextEditingController _controller = TextEditingController();
   bool _isLoading = false;
   bool _notification = true;
@@ -83,15 +80,10 @@ class AuthController extends GetxController implements GetxService {
   List<XFile> get pickedLicenseIdentities => _pickedLicenseIdentities;
 
 
-  List<PlatformFile> pickedResidenceIdent  = [];
-  List<PlatformFile> pickedBankingIdent = [];
-
 
   List<XFile> get pickedFrontIdentities => _pickedFrontIdentities;
   List<XFile> get pickedVhicleIdentities => _pickedVehicleIdentities;
 
-  List<PlatformFile> get pickedResidenceIdentities => pickedResidenceIdent;
-  List<PlatformFile> get pickedBankingIdentities => pickedBankingIdent;
 
 
   //List<PlatformFile> get pickedResidenceIdentities => _pickedResidenceIdentities;
@@ -628,16 +620,15 @@ class AuthController extends GetxController implements GetxService {
 
 
   Future<void> registerDeliveryMan(DeliveryManBody deliveryManBody,
-      List<PlatformFile> pickedResidenceIdentities,
-      List<PlatformFile> pickedBankingIdentities) async {
+
+      String path, String path_bank) async {
     _isLoading = true;
     update();
     List<MultipartBody> _multiParts = [];
     List<MultipartBody> _LicensemultiParts = [];
     List<MultipartBody> _DriverLicensemultiParts = [];
     List<MultipartBody> _VehiclemultiParts = [];
-    List<MultipartBody2> pickedResidenceParts = [];
-    List<MultipartBody2> pickedBankingParts = [];
+
 
     _multiParts.add(MultipartBody('image', _pickedImage));
     for (XFile file in _pickedIdentities) {
@@ -652,17 +643,14 @@ class AuthController extends GetxController implements GetxService {
     for (XFile file in pickedVhicleIdentities) {
       _VehiclemultiParts.add(MultipartBody('vehicle_plate_image[]', file));
     }
-    for (PlatformFile file in pickedResidenceIdentities) {
-      pickedResidenceParts.add(MultipartBody2('resident_image[]',  file));
-    }
-    for (PlatformFile file in pickedBankingIdentities) {
-      pickedBankingParts.add(MultipartBody2('banking_image[]',  file));
-    }
 
 
     Response response =
         await authRepo.registerDeliveryMan(deliveryManBody, _multiParts,_LicensemultiParts,
-            _DriverLicensemultiParts,_VehiclemultiParts,pickedResidenceParts,pickedBankingParts);
+            _DriverLicensemultiParts,_VehiclemultiParts,
+        path,path_bank
+
+        );
     if (response.statusCode == 200) {
       Get.offAllNamed(RouteHelper.getInitialRoute());
       showCustomSnackBar('delivery_man_registration_successful'.tr,

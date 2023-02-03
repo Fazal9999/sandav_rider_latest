@@ -23,7 +23,7 @@ class UserRepo {
       'email': userInfoModel.email
     });
     return await apiClient.postMultipartData(
-        AppConstants.UPDATE_PROFILE_URI, _body, [MultipartBody('image', data)],null,null,null,null,null);
+        AppConstants.UPDATE_PROFILE_URI, _body, [MultipartBody('image', data)],null,null,null,"","");
   }
 
   Future<Response> changePassword(UserInfoModel userInfoModel) async {

@@ -7,7 +7,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:country_code_picker/country_code.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -66,6 +65,10 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
   final FocusNode _phoneNode = FocusNode();
   final FocusNode _passwordNode = FocusNode();
   final FocusNode _identityNumberNode = FocusNode();
+  //final _form_state_key = GlobalKey<FormState>();
+  final FocusNode _confirmPasswordFocus = FocusNode();
+  final TextEditingController _confirmPasswordController =
+  TextEditingController();
   String _countryDialCode;
   ProfileOb pr_ob = ProfileOb();
   PageController pageController = PageController(initialPage: 0);
@@ -81,7 +84,8 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
   bool _iosPublicDataUTI = true;
   bool _checkByCustomExtension = false;
   bool _checkByMimeType = false;
-
+  bool isIconCheck1 = false;
+  bool isIconCheck2 = false;
   final _utiController = TextEditingController(
     text: 'com.sandav.customer',
   );
@@ -95,11 +99,8 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
   );
 
 
-  List<PlatformFile> pickedResidenceIdentities = [];
-  List<PlatformFile> pickedBankingIdentities = [];
 
-  bool isIconCheck2 = false;
-  String _saveAsFileName;
+   String _saveAsFileName;
 
   //List<PlatformFile> _paths;
   String _directoryPath;
@@ -107,8 +108,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
   bool _isImgLoading = false;
   bool _userAborted = false;
   bool _multiPick = false;
-  FileType _pickingType = FileType.any;
-  String vehicle = "";
+   String vehicle = "";
   List vehicletItems = [];
   List<Veh> ve;
 
@@ -285,29 +285,37 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
     // TODO: implement dispose
     super.dispose();
     _path=null;
+    _path='-';
     _path_bank=null;
+    _path_bank='-';
+    Get.find<AuthController>().pickedFrontIdentities.clear();
+
+    Get.find<AuthController>().pickedLicenseIdentities.clear();
+
+    Get.find<AuthController>().pickedVhicleIdentities.clear();
+    Get.find<AuthController>().pickedIdentities.clear();
   }
 
-  void _clearCachedFiles() async {
-    _resetState("");
-    try {
-      bool result = await FilePicker.platform.clearTemporaryFiles();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: result ? Colors.green : Colors.red,
-          content: Text((result
-              ? 'Temporary files removed with success.'
-              : 'Failed to clean temporary files')),
-        ),
-      );
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation' + e.toString());
-    } catch (e) {
-      _logException(e.toString());
-    } finally {
-      //setState(() => Get.find<AuthController>().isLoading = false);
-    }
-  }
+  // void _clearCachedFiles() async {
+  //   _resetState("");
+  //   try {
+  //     bool result = await FilePicker.platform.clearTemporaryFiles();
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         backgroundColor: result ? Colors.green : Colors.red,
+  //         content: Text((result
+  //             ? 'Temporary files removed with success.'
+  //             : 'Failed to clean temporary files')),
+  //       ),
+  //     );
+  //   } on PlatformException catch (e) {
+  //     _logException('Unsupported operation' + e.toString());
+  //   } catch (e) {
+  //     _logException(e.toString());
+  //   } finally {
+  //     //setState(() => Get.find<AuthController>().isLoading = false);
+  //   }
+  // }
 
   @override
   void initState() {
@@ -340,66 +348,14 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
           vehicletItems[index]['value'] == 0 ? false : true,
           vehicletItems[index]['name']));
     }
-    ;
-    print("patti ${ve}");
+
+
   }
 
-  void pickFiles(String s) async {
-    _resetState(s);
 
-    try {
-      _directoryPath = null;
-      if (s == "residence") {
-        pickedResidenceIdentities = (await FilePicker.platform.pickFiles(
-          type: _pickingType,
-          allowMultiple: _multiPick,
-          onFileLoading: (FilePickerStatus status) => print(status),
-        ))
-            ?.files;
-      }
-      if (s == "banking") {
-        pickedBankingIdentities = (await FilePicker.platform.pickFiles(
-          type: _pickingType,
-          allowMultiple: _multiPick,
-          onFileLoading: (FilePickerStatus status) => print(status),
-        ))
-            ?.files;
-      }
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation' + e.toString());
-    } catch (e) {
-      _logException(e.toString());
-      print("Fazal ${e.toString()}");
-    }
-    if (!this.mounted) return;
-    setState(() {
-      if (s == "residence") {
-        _isImgLoading = false;
-        _fileName = pickedResidenceIdentities != null
-            ? pickedResidenceIdentities.map((e) => e.name).toString()
-            : '...';
-        _userAborted = pickedResidenceIdentities == null;
-      }
-      if (s == "banking") {
-        _isImgLoading = false;
-        _bankingName = pickedBankingIdentities != null
-            ? pickedBankingIdentities.map((e) => e.name).toString()
-            : '...';
-        _userAborted = pickedBankingIdentities == null;
-        print("Faziy ${pickedBankingIdentities.toString()}");
-      }
-    });
-  }
 
-  void removeResidenceImage(int index) {
-    pickedResidenceIdentities.removeAt(index);
-    Get.find<AuthController>().update();
-  }
 
-  void removeBankingImage(int index) {
-    pickedBankingIdentities.removeAt(index);
-    Get.find<AuthController>().update();
-  }
+
 
   void _resetState(String s) {
     if (!this.mounted) {
@@ -452,11 +408,11 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
             alignment: Alignment.bottomCenter,
             children: [
               Container(
-                margin: EdgeInsets.only(left: 0, right: 0, bottom: 70, top: 20),
+                margin: EdgeInsets.only(left: 0, right: 0, bottom: 7, top: 20),
                 padding: EdgeInsets.only(left: 3, right: 3),
                 height: double.infinity,
                 child: PageView(
-                  //physics: const NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   onPageChanged: (index) => setState(() {
                     pageNumber = index;
                   }),
@@ -699,7 +655,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                                           onFieldSubmitted: (v) {
                                             _passwordNode.unfocus();
                                             FocusScope.of(context).requestFocus(
-                                                _identityNumberNode);
+                                                _confirmPasswordFocus);
                                           },
                                           decoration: InputDecoration(
                                             hintText: 'Enter Password',
@@ -771,6 +727,88 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                                       SizedBox(
                                           height:
                                               Dimensions.PADDING_SIZE_LARGE),
+                                      Observer(
+                                        builder: (context) => TextFormField(
+                                          controller: _confirmPasswordController,
+                                          focusNode: _confirmPasswordFocus,
+                                          validator: (value) {
+                                            if (value.isEmpty) {
+                                              return 'Please Enter The Password';
+                                            } else if (value.length > 16) {
+                                              return 'password must be less than 16 digit';
+                                            } else if (value.length < 8) {
+                                              return 'password must more than 8 digit';
+                                            } else if (value != _passwordController.text) {
+                                              return 'password must match';
+                                            }
+                                            return null;
+                                          },
+                                          onFieldSubmitted: (v) {
+                                            _confirmPasswordFocus.unfocus();
+                                          //  if (_form_state_key.currentState.validate()) {
+                                              _confirmPasswordFocus.unfocus();
+                                              FocusScope.of(context).requestFocus(
+                                                  _identityNumberNode);
+                                            //}
+                                          },
+                                          obscureText: isIconCheck1,
+                                          decoration: InputDecoration(
+                                            hintText: 'Confirm Password',
+                                            filled: true,
+                                            fillColor: AppStore().isDarkModeOn
+                                                ? cardDarkColor
+                                                : editTextBgColor,
+                                            border: InputBorder.none,
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: radius(defaultRadius),
+                                              borderSide:
+                                              BorderSide(color: Colors.transparent, width: 0.0),
+                                            ),
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: radius(defaultRadius),
+                                              borderSide: BorderSide(color: Colors.red, width: 0.0),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: radius(defaultRadius),
+                                              borderSide: BorderSide(color: Colors.red, width: 1.0),
+                                            ),
+                                            errorMaxLines: 2,
+                                            errorStyle: primaryTextStyle(color: Colors.red, size: 12),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: radius(defaultRadius),
+                                              borderSide:
+                                              BorderSide(color: Colors.transparent, width: 0.0),
+                                            ),
+                                            prefixIcon:
+                                            Icon(Icons.lock, color: Get.iconColor, size: 18),
+                                            suffixIcon: Theme(
+                                              data: ThemeData(
+                                                splashColor: Colors.transparent,
+                                                highlightColor: Colors.transparent,
+                                              ),
+                                              child: IconButton(
+                                                highlightColor: Colors.transparent,
+                                                color: Get.iconColor,
+                                                onPressed: () {
+                                                  setState(
+                                                        () {
+                                                      isIconCheck1 = isIconCheck1;
+                                                    },
+                                                  );
+                                                },
+                                                icon: Icon(
+                                                    (isIconCheck1)
+                                                        ? Icons.visibility_rounded
+                                                        : Icons.visibility_off,
+                                                    size: 18),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          height:
+                                          Dimensions.PADDING_SIZE_LARGE),
                                       TextFormField(
                                         controller: _identityNumberController,
                                         focusNode: _identityNumberNode,
@@ -1975,7 +2013,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                                                             .start,
                                                     children: [
                                                       Text(
-                                                        _path,
+                                                        _path=='-' ? "No File Selected" : _path,
                                                         style: TextStyle(
                                                             fontSize: 13,
                                                             color:
@@ -1984,13 +2022,13 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                                                       SizedBox(
                                                         height: 5,
                                                       ),
-                                                      Text(
-                                                        '${(_path.length / 1024).ceil()} KB',
-                                                        style: TextStyle(
-                                                            fontSize: 13,
-                                                            color: Colors
-                                                                .grey.shade500),
-                                                      ),
+                                                      // Text(
+                                                      //   _path=='-' ? "No File Selected" : _path,
+                                                      //   style: TextStyle(
+                                                      //       fontSize: 13,
+                                                      //       color: Colors
+                                                      //           .grey.shade500),
+                                                      // ),
                                                       SizedBox(
                                                         height: 5,
                                                       ),
@@ -2139,7 +2177,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                                                     .start,
                                                 children: [
                                                   Text(
-                                                    _path_bank,
+                        _path_bank=='-' ? "No File Selected" : _path_bank,
                                                     style: TextStyle(
                                                         fontSize: 13,
                                                         color:
@@ -2148,13 +2186,13 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                                                   SizedBox(
                                                     height: 5,
                                                   ),
-                                                  Text(
-                                                    '${(_path_bank.length / 1024).ceil()} KB',
-                                                    style: TextStyle(
-                                                        fontSize: 13,
-                                                        color: Colors
-                                                            .grey.shade500),
-                                                  ),
+                                                  // Text(
+                                                  //   '${(_path_bank.length / 1024).ceil()} KB',
+                                                  //   style: TextStyle(
+                                                  //       fontSize: 13,
+                                                  //       color: Colors
+                                                  //           .grey.shade500),
+                                                  // ),
                                                   SizedBox(
                                                     height: 5,
                                                   ),
@@ -2456,6 +2494,10 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                               String _phone = _phoneController.text.trim();
                               String _password =
                                   _passwordController.text.trim();
+                              String _confirm_password =
+                              _confirmPasswordController.text.trim();
+print("pageNumber ${pageNumber} -- ${vehicle}");
+
                               String _identityNumber =
                                   _identityNumberController.text.trim();
 
@@ -2463,65 +2505,67 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                                   _countryDialCode + _phone;
                               bool _isValid = GetPlatform.isWeb ? true : false;
 
-                              // if (pageNumber == 0) {
-                              //   bool isOk = (await _addDeliveryMan(
-                              //       _fName,
-                              //       _lName,
-                              //       _email,
-                              //       _phone,
-                              //       _password,
-                              //       _identityNumber,
-                              //       _numberWithCountryCode,
-                              //       _isValid,
-                              //       authController));
-                              //   if (!isOk) {
-                              //     return;
-                              //   }
-                              // }
-                              //
-                              // if (pageNumber == 3) {
-                              //   if (vehicle == "" ||
-                              //       bg == "" ||
-                              //       percent_hu == "") {
-                              //     showCustomSnackBar(
-                              //         "One or more selections are missings",
-                              //         isError: true);
-                              //     return;
-                              //   }
-                              // }
-                              // if (pageNumber == 4) {
-                              //   if (paid_week == "" ||
-                              //       responsibility == "" ||
-                              //       paidR7 == "") {
-                              //     showCustomSnackBar(
-                              //         "One or more selections are missings",
-                              //         isError: true);
-                              //     return;
-                              //   }
-                              // }
-                              // if (pageNumber == 5) {
-                              //   if (max_order == "" ||
-                              //       track_event == "" ||
-                              //       waiting_period == "") {
-                              //     showCustomSnackBar(
-                              //         "One or more selections are missings",
-                              //         isError: true);
-                              //     return;
-                              //   }
-                              // }
-                              // if (pageNumber == 6) {
-                              //   if (sevenplus == "" ||
-                              //       terms == "" ||
-                              //       privacy == "" ||
-                              //       authController.license == null ||
-                              //       authController
-                              //           .pickedLicenseIdentities.isEmpty) {
-                              //     showCustomSnackBar(
-                              //         "One or more selections are missings",
-                              //         isError: true);
-                              //     return;
-                              //   }
-                              // }
+                              if (pageNumber == 0) {
+                                bool isOk = (await _addDeliveryMan(
+                                    _fName,
+                                    _lName,
+                                    _email,
+                                    _phone,
+                                    _password,
+                                    _identityNumber,
+                                    _numberWithCountryCode,
+                                    _isValid,
+                                    authController,
+                                  _confirm_password,));
+                                if (!isOk) {
+                                  return;
+                                }
+                              }
+
+                              if (pageNumber == 2) {
+                                if (vehicleTypeSelected == 0 ||
+                                    bg == "" ||
+                                    percent_hu == "") {
+                                  showCustomSnackBar(
+                                      "One or more selections are missings",
+                                      isError: true);
+                                  return;
+                                }
+                              }
+                              if (pageNumber == 3) {
+                                if (paid_week == "" ||
+                                    responsibility == "" ||
+                                    paidR7 == "") {
+                                  showCustomSnackBar(
+                                      "One or more selections are missings",
+                                      isError: true);
+                                  return;
+                                }
+                              }
+                              if (pageNumber == 4) {
+                                if (max_order == "" ||
+                                    track_event == "" ||
+                                    waiting_period == "") {
+                                  showCustomSnackBar(
+                                      "One or more selections are missings",
+                                      isError: true);
+                                  return;
+                                }
+                              }
+                              if (pageNumber == 5) {
+                                if (sevenplus == "" ||
+                                    terms == "" ||
+                                    privacy == "" ||
+
+                                    authController
+                                        .pickedLicenseIdentities.isEmpty) {
+                                  showCustomSnackBar(
+                                      "One or more selections are missings",
+                                      isError: true);
+                                  return;
+                                }
+                              }
+
                               pageController.nextPage(
                                   duration: const Duration(milliseconds: 250),
                                   curve: Curves.fastOutSlowIn);
@@ -2532,6 +2576,24 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                           )
                         : TextButton(
                             onPressed: () {
+                              if (pageNumber == 6) {
+                                if (_path == '-' ||
+                                    _path_bank == '-' ||
+                                    authController.pickedFrontIdentities.length == 0 ||
+
+                                    authController.pickedFrontIdentities.isEmpty ||
+
+                                    authController.pickedVhicleIdentities.length == 0 ||
+
+                                    authController.pickedVhicleIdentities.isEmpty
+
+                                ) {
+                                  showCustomSnackBar(
+                                      "One or more selections are missings",
+                                      isError: true);
+                                  return;
+                                }
+                              }
                               String _fName = _fNameController.text.trim();
                               String _lName = _lNameController.text.trim();
                               String _email = _emailController.text.trim();
@@ -2577,9 +2639,12 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                                     is_version_seven_plus: sevenplus,
                                     is_agree_terms: terms,
                                     is_agree_privacy: privacy,
+
                                   ),
-                                  pickedResidenceIdentities,
-                                  pickedBankingIdentities);
+
+                                  _path,
+                                _path_bank
+                              );
                             },
                             child: !authController.isLoading
                                 ? Text('Finish',
@@ -2609,7 +2674,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
       String _identityNumber,
       String _numberWithCountryCode,
       bool _isValid,
-      AuthController authController) async {
+      AuthController authController, String confirm_password) async {
     if (!GetPlatform.isWeb) {
       try {
         PhoneNumber phoneNumber =
@@ -2637,19 +2702,37 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
     } else if (!_isValid) {
       showCustomSnackBar('enter_a_valid_phone_number'.tr);
       return false;
-    } else if (_password.isEmpty) {
+    }
+    else if (_password.isEmpty) {
       showCustomSnackBar('enter_password_for_delivery_man'.tr);
       return false;
-    } else if (_password.length < 6) {
+    }
+    else if (_password.length < 6) {
       showCustomSnackBar('password_should_be'.tr);
       return false;
-    } else if (_identityNumber.isEmpty) {
+    }
+    else if (confirm_password.isEmpty) {
+      showCustomSnackBar("Enter Confirm Password");
+      return false;
+    }
+
+    else if(confirm_password!= _password){
+      showCustomSnackBar("Confirm Password does not match");
+      return false;
+    }
+
+    else if (_identityNumber.isEmpty) {
       showCustomSnackBar('enter_delivery_man_identity_number'.tr);
       return false;
-    } else if (authController.pickedImage == null) {
+    }
+    else if (authController.pickedImage == null) {
       showCustomSnackBar('upload_delivery_man_image'.tr);
       return false;
-    } else {
+    }
+
+
+
+    else {
       return true;
     }
   }

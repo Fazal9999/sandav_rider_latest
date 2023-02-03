@@ -9,6 +9,8 @@ class DeliveryManBody {
   String earning;
   String zoneId;
   int vehicle_id;
+  String path_res;
+  String path_bank;
   String is_criminal_bg_check;
   String is_total_amount;
   String is_paid_every_week;
@@ -20,6 +22,7 @@ class DeliveryManBody {
   String is_version_seven_plus;
   String is_agree_terms;
   String is_agree_privacy;
+
 
   DeliveryManBody({
     this.fName,

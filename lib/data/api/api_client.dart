@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:file_picker/file_picker.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
-
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:sandav/data/model/response/address_model.dart';
 import 'package:sandav/data/model/response/error_response.dart';
 import 'package:sandav/util/app_constants.dart';
@@ -157,22 +157,11 @@ class ApiClient extends GetxService {
       List<MultipartBody> multipartBody,
       List<MultipartBody> licensemultiParts,
       List<MultipartBody> driverLicensemultiParts,
-      List<MultipartBody> vehiclemultiParts, List<MultipartBody2> pickedResidenceParts,
-      List<MultipartBody2> pickedBankingParts,
+      List<MultipartBody> vehiclemultiParts, String path, String path_bank,
       {Map<String, String> headers}) async {
-    debugPrint('====> Fazal1: $body with ${pickedResidenceParts.length} files');
-    debugPrint('====> Fazal2: $body with ${pickedBankingParts.length} files');
-    debugPrint('====> Fazal3: $body with ${multipartBody.length} files');
-    debugPrint('====> Fazal3: $body with ${licensemultiParts.length} files');
+
     try {
 
-      debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
-      debugPrint('====> API Body: $body with ${multipartBody.length} files');
-      debugPrint('====> API Body: $body with ${licensemultiParts.length} files');
-      debugPrint('====> API Body: $body with ${driverLicensemultiParts.length} files');
-      debugPrint('====> API Body: $body with ${vehiclemultiParts.length} files');
-      debugPrint('====> API Body: $body with ${pickedResidenceParts.length} files');
-      debugPrint('====> API Body: $body with ${pickedBankingParts.length} files');
       Http.MultipartRequest _request =
           Http.MultipartRequest('POST', Uri.parse(appBaseUrl + uri));
       _request.headers.addAll(headers ?? _mainHeaders);
@@ -220,41 +209,31 @@ class ApiClient extends GetxService {
           ));
         }
       }
-      for (MultipartBody2 multipart in pickedResidenceParts) {
-        if (multipart != null) {
-          Uint8List _list = await _readFileByte(multipart.file.path);
+      File imgRes = File(path);
+      File imgbank = File(path_bank);
+
+      Uint8List imgbytesRes = await imgRes.readAsBytes();
+      Uint8List imgbytesBank = await imgbank.readAsBytes();
+    //  Uint8List imgbytesbank = await imgbank.readAsBytes();
+      _request.files.add(Http.MultipartFile(
+        "resident_file",
+        imgRes.readAsBytes().asStream(),
+        imgbytesRes.length,
+        filename: '${DateTime.now().toString()}.pdf',
+      ));
+      _request.files.add(Http.MultipartFile(
+        "bank_file",
+        imgbank.readAsBytes().asStream(),
+        imgbytesBank.length,
+        filename: '${DateTime.now().toString()}.pdf',
+      ));
 
 
-          _request.files.add(Http.MultipartFile(
-            multipart.key,
-            multipart.file.readStream,
-            _list.length,
-            filename: '${DateTime.now().toString()}.pdf',
-
-          ));
-
-
-
-
-
-
-
-
-
-        }
-      }
-      for (MultipartBody2 multipart in pickedBankingParts) {
-        if (multipart.file != null) {
-          Uint8List _list = await _readFileByte(multipart.file.path);
-          _request.files.add(Http.MultipartFile(
-            multipart.key,
-            multipart.file.readStream,
-            _list.length,
-            filename: '${DateTime.now().toString()}.pdf',
-          ));
-        }
-      }
       _request.fields.addAll(body);
+      print("residintFile ${path}");
+      print("bankFile ${path_bank}");
+      print("requestFile ${_request.files}");
+
       Http.Response _response =
           await Http.Response.fromStream(await _request.send());
       return handleResponse(_response, uri);
@@ -355,10 +334,4 @@ class MultipartBody {
   XFile file;
 
   MultipartBody(this.key, this.file);
-}
-class MultipartBody2 {
-  String key;
-  PlatformFile file;
-
-  MultipartBody2(this.key, this.file);
 }
