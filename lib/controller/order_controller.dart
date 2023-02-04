@@ -383,7 +383,6 @@ class OrderController extends GetxController implements GetxService {
 
     if (response.statusCode == 200) {
       List loadedCars = response.body['vehicles'];
-      print("Fazalbin ${loadedCars}");
      return loadedCars;
     }
     else {

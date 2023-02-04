@@ -56,7 +56,7 @@ class AuthController extends GetxController implements GetxService {
   List<XFile> _pickedFrontIdentities = [];
   List<XFile> _pickedVehicleIdentities = [];
 
-  List<String> _identityTypeList = ['passport', 'nid'];
+  List<String> _identityTypeList = ['passport', 'id'];
   int _identityTypeIndex = 0;
   List<String> _dmTypeList = ['freelancer', 'salary_based'];
   int _dmTypeIndex = 0;

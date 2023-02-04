@@ -44,7 +44,7 @@
         android:usesCleartextTraffic="true"
         android:label="Sandav Delivery"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/ic_launcher">
          <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBxOiFmrWkVid0v8RdCWt7yzJ0e48GV1Oo"/>
         <activity

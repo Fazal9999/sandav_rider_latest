@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:sandav/data/model/response/language_model.dart';
 
 class AppConstants {
@@ -114,7 +116,7 @@ class AppConstants {
   static const String TOPIC = 'all_zone_customer';
   static const String ZONE_ID = 'zoneId';
   static const String LOCALIZATION_KEY = 'X-localization';
-
+  static const Color grey_90 = Color(0xFF263238);
   // Delivery Tips
   static List<int> tips = [0, 5, 10, 15, 20, 30, 50];
 
