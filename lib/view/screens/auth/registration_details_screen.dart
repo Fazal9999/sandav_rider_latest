@@ -4,7 +4,6 @@ import 'package:flutter_document_picker/flutter_document_picker.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:ui' as ui;
 import 'package:signature/signature.dart';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:country_code_picker/country_code.dart';
@@ -20,7 +19,6 @@ import 'package:sandav/controller/order_controller.dart';
 import 'package:sandav/data/model/body/delivery_man_body.dart';
 import 'package:sandav/view/screens/auth/widget/code_picker_widget.dart';
 import 'package:sandav/view/screens/auth/widget/signature_preview_page.dart';
-
 import '../../../commons/colors.dart';
 import '../../../commons/images.dart';
 import '../../../commons/widgets.dart';
@@ -98,6 +96,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
   final _utiController = TextEditingController(
     text: 'com.sandav.customer',
   );
+  int vehicle_id=0;
 
   final _extensionController = TextEditingController(
     text: 'pdf,doc,png',
@@ -118,7 +117,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
   bool _multiPick = false;
   String vehicle = "";
   List vehicletItems = [];
-  List<Veh> ve;
+  List<dynamic> ve=[];
 
   List vehiclestItems = [];
   String bg = "";
@@ -188,10 +187,10 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
       "title": "No",
     },
   ];
-  static const kSubtitleStyle = TextStyle(
-    fontSize: 18.0,
-    height: 1.2,
-  );
+  // static const kSubtitleStyle = TextStyle(
+  //   fontSize: 18.0,
+  //   height: 1.2,
+  // );
   String max_order = "";
   List max_orderItems = [
     {
@@ -395,36 +394,35 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
 
   Future<void> get_vehicle() async {
     vehicletItems = (await Get.find<OrderController>().get_Vehicles());
-
     for (int index = 0; index < vehicletItems.length; index++) {
-      ve.add(Veh(
-          vehicletItems[index]['id'],
+      ve.add([vehicletItems[index]['id'],
           vehicletItems[index]['value'] == 0 ? false : true,
-          vehicletItems[index]['name']));
+          vehicletItems[index]['name']]) ;
     }
+    print("FazalBhatti ${ve}");
   }
 
 
-  void _resetState(String s) {
-    if (!this.mounted) {
-      return;
-    }
-
-    setState(() {
-      _isImgLoading = true;
-      _directoryPath = null;
-      _fileName = null;
-      _bankingName = null;
-      if (s == 'banking') {
-        // pickedBankingIdentities = null;
-      } else {
-        //pickedResidenceIdentities = null;
-      }
-
-      _saveAsFileName = null;
-      _userAborted = false;
-    });
-  }
+  // void _resetState(String s) {
+  //   if (!this.mounted) {
+  //     return;
+  //   }
+  //
+  //   setState(() {
+  //     _isImgLoading = true;
+  //     _directoryPath = null;
+  //     _fileName = null;
+  //     _bankingName = null;
+  //     if (s == 'banking') {
+  //       // pickedBankingIdentities = null;
+  //     } else {
+  //       //pickedResidenceIdentities = null;
+  //     }
+  //
+  //     _saveAsFileName = null;
+  //     _userAborted = false;
+  //   });
+  // }
 
   void _logException(String message) {
     print(message);
@@ -1413,237 +1411,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
 
                                 )),
                             10.height,
-                            Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme
-                                          .of(context)
-                                          .cardColor,
-                                      borderRadius: BorderRadius.circular(20),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          offset: Offset(0, 0),
-                                          blurRadius: 1,
-                                          spreadRadius: 1,
-                                          color: Colors.black12,
-                                        ),
-                                      ],
-                                    ),
-                                    margin: const EdgeInsets.only(
-                                        top: 15, right: 10, left: 3),
-                                    height: 85,
-                                    child:
-                                    // One
-                                    FutureBuilder(
-                                        future: Get.find<OrderController>()
-                                            .get_Vehicles(),
-                                        builder: (context,
-                                            AsyncSnapshot<List> snapshot) {
-                                          if (!snapshot.hasData) {
-                                            return Container(
-                                                height: 60,
-                                                width: 80,
-                                                decoration:
-                                                const BoxDecoration(
-                                                  color: Colors.transparent,
-                                                  borderRadius: BorderRadius
-                                                      .horizontal(
-                                                    left:
-                                                    Radius.circular(20),
-                                                    right:
-                                                    Radius.circular(20),
-                                                  ),
-                                                ),
-                                                padding: EdgeInsets.all(8),
-                                                child:
-                                                CircularProgressIndicator());
-                                          } else {
-                                            return SizedBox(
-                                                height: 55,
-                                                child: ListView.separated(
-                                                  physics:
-                                                  ClampingScrollPhysics(),
-                                                  scrollDirection:
-                                                  Axis.horizontal,
-                                                  itemCount: snapshot
-                                                      .data?.length ??
-                                                      0,
-                                                  separatorBuilder:
-                                                      (context, index) {
-                                                    return VerticalDivider(
-                                                      color:
-                                                      Theme
-                                                          .of(context)
-                                                          .primaryColor,
-                                                      width: 0,
-                                                    );
-                                                  },
-                                                  shrinkWrap: true,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    // bool selected =
-                                                    //     vehicleTypeSelected?.id == vehicleType.id;
-                                                    int id = snapshot
-                                                        .data[index]['id'];
-                                                    selected =
-                                                        vehicleTypeSelected ==
-                                                            id;
-                                                    return InkWell(
-                                                      onTap: () async {
-                                                        if (selected) {
-                                                          setState(() {
-                                                            vehicleTypeSelected =
-                                                            snapshot.data[
-                                                            index]
-                                                            ['id'];
-                                                            base_price =
-                                                                snapshot
-                                                                    .data[index]
-                                                                [
-                                                                'base_price']
-                                                                    .toString()
-                                                                    .toDouble();
-                                                            additional_distance_price =
-                                                                snapshot
-                                                                    .data[index]
-                                                                [
-                                                                'additional_distance_pricing']
-                                                                    .toString()
-                                                                    .toDouble();
-
-                                                            vehicleTypeSelected =
-                                                            null;
-                                                          });
-                                                        } else {
-                                                          setState(() {
-                                                            vehicleTypeSelected =
-                                                            snapshot.data[
-                                                            index]
-                                                            ['id'];
-                                                            base_price =
-                                                                snapshot
-                                                                    .data[index]
-                                                                [
-                                                                'base_price']
-                                                                    .toString()
-                                                                    .toDouble();
-                                                            additional_distance_price =
-                                                                snapshot
-                                                                    .data[index]
-                                                                [
-                                                                'additional_distance_pricing']
-                                                                    .toString()
-                                                                    .toDouble();
-                                                          });
-                                                        }
-                                                      },
-                                                      child: Container(
-                                                        width: 80,
-                                                        decoration:
-                                                        BoxDecoration(
-                                                          color: vehicleTypeSelected ==
-                                                              id
-                                                              ? Theme
-                                                              .of(
-                                                              context)
-                                                              .primaryColor
-                                                              : Colors
-                                                              .transparent,
-                                                          borderRadius:
-                                                          BorderRadius
-                                                              .horizontal(
-                                                            left: index == 0
-                                                                ? Radius
-                                                                .circular(
-                                                                20)
-                                                                : Radius
-                                                                .zero,
-                                                            right: index ==
-                                                                snapshot.data
-                                                                    .length -
-                                                                    1
-                                                                ? Radius
-                                                                .circular(
-                                                                20)
-                                                                : Radius
-                                                                .zero,
-                                                          ),
-                                                        ),
-                                                        padding:
-                                                        EdgeInsets.all(
-                                                            8),
-                                                        child: Column(
-                                                          children: [
-                                                            AutoSizeText(
-                                                              snapshot.data[
-                                                              index]
-                                                              ['name'],
-                                                              style: kSubtitleStyle
-                                                                  .copyWith(
-                                                                color: selected
-                                                                    ? Colors
-                                                                    .white
-                                                                    : Colors
-                                                                    .black,
-                                                              ),
-                                                              minFontSize:
-                                                              8,
-                                                              maxLines: 1,
-                                                            ),
-                                                            if (snapshot.data[
-                                                            index]
-                                                            [
-                                                            'logo'] !=
-                                                                null)
-                                                              CachedNetworkImage(
-                                                                progressIndicatorBuilder: (
-                                                                    context,
-                                                                    url,
-                                                                    progress) =>
-                                                                    Center(
-                                                                      child:
-                                                                      SizedBox(
-                                                                        width:
-                                                                        55,
-                                                                        height:
-                                                                        55,
-                                                                        child:
-                                                                        CircularProgressIndicator(
-                                                                          value:
-                                                                          progress
-                                                                              .progress,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                imageUrl:
-                                                                '${AppConstants
-                                                                    .BASE_URL}/storage/app/public/vehicles/${snapshot
-                                                                    .data[index]['logo']}',
-                                                                height: 44,
-                                                                fit: BoxFit
-                                                                    .contain,
-                                                                alignment:
-                                                                Alignment
-                                                                    .bottomCenter,
-                                                                color: selected
-                                                                    ? Colors
-                                                                    .white
-                                                                    : Colors
-                                                                    .black,
-                                                              ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ));
-                                          }
-                                        }),
-                                  ),
-                                ]),
+                            checkBoxVehicle(ve, vehicle, 1),
                             40.height,
                             Text(
                                 "Do you agree that your information will be used for background checks \n "
@@ -2677,83 +2445,83 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                     pageNumber != 6
                         ? TextButton(
                       onPressed: () async {
-                        // String _fName = _fNameController.text.trim();
-                        // String _lName = _lNameController.text.trim();
-                        // String _email = _emailController.text.trim();
-                        // String _phone = _phoneController.text.trim();
-                        // String _password =
-                        // _passwordController.text.trim();
-                        // String _confirm_password =
-                        // _confirmPasswordController.text.trim();
-                        // print("pageNumber ${pageNumber} -- ${vehicle}");
-                        //
-                        // String _identityNumber =
-                        // _identityNumberController.text.trim();
-                        //
-                        // String _numberWithCountryCode =
-                        //     _countryDialCode + _phone;
-                        // bool _isValid = GetPlatform.isWeb ? true : false;
-                        //
-                        // if (pageNumber == 0) {
-                        //   bool isOk = (await _addDeliveryMan(
-                        //     _fName,
-                        //     _lName,
-                        //     _email,
-                        //     _phone,
-                        //     _password,
-                        //     _identityNumber,
-                        //     _numberWithCountryCode,
-                        //     _isValid,
-                        //     authController,
-                        //     _confirm_password,));
-                        //   if (!isOk) {
-                        //     return;
-                        //   }
-                        // }
-                        //
-                        // if (pageNumber == 2) {
-                        //   if (vehicleTypeSelected == 0 ||
-                        //       bg == "" ||
-                        //       percent_hu == "") {
-                        //     showCustomSnackBar(
-                        //         "One or more selections are missings",
-                        //         isError: true);
-                        //     return;
-                        //   }
-                        // }
-                        // if (pageNumber == 3) {
-                        //   if (paid_week == "" ||
-                        //       responsibility == "" ||
-                        //       paidR7 == "") {
-                        //     showCustomSnackBar(
-                        //         "One or more selections are missings",
-                        //         isError: true);
-                        //     return;
-                        //   }
-                        // }
-                        // if (pageNumber == 4) {
-                        //   if (max_order == "" ||
-                        //       track_event == "" ||
-                        //       waiting_period == "") {
-                        //     showCustomSnackBar(
-                        //         "One or more selections are missings",
-                        //         isError: true);
-                        //     return;
-                        //   }
-                        // }
-                        // if (pageNumber == 5) {
-                        //   if (sevenplus == "" ||
-                        //       terms == "" ||
-                        //       privacy == "" ||
-                        //
-                        //       authController
-                        //           .pickedLicenseIdentities.isEmpty) {
-                        //     showCustomSnackBar(
-                        //         "One or more selections are missings",
-                        //         isError: true);
-                        //     return;
-                        //   }
-                        // }
+                        String _fName = _fNameController.text.trim();
+                        String _lName = _lNameController.text.trim();
+                        String _email = _emailController.text.trim();
+                        String _phone = _phoneController.text.trim();
+                        String _password =
+                        _passwordController.text.trim();
+                        String _confirm_password =
+                        _confirmPasswordController.text.trim();
+                        print("pageNumber ${pageNumber} -- ${vehicle}");
+
+                        String _identityNumber =
+                        _identityNumberController.text.trim();
+
+                        String _numberWithCountryCode =
+                            _countryDialCode + _phone;
+                        bool _isValid = GetPlatform.isWeb ? true : false;
+
+                        if (pageNumber == 0) {
+                          bool isOk = (await _addDeliveryMan(
+                            _fName,
+                            _lName,
+                            _email,
+                            _phone,
+                            _password,
+                            _identityNumber,
+                            _numberWithCountryCode,
+                            _isValid,
+                            authController,
+                            _confirm_password,));
+                          if (!isOk) {
+                            return;
+                          }
+                        }
+
+                        if (pageNumber == 2) {
+                          if (vehicleTypeSelected == 0 ||
+                              bg == "" ||
+                              percent_hu == "") {
+                            showCustomSnackBar(
+                                "One or more selections are missings",
+                                isError: true);
+                            return;
+                          }
+                        }
+                        if (pageNumber == 3) {
+                          if (paid_week == "" ||
+                              responsibility == "" ||
+                              paidR7 == "") {
+                            showCustomSnackBar(
+                                "One or more selections are missings",
+                                isError: true);
+                            return;
+                          }
+                        }
+                        if (pageNumber == 4) {
+                          if (max_order == "" ||
+                              track_event == "" ||
+                              waiting_period == "") {
+                            showCustomSnackBar(
+                                "One or more selections are missings",
+                                isError: true);
+                            return;
+                          }
+                        }
+                        if (pageNumber == 5) {
+                          if (sevenplus == "" ||
+                              terms == "" ||
+                              privacy == "" ||
+
+                              authController
+                                  .pickedLicenseIdentities.isEmpty) {
+                            showCustomSnackBar(
+                                "One or more selections are missings",
+                                isError: true);
+                            return;
+                          }
+                        }
                         pageController.nextPage(
                             duration: const Duration(milliseconds: 250),
                             curve: Curves.fastOutSlowIn);
@@ -2817,7 +2585,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                               authController.selectedZoneIndex]
                                   .id
                                   .toString(),
-                              vehicle_id: vehicleTypeSelected,
+                              vehicle_id: vehicle_id,
                               is_criminal_bg_check: bg,
                               is_total_amount: percent_hu,
                               is_paid_every_week: paid_week,
@@ -2831,7 +2599,6 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                               is_agree_privacy: privacy,
 
                             ),
-
                             _path,
                             _path_bank
                         );
@@ -2941,15 +2708,19 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                   color: Colors.black,
                 ),
               ),
-              value: Items[index]["value"],
+              value: Items[index]['value'] ,
               onChanged: (value) {
                 setState(() {
                   for (var element in Items) {
-                    element["value"] = false;
+                      element["value"] = false;
+                    }
+                  if(value){
+                      item = "${Items[index]["title"]}";
+                      Items[index]["value"] = value;
                   }
-                  Items[index]["value"] = value;
-                  item = "${Items[index]["title"]}";
-
+                  else{
+                    item = "";
+                  }
                   switch (number) {
                     case 1:
                       vehicle = item;
@@ -2991,6 +2762,41 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                       print('invalid entry');
                   }
                   print("Faizy ${item}");
+                });
+              },
+            ),
+      ),
+    );
+  }
+  Widget checkBoxVehicle(List Items, String item, int number) {
+    return Column(
+      children: List.generate(
+        Items.length,
+            (index) =>
+            CheckboxListTile(
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              title: Text(
+                Items[index][2]
+                ,
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
+              ),
+              value: Items[index][1],
+              onChanged: (value) {
+                setState(() {
+                  for (var element in Items) {
+                    element[1]=false;
+                  }
+                   item = "${Items[index][2]}";
+                   Items[index][1] = value;
+                  int vehId=Items[index][0];
+                  vehicle_id=vehId;
+                   vehicle=item;
+
                 });
               },
             ),

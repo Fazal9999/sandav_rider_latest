@@ -2158,7 +2158,7 @@ List selectedVehicle;
                                         child: CircularProgressIndicator(
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
-                                                Colors.white),
+                                                Colors.black),
                                       )),
                               ),
                             ],
