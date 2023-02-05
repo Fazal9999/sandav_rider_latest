@@ -1,11 +1,11 @@
-import 'package:sandav/util/app_constants.dart';
+import 'package:delivery_man/util/app_constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeController extends GetxController implements GetxService {
   final SharedPreferences sharedPreferences;
-  ThemeController({@required this.sharedPreferences}) {
+  ThemeController({ this.sharedPreferences}) {
     _loadCurrentTheme();
   }
 

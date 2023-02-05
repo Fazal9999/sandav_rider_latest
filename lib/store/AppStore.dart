@@ -1,8 +1,9 @@
-import 'package:sandav/commons/colors.dart';
-import 'package:sandav/commons/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
+
+import '../common/colors.dart';
+import '../util/app_constants.dart';
 
 part 'AppStore.g.dart';
 
@@ -89,7 +90,7 @@ abstract class AppStoreBase with Store {
     }
     setStatusBarColor(scaffoldBackground);
 
-    setValue(isDarkModeOnPref, isDarkModeOn);
+    setValue(AppConstants.isDarkModeOnPref, isDarkModeOn);
   }
 
   @action

@@ -1,5 +1,5 @@
-import 'package:sandav/data/api/api_client.dart';
-import 'package:sandav/util/app_constants.dart';
+import 'package:delivery_man/data/api/api_client.dart';
+import 'package:delivery_man/util/app_constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,11 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NotificationRepo {
   final ApiClient apiClient;
   final SharedPreferences sharedPreferences;
-  NotificationRepo(
-      {@required this.apiClient, @required this.sharedPreferences});
+  NotificationRepo({ this.apiClient,  this.sharedPreferences});
 
   Future<Response> getNotificationList() async {
-    return await apiClient.getData(AppConstants.NOTIFICATION_URI);
+    return await apiClient.getData('${AppConstants.NOTIFICATION_URI}${getUserToken()}');
+  }
+
+  String getUserToken() {
+    return sharedPreferences.getString(AppConstants.TOKEN) ?? "";
   }
 
   void saveSeenNotificationCount(int count) {

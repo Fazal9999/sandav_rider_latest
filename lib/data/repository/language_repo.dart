@@ -1,5 +1,5 @@
-import 'package:sandav/data/model/response/language_model.dart';
-import 'package:sandav/util/app_constants.dart';
+import 'package:delivery_man/data/model/response/language_model.dart';
+import 'package:delivery_man/util/app_constants.dart';
 import 'package:flutter/material.dart';
 
 class LanguageRepo {

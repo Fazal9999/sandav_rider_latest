@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:sandav/data/model/response/conversation_model.dart';
+import 'package:delivery_man/data/model/response/conversation_model.dart';
 
 class MessageModel {
   int totalSize;
@@ -10,22 +10,14 @@ class MessageModel {
   Conversation conversation;
   List<Message> messages;
 
-  MessageModel(
-      {this.totalSize,
-      this.limit,
-      this.offset,
-      this.status,
-      this.conversation,
-      this.messages});
+  MessageModel({this.totalSize, this.limit, this.offset, this.messages,  this.status});
 
   MessageModel.fromJson(Map<String, dynamic> json) {
     totalSize = json['total_size'];
     limit = json['limit'];
     offset = json['offset'];
-    status = json['status'];
-    conversation = json['conversation'] != null
-        ? Conversation.fromJson(json['conversation'])
-        : null;
+    status = json['status'] != null ? json['status'] : false;
+    conversation = json['conversation'] != null ? Conversation.fromJson(json['conversation']) : null;
     if (json['messages'] != null) {
       messages = <Message>[];
       json['messages'].forEach((v) {
@@ -60,24 +52,25 @@ class Message {
   String createdAt;
   String updatedAt;
 
-  Message(
-      {this.id,
-      this.conversationId,
-      this.senderId,
-      this.message,
-      this.files,
-      this.isSeen,
-      this.createdAt,
-      this.updatedAt});
+  Message({
+    this.id,
+    this.conversationId,
+    this.senderId,
+    this.message,
+    this.files,
+    this.isSeen,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Message.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     conversationId = json['conversation_id'];
     senderId = json['sender_id'];
     message = json['message'];
-    files = (json['file'] != 'null' && json['file'] != null)
-        ? jsonDecode(json['file']).cast<String>()
-        : [];
+    if(json['file'] != null && json['file'] != 'null'){
+      files = jsonDecode(json['file']).cast<String>();
+    }
     isSeen = json['is_seen'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
@@ -93,6 +86,7 @@ class Message {
     data['is_seen'] = this.isSeen;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+
     return data;
   }
 }

@@ -3,51 +3,43 @@ enum NotificationType{
   message,
   order,
   general,
-  status,
+  order_request
 }
 
 class NotificationBody {
   NotificationType notificationType;
   int orderId;
-  int adminId;
-  int deliverymanId;
-  int restaurantId;
+  int customerId;
+  int vendorId;
   String type;
   int conversationId;
-  int id;
 
   NotificationBody({
     this.notificationType,
     this.orderId,
-    this.adminId,
-    this.deliverymanId,
-    this.restaurantId,
+    this.customerId,
+    this.vendorId,
     this.type,
     this.conversationId,
-    this.id
   });
 
   NotificationBody.fromJson(Map<String, dynamic> json) {
     notificationType = convertToEnum(json['order_notification']);
     orderId = json['order_id'];
-    adminId = json['admin_id'];
-    deliverymanId = json['deliveryman_id'];
-    restaurantId = json['restaurant_id'];
+    customerId = json['customer_id'];
+    vendorId = json['vendor_id'];
     type = json['type'];
     conversationId = json['conversation_id'];
-    id=json['id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['order_notification'] = this.notificationType.toString();
     data['order_id'] = this.orderId;
-    data['admin_id'] = this.adminId;
-    data['deliveryman_id'] = this.deliverymanId;
-    data['restaurant_id'] = this.restaurantId;
+    data['customer_id'] = this.customerId;
+    data['vendor_id'] = this.vendorId;
     data['type'] = this.type;
     data['conversation_id'] = this.conversationId;
-    data['id'] = this.id;
     return data;
   }
 
@@ -56,15 +48,11 @@ class NotificationBody {
       return NotificationType.general;
     }else if(enumString == NotificationType.order.toString()) {
       return NotificationType.order;
-    }
-    else if(enumString == NotificationType.message.toString()) {
+    }else if(enumString == NotificationType.order_request.toString()) {
+      return NotificationType.order_request;
+    }else if(enumString == NotificationType.message.toString()) {
       return NotificationType.message;
     }
-    else if(enumString == NotificationType.status.toString()) {
-      return NotificationType.status;
-    }
-
     return NotificationType.general;
   }
-
 }

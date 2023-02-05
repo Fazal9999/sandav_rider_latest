@@ -1,23 +1,17 @@
-import 'package:sandav/controller/auth_controller.dart';
-import 'package:sandav/controller/splash_controller.dart';
-import 'package:sandav/controller/theme_controller.dart';
-import 'package:sandav/controller/user_controller.dart';
-import 'package:sandav/helper/price_converter.dart';
-import 'package:sandav/helper/responsive_helper.dart';
-import 'package:sandav/helper/route_helper.dart';
-import 'package:sandav/util/app_constants.dart';
-import 'package:sandav/util/dimensions.dart';
-import 'package:sandav/util/styles.dart';
-import 'package:sandav/view/base/confirmation_dialog.dart';
-import 'package:sandav/view/base/custom_image.dart';
-import 'package:sandav/view/base/web_menu_bar.dart';
-import 'package:sandav/view/screens/profile/widget/profile_bg_widget.dart';
-import 'package:sandav/view/screens/profile/widget/profile_button.dart';
-import 'package:sandav/view/screens/profile/widget/profile_card.dart';
+import 'package:delivery_man/controller/auth_controller.dart';
+import 'package:delivery_man/controller/splash_controller.dart';
+import 'package:delivery_man/controller/theme_controller.dart';
+import 'package:delivery_man/helper/route_helper.dart';
+import 'package:delivery_man/util/app_constants.dart';
+import 'package:delivery_man/util/dimensions.dart';
+import 'package:delivery_man/util/images.dart';
+import 'package:delivery_man/util/styles.dart';
+import 'package:delivery_man/view/base/confirmation_dialog.dart';
+import 'package:delivery_man/view/screens/profile/widget/profile_bg_widget.dart';
+import 'package:delivery_man/view/screens/profile/widget/profile_button.dart';
+import 'package:delivery_man/view/screens/profile/widget/profile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../../commons/images.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -25,221 +19,132 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isLoggedIn;
 
   @override
   void initState() {
     super.initState();
-    _isLoggedIn = Get.find<AuthController>().isLoggedIn();
 
-    if (_isLoggedIn && Get.find<UserController>().userInfoModel == null) {
-      Get.find<UserController>().getUserInfo();
-    }
+    Get.find<AuthController>().getProfile();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool _showWalletCard =
-        Get.find<SplashController>().configModel.customerWalletStatus == 1 ||
-            Get.find<SplashController>().configModel.loyaltyPointStatus == 1;
-
     return Scaffold(
-      appBar: ResponsiveHelper.isDesktop(context) ? WebMenuBar() : null,
       backgroundColor: Theme.of(context).cardColor,
-      body: GetBuilder<UserController>(builder: (userController) {
-        return (_isLoggedIn && userController.userInfoModel == null)
-            ? Center(child: CircularProgressIndicator())
-            : ProfileBgWidget(
-                backButton: true,
-                circularImage: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        width: 2, color: Theme.of(context).cardColor),
-                    shape: BoxShape.circle,
-                  ),
-                  alignment: Alignment.center,
-                  child: ClipOval(
-                      child: CustomImage(
-                    image:
-                        '${Get.find<SplashController>().configModel.baseUrls.customerImageUrl}'
-                        '/${(userController.userInfoModel != null && _isLoggedIn) ? userController.userInfoModel.image : ''}',
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
-                  )),
-                ),
-                mainWidget: SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
-                    child: Center(
-                        child: Container(
-                      width: Dimensions.WEB_MAX_WIDTH,
-                      color: Theme.of(context).cardColor,
-                      padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                      child: Column(children: [
-                        Text(
-                          _isLoggedIn
-                              ? '${userController.userInfoModel.fName} ${userController.userInfoModel.lName}'
-                              : 'guest'.tr,
-                          style: robotoMedium.copyWith(
-                              fontSize: Dimensions.fontSizeLarge),
-                        ),
-                        SizedBox(height: 30),
-                        _isLoggedIn
-                            ? Column(children: [
-                                Row(children: [
-                                  ProfileCard(
-                                      title: 'since_joining'.tr,
-                                      data:
-                                          '${userController.userInfoModel.memberSinceDays} ${'days'.tr}'),
-                                  SizedBox(
-                                      width: Dimensions.PADDING_SIZE_SMALL),
-                                  ProfileCard(
-                                      title: 'total_order'.tr,
-                                      data: userController
-                                          .userInfoModel.orderCount
-                                          .toString()),
-                                ]),
-                                SizedBox(
-                                    height: _showWalletCard
-                                        ? Dimensions.PADDING_SIZE_SMALL
-                                        : 0),
-                                _showWalletCard
-                                    ? Row(children: [
-                                        Get.find<SplashController>()
-                                                    .configModel
-                                                    .customerWalletStatus ==
-                                                1
-                                            ? ProfileCard(
-                                                title: 'wallet_amount'.tr,
-                                                data:
-                                                    PriceConverter.convertPrice(
-                                                        userController
-                                                            .userInfoModel
-                                                            .walletBalance),
-                                              )
-                                            : SizedBox.shrink(),
-                                        SizedBox(
-                                            width: Get.find<SplashController>()
-                                                            .configModel
-                                                            .customerWalletStatus ==
-                                                        1 &&
-                                                    Get.find<SplashController>()
-                                                            .configModel
-                                                            .loyaltyPointStatus ==
-                                                        1
-                                                ? Dimensions.PADDING_SIZE_SMALL
-                                                : 0.0),
-                                        Get.find<SplashController>()
-                                                    .configModel
-                                                    .loyaltyPointStatus ==
-                                                1
-                                            ? ProfileCard(
-                                                title: 'loyalty_points'.tr,
-                                                data: userController
-                                                            .userInfoModel
-                                                            .loyaltyPoint !=
-                                                        null
-                                                    ? userController
-                                                        .userInfoModel
-                                                        .loyaltyPoint
-                                                        .toString()
-                                                    : '0',
-                                              )
-                                            : SizedBox.shrink(),
-                                      ])
-                                    : SizedBox(),
-                              ])
-                            : SizedBox(),
-                        SizedBox(height: _isLoggedIn ? 30 : 0),
-                        ProfileButton(
-                            icon: Icons.dark_mode,
-                            title: 'dark_mode'.tr,
-                            isButtonActive: Get.isDarkMode,
-                            onTap: () {
-                              Get.find<ThemeController>().toggleTheme();
-                            }),
-                        SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-                        _isLoggedIn
-                            ? GetBuilder<AuthController>(
-                                builder: (authController) {
-                                return ProfileButton(
-                                  icon: Icons.notifications,
-                                  title: 'notification'.tr,
-                                  isButtonActive: authController.notification,
-                                  onTap: () {
-                                    authController.setNotificationActive(
-                                        !authController.notification);
-                                  },
-                                );
-                              })
-                            : SizedBox(),
-                        SizedBox(
-                            height: _isLoggedIn
-                                ? Dimensions.PADDING_SIZE_SMALL
-                                : 0),
-                        _isLoggedIn
-                            ? ProfileButton(
-                                icon: Icons.lock,
-                                title: 'change_password'.tr,
-                                onTap: () {
-                                  Get.toNamed(RouteHelper.getResetPasswordRoute(
-                                      '', '', 'password-change'));
-                                })
-                            : SizedBox(),
-                        SizedBox(
-                            height: _isLoggedIn
-                                ? Dimensions.PADDING_SIZE_SMALL
-                                : 0),
-                        ProfileButton(
-                            icon: Icons.edit,
-                            title: 'edit_profile'.tr,
-                            onTap: () {
-                              Get.toNamed(RouteHelper.getUpdateProfileRoute());
-                            }),
-                        SizedBox(
-                            height: _isLoggedIn
-                                ? Dimensions.PADDING_SIZE_SMALL
-                                : Dimensions.PADDING_SIZE_LARGE),
-                        _isLoggedIn
-                            ? ProfileButton(
-                                icon: Icons.delete,
-                                title: 'delete_account'.tr,
-                                onTap: () {
-                                  Get.dialog(
-                                      ConfirmationDialog(
-                                        icon: support,
-                                        title:
-                                            'are_you_sure_to_delete_account'.tr,
-                                        description:
-                                            'it_will_remove_your_all_information'
-                                                .tr,
-                                        isLogOut: true,
-                                        onYesPressed: () =>
-                                            userController.removeUser(),
-                                      ),
-                                      useSafeArea: false);
-                                },
-                              )
-                            : SizedBox(),
-                        SizedBox(
-                            height: _isLoggedIn
-                                ? Dimensions.PADDING_SIZE_LARGE
-                                : 0),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('${'version'.tr}:',
-                                  style: robotoRegular.copyWith(
-                                      fontSize: Dimensions.fontSizeExtraSmall)),
-                              SizedBox(
-                                  width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                              Text(AppConstants.APP_VERSION.toString(),
-                                  style: robotoMedium.copyWith(
-                                      fontSize: Dimensions.fontSizeExtraSmall)),
-                            ]),
-                      ]),
-                    ))),
-              );
+      body: GetBuilder<AuthController>(builder: (authController) {
+        return authController.profileModel == null ? Center(child: CircularProgressIndicator()) : ProfileBgWidget(
+          backButton: false,
+          circularImage: Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 2, color: Theme.of(context).cardColor),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: ClipOval(child: FadeInImage.assetNetwork(
+              placeholder: Images.placeholder,
+              image: '${Get.find<SplashController>().configModel.baseUrls.deliveryManImageUrl}'
+                  '/${authController.profileModel != null ? authController.profileModel.image : ''}',
+              height: 100, width: 100, fit: BoxFit.cover,
+              imageErrorBuilder: (c, o, s) => Image.asset(Images.placeholder, height: 100, width: 100, fit: BoxFit.cover),
+            )),
+          ),
+          mainWidget: SingleChildScrollView(physics: BouncingScrollPhysics(), child: Center(child: Container(
+            width: 1170, color: Theme.of(context).cardColor,
+            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+            child: Column(children: [
+
+              Text(
+                '${authController.profileModel.fName} ${authController.profileModel.lName}',
+                style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+              ),
+              SizedBox(height: 30),
+
+              Row(children: [
+                ProfileCard(title: 'since_joining'.tr, data: '${authController.profileModel.memberSinceDays} ${'days'.tr}'),
+                SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                ProfileCard(title: 'total_order'.tr, data: authController.profileModel.orderCount.toString()),
+              ]),
+              SizedBox(height: 30),
+
+              ProfileButton(icon: Icons.dark_mode, title: 'dark_mode'.tr, isButtonActive: Get.isDarkMode, onTap: () {
+                Get.find<ThemeController>().toggleTheme();
+              }),
+              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+              ProfileButton(
+                icon: Icons.notifications, title: 'notification'.tr,
+                isButtonActive: authController.notification, onTap: () {
+                  authController.setNotificationActive(!authController.notification);
+                },
+              ),
+              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+              ProfileButton(icon: Icons.chat_bubble, title: 'conversation'.tr, onTap: () {
+                Get.toNamed(RouteHelper.getConversationListRoute());
+              }),
+              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+              // Get.find<SplashController>().configModel.toggleDmRegistration
+              //     ? ProfileButton(icon: Icons.delivery_dining, title: 'join_as_a_delivery_man'.tr, onTap: () {
+              //   Get.toNamed(RouteHelper.getDeliverymanRegistrationRoute());
+              // }) : SizedBox(),
+              // SizedBox(height: Get.find<SplashController>().configModel.toggleDmRegistration ? Dimensions.PADDING_SIZE_SMALL : 0.0),
+
+              ProfileButton(icon: Icons.language, title: 'Language'.tr, onTap: () {
+                Get.toNamed(RouteHelper.getLanguageRoute('profile'));
+              }),
+              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+              ProfileButton(icon: Icons.lock, title: 'change_password'.tr, onTap: () {
+                Get.toNamed(RouteHelper.getResetPasswordRoute('', '', 'password-change'));
+              }),
+              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+              ProfileButton(icon: Icons.edit, title: 'edit_profile'.tr, onTap: () {
+                Get.toNamed(RouteHelper.getUpdateProfileRoute());
+              }),
+              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+              ProfileButton(icon: Icons.list, title: 'terms_condition'.tr, onTap: () {
+                Get.toNamed(RouteHelper.getTermsRoute());
+              }),
+              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+              ProfileButton(icon: Icons.privacy_tip, title: 'privacy_policy'.tr, onTap: () {
+                Get.toNamed(RouteHelper.getPrivacyRoute());
+              }),
+              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+              ProfileButton(
+                icon: Icons.delete, title: 'delete_account'.tr,
+                onTap: () {
+                  Get.dialog(ConfirmationDialog(icon: Images.warning, title: 'are_you_sure_to_delete_account'.tr,
+                      description: 'it_will_remove_your_all_information'.tr, isLogOut: true,
+                      onYesPressed: () => authController.removeDriver()),
+                      useSafeArea: false);
+                },
+              ),
+              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+              ProfileButton(icon: Icons.logout, title: 'logout'.tr, onTap: () {
+                Get.back();
+                Get.dialog(ConfirmationDialog(icon: Images.support, description: 'are_you_sure_to_logout'.tr, isLogOut: true, onYesPressed: () {
+                  Get.find<AuthController>().clearSharedData();
+                  Get.find<AuthController>().stopLocationRecord();
+                  Get.offAllNamed(RouteHelper.getSignInRoute());
+                }));
+              }),
+              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Text('${'version'.tr}:', style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL)),
+                SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                Text(AppConstants.APP_VERSION.toString(), style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL)),
+              ]),
+
+            ]),
+          ))),
+        );
       }),
     );
   }

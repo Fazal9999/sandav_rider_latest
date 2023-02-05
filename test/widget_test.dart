@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sandav/main.dart';
+import 'package:delivery_man/main.dart';
 
 
 void main() {

@@ -1,7 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-
-import '../../commons/images.dart';
+import 'package:delivery_man/util/images.dart';
+import 'package:flutter/cupertino.dart';
 
 class CustomImage extends StatelessWidget {
   final String image;
@@ -9,26 +7,16 @@ class CustomImage extends StatelessWidget {
   final double width;
   final BoxFit fit;
   final String placeholder;
-  CustomImage(
-      {@required this.image,
-      this.height,
-      this.width,
-      this.fit = BoxFit.cover,
-      this.placeholder = placeholderimg});
+  CustomImage({ this.image, this.height, this.width, this.fit, this.placeholder});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).cardColor,
-      child: CachedNetworkImage(
-        imageUrl: image,
-        height: height,
-        width: width,
-        fit: fit,
-        placeholder: (context, url) =>
-            Image.asset(placeholder, height: height, width: width, fit: fit),
-        errorWidget: (context, url, error) =>
-            Image.asset(placeholder, height: height, width: width, fit: fit),
+    return FadeInImage.assetNetwork(
+      placeholder: Images.placeholder, height: height, width: width, fit: fit,
+      image: image,
+      imageErrorBuilder: (c, o, s) => Image.asset(
+        placeholder != null ? placeholder : Images.placeholder,
+        height: height, width: width, fit: fit,
       ),
     );
   }

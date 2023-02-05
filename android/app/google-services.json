@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:37598349845:android:8365ce3da1c7233e7ddc1c",
         "android_client_info": {
-          "package_name": "com.delivery.sandav"
+          "package_name": "sandav.delivery.man"
         }
       },
       "oauth_client": [
@@ -46,7 +46,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:37598349845:android:e22d087daa3482d97ddc1c",
         "android_client_info": {
-          "package_name": "com.sandav.customer"
+          "package_name": "sandav.delivery.man"
         }
       },
       "oauth_client": [
@@ -54,7 +54,7 @@
           "client_id": "37598349845-9j8oiu7rujs2aogocart7t71po4vh8ub.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.sandav.customer",
+            "package_name": "sandav.delivery.man",
             "certificate_hash": "f92e8fa541e91c983dbfbd6233b3cbc9a874a165"
           }
         },
@@ -62,7 +62,7 @@
           "client_id": "37598349845-jb7slafmkb26c3rrp2ujjd088e4obat5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.sandav.customer",
+            "package_name": "sandav.delivery.man",
             "certificate_hash": "24ab6984cb81a4599b17993bd6ea08b2e2801b10"
           }
         },
@@ -99,6 +99,42 @@
         "mobilesdk_app_id": "1:37598349845:android:5c046fe0421bd12a7ddc1c",
         "android_client_info": {
           "package_name": "com.store.sandav"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "37598349845-tl17h92tapj64j8u31saigc8dru90m4b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDM1ciminCDJbv5W4ik8eL56YTC18iQ3gI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "37598349845-tl17h92tapj64j8u31saigc8dru90m4b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "37598349845-42d6vrip70rmvieddekrtfd81cm4n7rg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.store.sandav"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:37598349845:android:39e11474baa2e2507ddc1c",
+        "android_client_info": {
+          "package_name": "sandav.delivery.man"
         }
       },
       "oauth_client": [

@@ -1,7 +1,6 @@
 enum UserType {
+  vendor,
   user,
   customer,
-  admin,
-  delivery_man,
-  vendor,
+  delivery_man
 }

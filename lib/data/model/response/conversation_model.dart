@@ -1,21 +1,18 @@
-import 'package:sandav/data/model/response/message_model.dart';
-
 class ConversationsModel {
   int totalSize;
   int limit;
   int offset;
   List<Conversation> conversations;
 
-  ConversationsModel(
-      {this.totalSize, this.limit, this.offset, this.conversations});
+  ConversationsModel({this.totalSize, this.limit, this.offset, this.conversations});
 
   ConversationsModel.fromJson(Map<String, dynamic> json) {
     totalSize = json['total_size'];
     limit = json['limit'];
     offset = json['offset'];
-    if (json['conversations'] != null) {
+    if (json['conversation'] != null) {
       conversations = <Conversation>[];
-      json['conversations'].forEach((v) {
+      json['conversation'].forEach((v) {
         conversations.add(new Conversation.fromJson(v));
       });
     }
@@ -27,11 +24,11 @@ class ConversationsModel {
     data['limit'] = this.limit;
     data['offset'] = this.offset;
     if (this.conversations != null) {
-      data['conversations'] =
-          this.conversations.map((v) => v.toJson()).toList();
+      data['conversation'] = this.conversations.map((v) => v.toJson()).toList();
     }
     return data;
   }
+
 }
 
 class Conversation {
@@ -47,7 +44,8 @@ class Conversation {
   String updatedAt;
   User sender;
   User receiver;
-  Message lastMessage;
+  LastMessage lastMessage;
+
 
   Conversation({
     this.id,
@@ -77,11 +75,8 @@ class Conversation {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     sender = json['sender'] != null ? new User.fromJson(json['sender']) : null;
-    receiver =
-        json['receiver'] != null ? new User.fromJson(json['receiver']) : null;
-    lastMessage = json['last_message'] != null
-        ? new Message.fromJson(json['last_message'])
-        : null;
+    receiver = json['receiver'] != null ? new User.fromJson(json['receiver']) : null;
+    lastMessage = json['last_message'] != null ? new LastMessage.fromJson(json['last_message']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -102,9 +97,8 @@ class Conversation {
     if (this.receiver != null) {
       data['receiver'] = this.receiver.toJson();
     }
-    if (this.lastMessage != null) {
-      data['last_message'] = this.lastMessage.toJson();
-    }
+    data['last_message'] = this.lastMessage;
+
     return data;
   }
 }
@@ -116,18 +110,24 @@ class User {
   String phone;
   String email;
   String image;
+  int userId;
+  int vendorId;
+  int deliveryManId;
   String createdAt;
   String updatedAt;
 
   User(
       {this.id,
-      this.fName,
-      this.lName,
-      this.phone,
-      this.email,
-      this.image,
-      this.createdAt,
-      this.updatedAt});
+        this.fName,
+        this.lName,
+        this.phone,
+        this.email,
+        this.image,
+        this.userId,
+        this.vendorId,
+        this.deliveryManId,
+        this.createdAt,
+        this.updatedAt});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -136,6 +136,9 @@ class User {
     phone = json['phone'];
     email = json['email'];
     image = json['image'];
+    userId = json['user_id'];
+    vendorId = json['vendor_id'];
+    deliveryManId = json['deliveryman_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -148,8 +151,45 @@ class User {
     data['phone'] = this.phone;
     data['email'] = this.email;
     data['image'] = this.image;
+    data['user_id'] = this.userId;
+    data['vendor_id'] = this.vendorId;
+    data['deliveryman_id'] = this.deliveryManId;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    return data;
+  }
+}
+
+class LastMessage {
+  int id;
+  int conversationId;
+  int senderId;
+  String message;
+  int isSeen;
+
+  LastMessage({
+    this.id,
+    this.conversationId,
+    this.senderId,
+    this.message,
+    this.isSeen,
+  });
+
+  LastMessage.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    conversationId = json['conversation_id'];
+    senderId = json['sender_id'];
+    message = json['message'];
+    isSeen = json['is_seen'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['conversation_id'] = this.conversationId;
+    data['sender_id'] = this.senderId;
+    data['message'] = this.message;
+    data['is_seen'] = this.isSeen;
     return data;
   }
 }

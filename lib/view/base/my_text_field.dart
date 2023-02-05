@@ -1,7 +1,8 @@
-import 'package:sandav/util/dimensions.dart';
-import 'package:sandav/util/styles.dart';
+import 'package:delivery_man/util/dimensions.dart';
+import 'package:delivery_man/util/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class MyTextField extends StatefulWidget {
   final String hintText;
@@ -18,28 +19,22 @@ class MyTextField extends StatefulWidget {
   final bool isEnabled;
   final TextCapitalization capitalization;
   final Color fillColor;
-  final bool autoFocus;
-  final GlobalKey<FormFieldState<String>> key;
-  final bool showBorder;
 
   MyTextField(
       {this.hintText = '',
-      this.controller,
-      this.focusNode,
-      this.nextFocus,
-      this.isEnabled = true,
-      this.inputType = TextInputType.text,
-      this.inputAction = TextInputAction.next,
-      this.maxLines = 1,
-      this.onSubmit,
-      this.onChanged,
-      this.capitalization = TextCapitalization.none,
-      this.onTap,
-      this.fillColor,
-      this.isPassword = false,
-      this.autoFocus = false,
-      this.showBorder = false,
-      this.key});
+        this.controller,
+        this.focusNode,
+        this.nextFocus,
+        this.isEnabled = true,
+        this.inputType = TextInputType.text,
+        this.inputAction = TextInputAction.next,
+        this.maxLines = 1,
+        this.onSubmit,
+        this.onChanged,
+        this.capitalization = TextCapitalization.none,
+        this.onTap,
+        this.fillColor,
+        this.isPassword = false});
 
   @override
   _MyTextFieldState createState() => _MyTextFieldState();
@@ -52,12 +47,9 @@ class _MyTextFieldState extends State<MyTextField> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-          border: widget.showBorder
-              ? Border.all(color: Theme.of(context).disabledColor)
-              : null),
+        boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200], spreadRadius: 2, blurRadius: 5, offset: Offset(0, 5))],
+      ),
       child: TextField(
-        key: widget.key,
         maxLines: widget.maxLines,
         controller: widget.controller,
         focusNode: widget.focusNode,
@@ -67,40 +59,25 @@ class _MyTextFieldState extends State<MyTextField> {
         cursorColor: Theme.of(context).primaryColor,
         textCapitalization: widget.capitalization,
         enabled: widget.isEnabled,
-        autofocus: widget.autoFocus,
+        autofocus: false,
         //onChanged: widget.isSearch ? widget.languageProvider.searchLanguage : null,
         obscureText: widget.isPassword ? _obscureText : false,
-        inputFormatters: widget.inputType == TextInputType.phone
-            ? <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(RegExp('[0-9+]'))
-              ]
-            : null,
+        inputFormatters: widget.inputType == TextInputType.phone ? <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp('[0-9+]'))] : null,
         decoration: InputDecoration(
           hintText: widget.hintText,
           isDense: true,
           filled: true,
-          fillColor: widget.fillColor != null
-              ? widget.fillColor
-              : Theme.of(context).cardColor,
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-              borderSide: BorderSide.none),
+          fillColor: widget.fillColor != null ? widget.fillColor : Theme.of(context).cardColor,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL), borderSide: BorderSide.none),
           hintStyle: robotoRegular.copyWith(color: Theme.of(context).hintColor),
-          suffixIcon: widget.isPassword
-              ? IconButton(
-                  icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: Theme.of(context).hintColor.withOpacity(0.3)),
-                  onPressed: _toggle,
-                )
-              : null,
+          suffixIcon: widget.isPassword ? IconButton(
+            icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: Theme.of(context).hintColor.withOpacity(0.3)),
+            onPressed: _toggle,
+          ) : null,
         ),
         onTap: widget.onTap,
-        onSubmitted: (text) => widget.nextFocus != null
-            ? FocusScope.of(context).requestFocus(widget.nextFocus)
-            : widget.onSubmit != null
-                ? widget.onSubmit(text)
-                : null,
+        onSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus)
+            : widget.onSubmit != null ? widget.onSubmit(text) : null,
         onChanged: widget.onChanged,
       ),
     );

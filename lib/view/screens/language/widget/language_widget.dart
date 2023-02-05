@@ -1,8 +1,8 @@
-import 'package:sandav/controller/localization_controller.dart';
-import 'package:sandav/data/model/response/language_model.dart';
-import 'package:sandav/util/app_constants.dart';
-import 'package:sandav/util/dimensions.dart';
-import 'package:sandav/util/styles.dart';
+import 'package:delivery_man/controller/localization_controller.dart';
+import 'package:delivery_man/data/model/response/language_model.dart';
+import 'package:delivery_man/util/app_constants.dart';
+import 'package:delivery_man/util/dimensions.dart';
+import 'package:delivery_man/util/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,10 +10,7 @@ class LanguageWidget extends StatelessWidget {
   final LanguageModel languageModel;
   final LocalizationController localizationController;
   final int index;
-  LanguageWidget(
-      {@required this.languageModel,
-      @required this.localizationController,
-      @required this.index});
+  LanguageWidget({ this.languageModel,  this.localizationController,  this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -31,48 +28,35 @@ class LanguageWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.grey[Get.isDarkMode ? 800 : 200],
-                blurRadius: 5,
-                spreadRadius: 1)
-          ],
+          boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200], blurRadius: 5, spreadRadius: 1)],
         ),
         child: Stack(children: [
+
           Center(
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Container(
-                height: 65,
-                width: 65,
+                height: 65, width: 65,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                  border: Border.all(
-                      color: Theme.of(context).textTheme.bodyText1.color,
-                      width: 1),
+                  border: Border.all(color: Theme.of(context).textTheme.bodyText1.color, width: 1),
                 ),
                 alignment: Alignment.center,
                 child: Image.asset(
-                  languageModel.imageUrl,
-                  width: 36,
-                  height: 36,
-                  color: languageModel.languageCode == 'en' ||
-                          languageModel.languageCode == 'ar'
-                      ? Theme.of(context).textTheme.bodyText1.color
-                      : null,
+                  languageModel.imageUrl, width: 36, height: 36,
+                  color: languageModel.languageCode == 'en' || languageModel.languageCode == 'ar'
+                      ? Theme.of(context).textTheme.bodyText1.color : null,
                 ),
               ),
               SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
               Text(languageModel.languageName, style: robotoRegular),
             ]),
           ),
-          localizationController.selectedIndex == index
-              ? Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Icon(Icons.check_circle,
-                      color: Theme.of(context).primaryColor, size: 25),
-                )
-              : SizedBox(),
+
+          localizationController.selectedIndex == index ? Positioned(
+            top: 0, right: 0,
+            child: Icon(Icons.check_circle, color: Theme.of(context).primaryColor, size: 25),
+          ) : SizedBox(),
+
         ]),
       ),
     );

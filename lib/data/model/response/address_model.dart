@@ -1,4 +1,4 @@
-import 'package:sandav/data/model/response/zone_response_model.dart';
+import 'package:delivery_man/data/model/response/zone_response_model.dart';
 
 class AddressModel {
   int id;
@@ -16,22 +16,22 @@ class AddressModel {
   String floor;
   List<ZoneData> zoneData;
 
-  AddressModel({
-    this.id,
-    this.addressType,
-    this.contactPersonNumber,
-    this.address,
-    this.latitude,
-    this.longitude,
-    this.zoneId,
-    this.zoneIds,
-    this.method,
-    this.contactPersonName,
-    this.road,
-    this.house,
-    this.floor,
-    this.zoneData,
-  });
+  AddressModel(
+      {this.id,
+      this.addressType,
+      this.contactPersonNumber,
+      this.address,
+      this.latitude,
+      this.longitude,
+      this.zoneId,
+      this.zoneIds,
+      this.method,
+      this.contactPersonName,
+      this.road,
+      this.house,
+      this.floor,
+        this.zoneData,
+      });
 
   AddressModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

@@ -1,4 +1,4 @@
-package com.example.carea
+package sandav.delivery.man
 
 import io.flutter.embedding.android.FlutterActivity
 
