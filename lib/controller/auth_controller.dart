@@ -628,8 +628,7 @@ class AuthController extends GetxController implements GetxService {
     List<MultipartBody> _LicensemultiParts = [];
     List<MultipartBody> _DriverLicensemultiParts = [];
     List<MultipartBody> _VehiclemultiParts = [];
-
-
+    print("Fazzzz ${deliveryManBody.vehicle_id}");
     _multiParts.add(MultipartBody('image', _pickedImage));
     for (XFile file in _pickedIdentities) {
       _multiParts.add(MultipartBody('identity_image[]', file));

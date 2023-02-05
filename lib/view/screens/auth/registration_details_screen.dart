@@ -96,7 +96,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
   final _utiController = TextEditingController(
     text: 'com.sandav.customer',
   );
-  int vehicle_id=0;
+  int vehicle_id=-1;
 
   final _extensionController = TextEditingController(
     text: 'pdf,doc,png',
@@ -2480,7 +2480,8 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                         }
 
                         if (pageNumber == 2) {
-                          if (vehicleTypeSelected == 0 ||
+                          if (
+                          vehicle_id == -1 ||
                               bg == "" ||
                               percent_hu == "") {
                             showCustomSnackBar(
@@ -2565,7 +2566,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                             _countryDialCode + _phone;
                         bool _isValid = GetPlatform.isWeb ? true : false;
 
-                        finish(context);
+
                         authController.registerDeliveryMan(
                             DeliveryManBody(
                               fName: _fName,
@@ -2602,6 +2603,7 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                             _path,
                             _path_bank
                         );
+                        finish(context);
                       },
                       child: !authController.isLoading
                           ? Text('Finish',
@@ -2795,7 +2797,8 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                    Items[index][1] = value;
                   int vehId=Items[index][0];
                   vehicle_id=vehId;
-                   vehicle=item;
+                  print("Faziy ${vehicle_id}");
+                  vehicle=item;
 
                 });
               },
