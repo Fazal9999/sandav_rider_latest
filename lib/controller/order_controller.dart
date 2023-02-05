@@ -269,4 +269,6 @@ class OrderController extends GetxController implements GetxService {
     }
   }
 
+  get_Vehicles() {}
+
 }

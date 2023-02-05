@@ -157,6 +157,10 @@ class AuthRepo {
   String getUserCountryCode() {
     return sharedPreferences.getString(AppConstants.USER_COUNTRY_CODE) ?? "";
   }
+  Future<Response> getVehicles() async {
+    return await apiClient.getVehicles(
+        AppConstants.GET_VEHICLES);
+  }
 
   String getUserPassword() {
     return sharedPreferences.getString(AppConstants.USER_PASSWORD) ?? "";
@@ -208,7 +212,15 @@ class AuthRepo {
     return sharedPreferences.getString(AppConstants.USER_ADDRESS);
   }
 
-  Future<Response> registerDeliveryMan(DeliveryManBody deliveryManBody, List<MultipartBody> multiParts) async {
-    return apiClient.postMultipartData(AppConstants.DM_REGISTER_URI, deliveryManBody.toJson(), multiParts);
+  Future<Response> registerDeliveryMan(DeliveryManBody deliveryManBody, List<MultipartBody> multiParts,
+      List<MultipartBody> licensemultiParts,
+      List<MultipartBody> driverLicensemultiParts,
+      List<MultipartBody> vehiclemultiParts,
+      String path, String path_bank) async {
+    return apiClient.postMultipartData(AppConstants.DM_REGISTER_URI, deliveryManBody.toJson(), multiParts,
+        licensemultiParts
+        ,driverLicensemultiParts,vehiclemultiParts,path,path_bank
+
+    );
   }
 }

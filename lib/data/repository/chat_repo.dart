@@ -31,8 +31,10 @@ class ChatRepo {
   Future<Response> sendMessage(String message, List<MultipartBody> file, int conversationId, int userId, UserType userType) async {
     return apiClient.postMultipartData(
         AppConstants.SEND_MESSAGE_URI,
-        {'message': message, 'receiver_type': userType.name,  '${conversationId != null ? 'conversation_id' : 'receiver_id'}': '${conversationId != null ? conversationId : userId}', 'token': getUserToken(), 'offset': '1', 'limit': '10'},
-        file,
+        {'message': message, 'receiver_type': userType.name,
+          '${conversationId != null ? 'conversation_id' : 'receiver_id'}': '${conversationId != null ?
+          conversationId : userId}', 'token': getUserToken(), 'offset': '1', 'limit': '10'},
+        file,null,null,null,"",""
     );
   }
 

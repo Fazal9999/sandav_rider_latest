@@ -71,8 +71,28 @@ class ApiClient extends GetxService {
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
+  Future<Response> getVehicles(String uri,
+      {Map<String, String> headers}) async {
+    try {
+      debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
 
-  Future<Response> postMultipartData(String uri, Map<String, String> body, List<MultipartBody> multipartBody, {Map<String, String> headers}) async {
+      Http.Response _response = await Http.post(
+        Uri.parse(appBaseUrl + uri),
+        body: jsonEncode(""),
+        headers: headers ?? _mainHeaders,
+      ).timeout(Duration(seconds: timeoutInSeconds));
+      return handleResponse(_response, uri);
+    } catch (e) {
+      print("ApiError6 ${e.toString()}");
+      return Response(statusCode: 1, statusText: noInternetMessage);
+    }
+  }
+  Future<Response> postMultipartData(String uri, Map<String, String> body,
+      List<MultipartBody> multipartBody,
+      List<MultipartBody> licensemultiParts,
+      List<MultipartBody> driverLicensemultiParts,
+      List<MultipartBody> vehiclemultiParts,
+      String path, String path_bank, {Map<String, String> headers}) async {
     try {
       debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
       debugPrint('====> API Body: $body with ${multipartBody.length} files');
@@ -95,7 +115,65 @@ class ApiClient extends GetxService {
           }
         }
       }
+
+      for (MultipartBody multipart in licensemultiParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.readAsBytes();
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readAsBytes().asStream(),
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      for (MultipartBody multipart in driverLicensemultiParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.readAsBytes();
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readAsBytes().asStream(),
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      for (MultipartBody multipart in vehiclemultiParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.readAsBytes();
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readAsBytes().asStream(),
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      File imgRes = File(path);
+      File imgbank = File(path_bank);
+
+      Uint8List imgbytesRes = await imgRes.readAsBytes();
+      Uint8List imgbytesBank = await imgbank.readAsBytes();
+      //  Uint8List imgbytesbank = await imgbank.readAsBytes();
+      _request.files.add(Http.MultipartFile(
+        "resident_file",
+        imgRes.readAsBytes().asStream(),
+        imgbytesRes.length,
+        filename: '${DateTime.now().toString()}.pdf',
+      ));
+      _request.files.add(Http.MultipartFile(
+        "bank_file",
+        imgbank.readAsBytes().asStream(),
+        imgbytesBank.length,
+        filename: '${DateTime.now().toString()}.pdf',
+      ));
+
+
       _request.fields.addAll(body);
+      print("residintFile ${path}");
+      print("bankFile ${path_bank}");
+      print("requestFile ${_request.files}");
+
       Http.Response _response = await Http.Response.fromStream(await _request.send());
       return handleResponse(_response, uri);
     } catch (e) {

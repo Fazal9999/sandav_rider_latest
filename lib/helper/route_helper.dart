@@ -22,6 +22,8 @@ import 'package:delivery_man/view/screens/update/update_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
+import '../view/screens/auth/registration_details_screen.dart';
+
 class RouteHelper {
   static const String initial = '/';
   static const String splash = '/splash';
@@ -130,6 +132,6 @@ class RouteHelper {
       );
     }),
     GetPage(name: conversationListScreen, page: () => ConversationScreen()),
-    GetPage(name: deliveryManRegistration, page: () => DeliveryManRegistrationScreen()),
+    GetPage(name: deliveryManRegistration, page: () => RegistrationDetailsScreen()),
   ];
 }

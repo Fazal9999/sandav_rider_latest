@@ -7,6 +7,8 @@ class AppConstants {
  static const isDarkModeOnPref = 'isDarkModeOnPref';
   static const String BASE_URL = 'https://sandavdelivery.co.za/sandav';
   static const String CONFIG_URI = '/api/v1/config';
+  static const String GET_VEHICLES ='/api/v1/availability/get_vehicles';
+
   static const String FORGET_PASSWORD_URI = '/api/v1/auth/delivery-man/forgot-password';
   static const String VERIFY_TOKEN_URI = '/api/v1/auth/delivery-man/verify-token';
   static const String RESET_PASSWORD_URI = '/api/v1/auth/delivery-man/reset-password';

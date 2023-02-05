@@ -40,7 +40,7 @@ class AuthController extends GetxController implements GetxService {
   Location _location = Location();
   XFile _pickedImage;
   List<XFile> _pickedIdentities = [];
-  List<String> _identityTypeList = ['passport', 'driving_license', 'nid'];
+  List<String> _identityTypeList = ['passport', 'National Identity'];
   int _identityTypeIndex = 0;
   List<String> _dmTypeList = ['freelancer', 'salary_based'];
   int _dmTypeIndex = 0;
@@ -54,25 +54,104 @@ class AuthController extends GetxController implements GetxService {
   bool _inZone = false;
   int _zoneID = 0;
 
+
+
   bool get isLoading => _isLoading;
   bool get notification => _notification;
-  ProfileModel get profileModel => _profileModel;
-  XFile get pickedFile => _pickedFile;
-  XFile get pickedImage => _pickedImage;
-  List<XFile> get pickedIdentities => _pickedIdentities;
-  List<String> get identityTypeList => _identityTypeList;
-  int get identityTypeIndex => _identityTypeIndex;
-  List<String> get dmTypeList => _dmTypeList;
-  int get dmTypeIndex => _dmTypeIndex;
+  bool get acceptTerms => _acceptTerms;
   XFile get pickedLogo => _pickedLogo;
   XFile get pickedCover => _pickedCover;
   List<ZoneModel> get zoneList => _zoneList;
   int get selectedZoneIndex => _selectedZoneIndex;
   LatLng get restaurantLocation => _restaurantLocation;
   List<int> get zoneIds => _zoneIds;
+  XFile get pickedImage => _pickedImage;
+
+  XFile get license =>  _licensedImage;
+
+  XFile get residence =>  _residenceImage;
+
+  List<XFile> get pickedIdentities => _pickedIdentities;
+  List<XFile> get pickedLicenseIdentities => _pickedLicenseIdentities;
+
+
+
+  List<XFile> get pickedFrontIdentities => _pickedFrontIdentities;
+  List<XFile> get pickedVhicleIdentities => _pickedVehicleIdentities;
+
+
+
+  //List<PlatformFile> get pickedResidenceIdentities => _pickedResidenceIdentities;
+
+
+  List<String> get identityTypeList => _identityTypeList;
+  int get identityTypeIndex => _identityTypeIndex;
+  List<String> get dmTypeList => _dmTypeList;
+  int get dmTypeIndex => _dmTypeIndex;
+
+  ProfileModel get profileModel => _profileModel;
+  XFile get pickedFile => _pickedFile;
   bool get loading => _loading;
   bool get inZone => _inZone;
   int get zoneID => _zoneID;
+
+
+
+
+
+
+
+  String _saveAsFileName;
+  //List<PlatformFile> _paths;
+  String _directoryPath;
+  String _extension="jpg, pdf, doc";
+  bool _isImgLoading = false;
+  bool _userAborted = false;
+  bool _multiPick = false;
+  TextEditingController _controller = TextEditingController();
+
+  bool _acceptTerms = true;
+
+
+  XFile _licensedImage;
+  XFile _residenceImage;
+  XFile _frontImage;
+  XFile _vehicleImage;
+
+
+   List<XFile> _pickedLicenseIdentities = [];
+  List<XFile> _pickedFrontIdentities = [];
+  List<XFile> _pickedVehicleIdentities = [];
+
+
+
+
+
+
+  Future<List> get_Vehicles(
+      ) async {
+    // update();
+    Response response = await authRepo.getVehicles();
+
+    if (response.statusCode == 200) {
+      List loadedCars = response.body['vehicles'];
+      return loadedCars;
+    }
+    else {
+      null;
+    }
+    return null;
+  }
+
+
+
+
+
+
+
+
+
+
 
   Future<ResponseModel> login(String phone, String password) async {
     _isLoading = true;
@@ -506,15 +585,17 @@ class AuthController extends GetxController implements GetxService {
   }
 
   void pickDmImage(bool isLogo, bool isRemove) async {
-    if(isRemove) {
+    if (isRemove) {
       _pickedImage = null;
       _pickedIdentities = [];
-    }else {
+    } else {
       if (isLogo) {
-        _pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+        _pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
       } else {
-        XFile _xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-        if(_xFile != null) {
+        XFile _xFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+        if (_xFile != null) {
           _pickedIdentities.add(_xFile);
         }
       }
@@ -522,20 +603,131 @@ class AuthController extends GetxController implements GetxService {
     }
   }
 
+  void pickRegImage(bool isLogo, bool isRemove, String s) async {
+    if (isRemove) {
+      if(s == "license"){
+        _licensedImage = null;
+        _pickedLicenseIdentities = [];
+      }
+      if(s == "front"){
+        _frontImage = null;
+        _pickedFrontIdentities = [];
+      }
+      if(s == "vehicle"){
+        _vehicleImage = null;
+        _pickedVehicleIdentities = [];
+      }
+
+    } else {
+      if (isLogo) {
+        if(s == "license"){
+          _licensedImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+          print("Faziysss ${_licensedImage.path}");
+        }
+        if(s == "front"){
+          _frontImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+        }
+        if(s == "vehicle"){
+          _vehicleImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+        }
+      } else {
+        if(s == "license"){
+          XFile _xFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+          if (_xFile != null) {
+            _pickedLicenseIdentities.add(_xFile);
+          }
+        }
+        if(s == "front"){
+          XFile _xFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+          if (_xFile != null) {
+            _pickedFrontIdentities.add(_xFile);
+          }
+        }
+        if(s == "vehicle"){
+          XFile _xFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+          if (_xFile != null) {
+            _pickedVehicleIdentities.add(_xFile);
+          }
+        }
+
+      }
+      update();
+    }
+  }
+
+
+
+
+
+
+
+
+
   void removeIdentityImage(int index) {
     _pickedIdentities.removeAt(index);
     update();
   }
 
-  Future<void> registerDeliveryMan(DeliveryManBody deliveryManBody) async {
+
+
+  void removeLicenseImage(int index) {
+
+    _pickedLicenseIdentities.removeAt(index);
+    update();
+  }
+
+  void removeFrontImage(int index) {
+
+    _pickedFrontIdentities.removeAt(index);
+    update();
+  }
+
+  void removeVehicleImage(int index) {
+    _pickedVehicleIdentities.removeAt(index);
+    update();
+  }
+
+
+
+
+
+
+
+
+  Future<void> registerDeliveryMan(DeliveryManBody deliveryManBody,
+      String path,
+      String path_bank) async {
     _isLoading = true;
     update();
     List<MultipartBody> _multiParts = [];
+    List<MultipartBody> _LicensemultiParts = [];
+    List<MultipartBody> _DriverLicensemultiParts = [];
+    List<MultipartBody> _VehiclemultiParts = [];
     _multiParts.add(MultipartBody('image', _pickedImage));
     for(XFile file in _pickedIdentities) {
       _multiParts.add(MultipartBody('identity_image[]', file));
     }
-    Response response = await authRepo.registerDeliveryMan(deliveryManBody, _multiParts);
+    for (XFile file in pickedLicenseIdentities) {
+      _LicensemultiParts.add(MultipartBody('vehicle_license_image[]', file));
+    }
+    for (XFile file in pickedFrontIdentities) {
+      _DriverLicensemultiParts.add(MultipartBody('driver_license_image[]', file));
+    }
+    for (XFile file in pickedVhicleIdentities) {
+      _VehiclemultiParts.add(MultipartBody('vehicle_plate_image[]', file));
+    }
+
+
+    Response response = await authRepo.registerDeliveryMan(deliveryManBody, _multiParts,_LicensemultiParts,
+        _DriverLicensemultiParts,_VehiclemultiParts,
+        path,path_bank
+    );
     if (response.statusCode == 200) {
       Get.offAllNamed(RouteHelper.getInitialRoute());
       showCustomSnackBar('delivery_man_registration_successful'.tr, isError: false);

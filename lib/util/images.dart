@@ -1,5 +1,6 @@
 class Images {
   static const String logo = 'assets/logo.png';
+  static const placeholderimg = 'assets/placeholder.png';
   //static const String logo_name = 'assets/logo_name.png';
   static const String call = 'assets/call.png';
   static const String no_internet = 'assets/no_internet.png';

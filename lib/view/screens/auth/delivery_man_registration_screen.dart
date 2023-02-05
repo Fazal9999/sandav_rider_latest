@@ -405,11 +405,14 @@ class _DeliveryManRegistrationScreenState extends State<DeliveryManRegistrationS
     }else if(authController.pickedImage == null) {
       showCustomSnackBar('upload_delivery_man_image'.tr);
     }else {
-      authController.registerDeliveryMan(DeliveryManBody(
-        fName: _fName, lName: _lName, password: _password, phone: _numberWithCountryCode, email: _email,
-        identityNumber: _identityNumber, identityType: authController.identityTypeList[authController.identityTypeIndex],
-        earning: authController.dmTypeIndex == 0 ? '1' : '0', zoneId: authController.zoneList[authController.selectedZoneIndex].id.toString(),
-      ));
+      // authController.registerDeliveryMan(DeliveryManBody(
+      //   fName: _fName, lName: _lName, password: _password, phone: _numberWithCountryCode,
+      //   email: _email,
+      //   identityNumber: _identityNumber,
+      //   identityType: authController.identityTypeList[authController.identityTypeIndex],
+      //   earning: authController.dmTypeIndex == 0 ? '1' : '0',
+      //   zoneId: authController.zoneList[authController.selectedZoneIndex].id.toString(),
+      // ));
     }
   }
 }
