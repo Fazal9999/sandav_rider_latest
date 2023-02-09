@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:delivery_man/controller/auth_controller.dart';
 import 'package:delivery_man/controller/order_controller.dart';
 import 'package:delivery_man/helper/notification_helper.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+
 import '../../../main.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -30,11 +32,12 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   PageController _pageController;
   int _pageIndex = 0;
-  List<Widget> _screens;
+   List<Widget> _screens;
   final _channel = const MethodChannel('com.sixamtech/app_retain');
   StreamSubscription _stream;
   //Timer _timer;
   //int _orderCount;
+
 
   @override
   void initState() {
@@ -44,12 +47,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     _pageController = PageController(initialPage: widget.pageIndex);
 
-    _screens = [
-      HomeScreen(),
-      OrderRequestScreen(onTap: () => _setPage(0)),
-      OrderScreen(),
-      ProfileScreen(),
-    ];
+    // _screens = [
+    //   HomeScreen(),
+    //   OrderRequestScreen(onTap: () => _setPage(0)),
+    //   OrderScreen(),
+    //   ProfileScreen(),
+    // ];
 
 
     print('dashboard call');
@@ -92,6 +95,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
     //   }
     // });
 
+  }
+  void changePage(int index) {
+    setState(() {
+      _pageIndex = index;
+    });
+  }
+  //
+  // HomeScreen(),
+  // OrderRequestScreen(onTap: () => _setPage(0)),
+  // OrderScreen(),
+  // ProfileScreen(),
+  Widget _getWidget() {
+    if (_pageIndex == 0) {
+
+      return HomeScreen();
+    } else if (_pageIndex == 1) {
+      return OrderRequestScreen(onTap: () => _setPage(0));
+    }
+    else if (_pageIndex == 2) {
+      return OrderScreen();
+    }
+    else if (_pageIndex == 3) {
+      return ProfileScreen();
+    }
+
+    return HomeScreen();
   }
 
   // @override
@@ -138,31 +167,81 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       },
       child: Scaffold(
-        bottomNavigationBar: GetPlatform.isDesktop ? SizedBox() : BottomAppBar(
-          elevation: 5,
-          notchMargin: 5,
-          shape: CircularNotchedRectangle(),
+        bottomNavigationBar: GetPlatform.isDesktop ? SizedBox() :
+        Container(
+          height: 60,
+          margin: EdgeInsets.symmetric(horizontal: 0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child:  BubbleBottomBar(
+            hasNotch: true,
+            fabLocation: BubbleBottomBarFabLocation.end,
+            opacity: .2,
+            currentIndex: _pageIndex,
+            onTap: changePage,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(16),
+            ), //border radius doesn't work when the notch is enabled.
+            elevation: 8,
+            items: <BubbleBottomBarItem>[
+              BubbleBottomBarItem(
 
-          child: Padding(
-            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_EXTRA_SMALL),
-            child: Row(children: [
-              BottomNavItem(iconData: Icons.home, isSelected: _pageIndex == 0, onTap: () => _setPage(0)),
-              BottomNavItem(iconData: Icons.list_alt_rounded, isSelected: _pageIndex == 1, onTap: () {
-                _navigateRequestPage();
-              }),
-              BottomNavItem(iconData: Icons.shopping_bag, isSelected: _pageIndex == 2, onTap: () => _setPage(2)),
-              BottomNavItem(iconData: Icons.person, isSelected: _pageIndex == 3, onTap: () => _setPage(3)),
-            ]),
+                  backgroundColor: Colors.black,
+                  icon: Icon(
+                    Icons.dashboard,
+                    color: Colors.black,
+                  ),
+                  activeIcon: Icon(
+                    Icons.dashboard,
+                    color: Colors.black,
+                  ),
+                  title: Text("Home")),
+
+              BubbleBottomBarItem(
+                  backgroundColor: Colors.black,
+                  icon: Icon(
+                    Icons.shopping_cart,
+                    color: Colors.black,
+                  ),
+                  activeIcon: Icon(
+                    Icons.shopping_cart,
+                    color: Colors.black,
+                  ),
+                  title: Text("Request")),
+              BubbleBottomBarItem(
+                  backgroundColor: Colors.black,
+                  icon: Icon(
+                    Icons.shopping_bag,
+                    color: Colors.black,
+                  ),
+                  activeIcon: Icon(
+                    Icons.shopping_bag,
+                    color: Colors.black,
+                  ),
+                  title: Text("Orders")),
+              BubbleBottomBarItem(
+                  backgroundColor: Colors.black,
+                  icon: Icon(
+                    Icons.person_add_rounded,
+                    color: Colors.black,
+                  ),
+                  activeIcon: Icon(
+                    Icons.person_add_rounded,
+                    color: Colors.black,
+                  ),
+                  title: Text("Profile"))
+            ],
           ),
         ),
-        body: PageView.builder(
-          controller: _pageController,
-          itemCount: _screens.length,
-          physics: NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return _screens[index];
-          },
-        ),
+
+
+        body: _getWidget(),
+
       ),
     );
   }

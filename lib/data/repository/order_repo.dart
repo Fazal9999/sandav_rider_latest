@@ -24,6 +24,7 @@ class OrderRepo extends GetxService {
   }
 
   Future<Response> getCurrentOrders() {
+    print("tokenbyFazal ${getUserToken()}");
     return apiClient.getData(AppConstants.CURRENT_ORDERS_URI + getUserToken());
   }
 

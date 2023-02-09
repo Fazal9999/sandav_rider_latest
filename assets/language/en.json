@@ -148,7 +148,7 @@
     "food_is_preparing": "Product is preparing",
     "food_is_ready_for_handover": "Product is ready for handover",
     "swipe_to_confirm_order": "Swipe to confirm order",
-    "food_waiting_for_cook": "Product is waiting for cook",
+    "food_waiting_for_cook": "Product is waiting for preparing",
     "addons": "Addons",
     "variations": "Variations",
     "quantity": "Quantity",

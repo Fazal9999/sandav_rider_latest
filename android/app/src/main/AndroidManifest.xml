@@ -15,6 +15,8 @@
 
 
 
+
+
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
@@ -42,7 +44,7 @@
 
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
-        android:label="Sandav Delivery"
+        android:label="Sandav Rider"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
          <meta-data android:name="com.google.android.geo.API_KEY"

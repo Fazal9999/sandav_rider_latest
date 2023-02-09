@@ -106,6 +106,7 @@ class OrderController extends GetxController implements GetxService {
 
   Future<void> getCurrentOrders() async {
     Response response = await orderRepo.getCurrentOrders();
+
     if(response.statusCode == 200) {
       _currentOrderList = [];
       response.body.forEach((order) => _currentOrderList.add(OrderModel.fromJson(order)));
@@ -127,7 +128,9 @@ class OrderController extends GetxController implements GetxService {
 
   Future<void> getLatestOrders() async {
     Response response = await orderRepo.getLatestOrders();
+
     if(response.statusCode == 200) {
+      print("OrdersRequests ${response.body}");
       _latestOrderList = [];
       List<int> _ignoredIdList = [];
       _ignoredRequests.forEach((ignore) {

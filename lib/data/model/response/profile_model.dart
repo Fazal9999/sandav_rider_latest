@@ -1,5 +1,6 @@
 class ProfileModel {
   int id;
+  int vehicle_id;
   String fName;
   String lName;
   String phone;
@@ -53,6 +54,7 @@ class ProfileModel {
         this.type,
         this.balance,
         this.todaysEarning,
+        this.vehicle_id,
         this.thisWeekEarning,
         this.thisMonthEarning});
 
@@ -84,11 +86,13 @@ class ProfileModel {
     thisMonthEarning = json['this_month_earning'].toDouble();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    vehicle_id = json['vehicle_id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
+    data['vehicle_id'] = this.vehicle_id;
     data['f_name'] = this.fName;
     data['l_name'] = this.lName;
     data['phone'] = this.phone;

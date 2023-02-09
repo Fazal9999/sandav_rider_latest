@@ -1,3 +1,4 @@
+import 'package:delivery_man/store/AppStore.dart';
 import 'package:delivery_man/util/app_constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -17,7 +18,10 @@ class ThemeController extends GetxController implements GetxService {
     sharedPreferences.setBool(AppConstants.THEME, _darkTheme);
     update();
   }
-
+  void changeThemeOfButtons() {
+    AppStore().isDarkModeOn = !AppStore().isDarkModeOn;
+    update([1]);
+  }
   void _loadCurrentTheme() async {
     _darkTheme = sharedPreferences.getBool(AppConstants.THEME) ?? false;
     update();

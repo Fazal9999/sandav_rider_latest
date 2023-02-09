@@ -12,7 +12,8 @@ class RunningOrderScreen extends StatelessWidget {
       appBar: CustomAppBar(title: 'running_orders'.tr),
       body: GetBuilder<OrderController>(builder: (orderController) {
 
-        return orderController.currentOrderList != null ? orderController.currentOrderList.length > 0 ? RefreshIndicator(
+        return orderController.currentOrderList != null ? orderController.currentOrderList.length
+            > 0 ? RefreshIndicator(
           onRefresh: () async {
             await orderController.getCurrentOrders();
           },

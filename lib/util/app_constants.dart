@@ -8,7 +8,6 @@ class AppConstants {
   static const String BASE_URL = 'https://sandavdelivery.co.za/sandav';
   static const String CONFIG_URI = '/api/v1/config';
   static const String GET_VEHICLES ='/api/v1/availability/get_vehicles';
-
   static const String FORGET_PASSWORD_URI = '/api/v1/auth/delivery-man/forgot-password';
   static const String VERIFY_TOKEN_URI = '/api/v1/auth/delivery-man/verify-token';
   static const String RESET_PASSWORD_URI = '/api/v1/auth/delivery-man/reset-password';
@@ -31,7 +30,6 @@ class AppConstants {
   static const String DM_REGISTER_URI = '/api/v1/auth/delivery-man/store';
   static const String ZONE_LIST_URI = '/api/v1/zone/list';
   static const String ZONE_URI = '/api/v1/config/get-zone-id';
-
   //chat url
   static const String GET_CONVERSATION_LIST = '/api/v1/delivery-man/message/list';
   static const String GET_MESSAGE_LIST_URI = '/api/v1/delivery-man/message/details';

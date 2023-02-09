@@ -22,8 +22,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
 class HomeScreen extends StatelessWidget {
+  bool serviceEnabled;
+  LocationPermission permission;
 
   Future<void> _loadData() async {
+    check_location();
     Get.find<OrderController>().getIgnoreList();
     Get.find<OrderController>().removeFromIgnoreList();
     await Get.find<AuthController>().getProfile();
@@ -34,7 +37,30 @@ class HomeScreen extends StatelessWidget {
       DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
     }
   }
+Future<void> check_location() async {
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      Get.snackbar('', 'Location Permission Denied');
+      // Permissions are denied, next time you could try
+      // requesting permissions again (this is also where
+      // Android's shouldShowRequestPermissionRationale
+      // returned true. According to Android guidelines
+      // your App should show an explanatory UI now.
+      return Future.error('Location permissions are denied');
+    }
+  }
 
+  if (permission == LocationPermission.deniedForever) {
+    // Permissions are denied forever, handle appropriately.
+    return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.');
+  }
+  return Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high);
+}
   @override
   Widget build(BuildContext context) {
     _loadData();
@@ -91,25 +117,26 @@ class HomeScreen extends StatelessWidget {
                       ));
                     }else {
                       LocationPermission permission = await Geolocator.checkPermission();
-                      if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
-                          || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-                        if(GetPlatform.isAndroid) {
-                          Get.dialog(ConfirmationDialog(
-                            icon: Images.location_permission,
-                            iconSize: 200,
-                            hasCancel: false,
-                            description: 'this_app_collects_location_data'.tr,
-                            onYesPressed: () {
-                              Get.back();
-                              _checkPermission(() => authController.updateActiveStatus());
-                            },
-                          ), barrierDismissible: false);
-                        }else {
-                          _checkPermission(() => authController.updateActiveStatus());
-                        }
-                      }else {
+                      // if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
+                      //     || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
+                      //   if(GetPlatform.isAndroid) {
+                      //     Get.dialog(ConfirmationDialog(
+                      //       icon: Images.location_permission,
+                      //       iconSize: 200,
+                      //       hasCancel: false,
+                      //       description: 'this_app_collects_location_data'.tr,
+                      //       onYesPressed: () {
+                      //         Get.back();
+                      //      //   _checkPermission(() => authController.updateActiveStatus());
+                      //       },
+                      //     ), barrierDismissible: false);
+                      //   }else {
+                      //   //  _checkPermission(() => authController.updateActiveStatus());
+                      //   }
+                    //  }
+                    //else {
                         authController.updateActiveStatus();
-                      }
+                      //}
                     }
                   }
                 },
@@ -266,7 +293,27 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  void _checkPermission(Function callback) async {
+  // void _checkPermission(Function callback) async {
+  //   LocationPermission permission = await Geolocator.requestPermission();
+  //   permission = await Geolocator.checkPermission();
+  //   if(permission == LocationPermission.denied
+  //       || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
+  //     Get.dialog(CustomAlertDialog(description: 'you_denied'.tr, onOkPressed: () async {
+  //       Get.back();
+  //       await Geolocator.requestPermission();
+  //       _checkPermission(callback);
+  //     }), barrierDismissible: false);
+  //   }else if(permission == LocationPermission.deniedForever) {
+  //     Get.dialog(CustomAlertDialog(description: 'you_denied_forever'.tr, onOkPressed: () async {
+  //       Get.back();
+  //       await Geolocator.openAppSettings();
+  //       _checkPermission(callback);
+  //     }), barrierDismissible: false);
+  //   }else {
+  //     callback();
+  //   }
+  // }
+   void _checkPermission(Function callback) async {
     LocationPermission permission = await Geolocator.requestPermission();
     permission = await Geolocator.checkPermission();
     if(permission == LocationPermission.denied
