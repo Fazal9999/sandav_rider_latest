@@ -34,27 +34,6 @@ class AuthRepo {
     return apiClient.postData(AppConstants.RECORD_LOCATION_URI, recordLocationBody.toJson());
   }
 
-  Future<http.StreamedResponse> updateProfile(ProfileModel userInfoModel, XFile data, String token) async {
-    http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse('${AppConstants.BASE_URL}${AppConstants.UPDATE_PROFILE_URI}'));
-    request.headers.addAll(<String,String>{'Authorization': 'Bearer $token'});
-    if(GetPlatform.isMobile && data != null) {
-      File _file = File(data.path);
-      request.files.add(http.MultipartFile('image', _file.readAsBytes().asStream(), _file.lengthSync(), filename: _file.path.split('/').last));
-    }else if(GetPlatform.isWeb && data != null) {
-      Uint8List _list = await data.readAsBytes();
-      var part = http.MultipartFile('image', data.readAsBytes().asStream(), _list.length, filename: basename(data.path),
-          contentType: MediaType('image', 'jpg'));
-      request.files.add(part);
-    }
-    Map<String, String> _fields = Map();
-    _fields.addAll(<String, String>{
-      '_method': 'put', 'f_name': userInfoModel.fName, 'l_name': userInfoModel.lName,
-      'email': userInfoModel.email, 'token': getUserToken()
-    });
-    request.fields.addAll(_fields);
-    http.StreamedResponse response = await request.send();
-    return response;
-  }
 
   Future<Response> changePassword(ProfileModel userInfoModel, String password) async {
     return await apiClient.postData(AppConstants.UPDATE_PROFILE_URI, {'_method': 'put', 'f_name': userInfoModel.fName,
@@ -223,4 +202,61 @@ class AuthRepo {
 
     );
   }
+  Future<Response> updateDeliveryMan(DeliveryManBody deliveryManBody,
+      List<MultipartBody> licensemultiParts,
+      List<MultipartBody> driverLicensemultiParts,
+      List<MultipartBody> vehiclemultiParts,
+      String path, String path_bank) async {
+    return apiClient.postMultipartDataUpdate(AppConstants.DM_UPDATE_URI, deliveryManBody,
+        licensemultiParts
+        ,driverLicensemultiParts,vehiclemultiParts,path,path_bank
+
+    );
+  }
+
+  Future<http.StreamedResponse> updateProfile(ProfileModel userInfoModel,
+      XFile data,
+      String token) async {
+    http.MultipartRequest request = http.MultipartRequest('POST',
+        Uri.parse('${AppConstants.BASE_URL}${AppConstants.UPDATE_PROFILE_URI}'));
+    request.headers.addAll(<String,String>{'Authorization': 'Bearer $token'});
+    if(GetPlatform.isMobile && data != null) {
+      File _file = File(data.path);
+      request.files.add(http.MultipartFile('image', _file.readAsBytes().asStream(),
+          _file.lengthSync(), filename: _file.path.split('/').last));
+    }else if(GetPlatform.isWeb && data != null) {
+      Uint8List _list = await data.readAsBytes();
+      var part = http.MultipartFile('image', data.readAsBytes().asStream(), _list.length, filename: basename(data.path),
+          contentType: MediaType('image', 'jpg'));
+      request.files.add(part);
+    }
+    Map<String, String> _fields = Map();
+    _fields.addAll(<String, String>{
+      '_method': 'put', 'f_name': userInfoModel.fName, 'l_name': userInfoModel.lName,
+      'email': userInfoModel.email, 'token': getUserToken()
+    });
+    request.fields.addAll(_fields);
+    http.StreamedResponse response = await request.send();
+    return response;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+

@@ -27,36 +27,61 @@ class ProfileModel {
   double thisMonthEarning;
   String createdAt;
   String updatedAt;
+  String is_vehicle_responsibility;
+  String is_criminal_bg_check;
+  String is_total_amount;
+  String is_paid_every_week;
+  String is_paid_per_km;
+  String is_max_order;
+  String is_track_event;
+  String is_max_waiting_period;
+  String is_version_seven_plus;
+  String is_agree_terms;
+  String is_agree_privacy;
+  String vehicle_license_images;
 
-  ProfileModel(
-      {this.id,
-        this.fName,
-        this.lName,
-        this.phone,
-        this.email,
-        this.identityNumber,
-        this.identityType,
-        this.identityImage,
-        this.image,
-        this.fcmToken,
-        this.zoneId,
-        this.active,
-        this.avgRating,
-        this.memberSinceDays,
-        this.orderCount,
-        this.todaysOrderCount,
-        this.thisWeekOrderCount,
-        this.cashInHands,
-        this.ratingCount,
-        this.createdAt,
-        this.updatedAt,
-        this.earnings,
-        this.type,
-        this.balance,
-        this.todaysEarning,
-        this.vehicle_id,
-        this.thisWeekEarning,
-        this.thisMonthEarning});
+  ProfileModel({
+    this.id,
+    this.fName,
+    this.lName,
+    this.phone,
+    this.email,
+    this.identityNumber,
+    this.identityType,
+    this.identityImage,
+    this.image,
+    this.fcmToken,
+    this.zoneId,
+    this.active,
+    this.avgRating,
+    this.memberSinceDays,
+    this.orderCount,
+    this.todaysOrderCount,
+    this.thisWeekOrderCount,
+    this.cashInHands,
+    this.ratingCount,
+    this.createdAt,
+    this.updatedAt,
+    this.earnings,
+    this.type,
+    this.balance,
+    this.todaysEarning,
+    this.vehicle_id,
+    this.thisWeekEarning,
+    this.thisMonthEarning,
+    this.is_vehicle_responsibility,
+    this.is_criminal_bg_check,
+    this.is_total_amount,
+    this.is_paid_every_week,
+    this.is_paid_per_km,
+    this.is_max_order,
+    this.is_track_event,
+    this.is_max_waiting_period,
+    this.is_version_seven_plus,
+    this.is_agree_terms,
+    this.is_agree_privacy,
+    this.vehicle_license_images,
+  });
 
   ProfileModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -87,6 +112,20 @@ class ProfileModel {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     vehicle_id = json['vehicle_id'];
+
+    is_vehicle_responsibility = json['is_vehicle_responsibility'];
+    is_criminal_bg_check = json['is_criminal_bg_check'];
+    is_total_amount = json['is_total_amount'];
+    is_paid_every_week = json['is_paid_every_week'];
+    is_paid_per_km = json['is_paid_per_km'];
+    is_max_order = json['is_max_order'];
+    is_track_event = json['is_track_event'];
+
+    is_max_waiting_period = json['is_max_waiting_period'];
+    is_version_seven_plus = json['is_version_seven_plus'];
+    is_agree_terms = json['is_agree_terms'];
+    is_agree_privacy = json['is_agree_privacy'];
+    vehicle_license_images = json['vehicle_license_images'];
   }
 
   Map<String, dynamic> toJson() {
@@ -119,6 +158,20 @@ class ProfileModel {
     data['this_month_earning'] = this.thisMonthEarning;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+
+    data['is_vehicle_responsibility'] = this.is_vehicle_responsibility;
+    data['is_criminal_bg_check']= this.is_criminal_bg_check;;
+    data['is_total_amount']= this.is_total_amount;;
+    data['is_paid_every_week']= this.is_paid_every_week;;
+    data['is_paid_per_km']= this.is_paid_per_km;;
+    data['is_max_order']= this.is_max_order;;
+    data['is_track_event']= this.is_track_event;;
+    data['is_max_waiting_period']= this.is_max_waiting_period;;
+    data['is_version_seven_plus']= this.is_version_seven_plus;;
+    data['is_agree_terms']= this.is_agree_terms;;
+    data['is_agree_privacy']= this.is_agree_privacy;;
+    data['vehicle_license_images']= this.vehicle_license_images;;
+
     return data;
   }
 }

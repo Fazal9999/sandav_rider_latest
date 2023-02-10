@@ -20,6 +20,7 @@ import 'package:get/get.dart';
 
 
 import '../../../main.dart';
+import '../home/home.dart';
 
 class DashboardScreen extends StatefulWidget {
   final int pageIndex;
@@ -33,7 +34,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   PageController _pageController;
   int _pageIndex = 0;
    List<Widget> _screens;
-  final _channel = const MethodChannel('com.sixamtech/app_retain');
+  final _channel = const MethodChannel('sandav.delivery.man');
   StreamSubscription _stream;
   //Timer _timer;
   //int _orderCount;
@@ -109,7 +110,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _getWidget() {
     if (_pageIndex == 0) {
 
-      return HomeScreen();
+      return Home();
     } else if (_pageIndex == 1) {
       return OrderRequestScreen(onTap: () => _setPage(0));
     }
@@ -120,7 +121,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return ProfileScreen();
     }
 
-    return HomeScreen();
+    return Home();
   }
 
   // @override
@@ -168,19 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
       child: Scaffold(
         bottomNavigationBar: GetPlatform.isDesktop ? SizedBox() :
-        Container(
-          height: 60,
-          margin: EdgeInsets.symmetric(horizontal: 0),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child:  BubbleBottomBar(
-            hasNotch: true,
-            fabLocation: BubbleBottomBarFabLocation.end,
+          BubbleBottomBar(
             opacity: .2,
             currentIndex: _pageIndex,
             onTap: changePage,
@@ -190,26 +179,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
             elevation: 8,
             items: <BubbleBottomBarItem>[
               BubbleBottomBarItem(
-
                   backgroundColor: Colors.black,
                   icon: Icon(
-                    Icons.dashboard,
+                    Icons.home,
                     color: Colors.black,
                   ),
                   activeIcon: Icon(
-                    Icons.dashboard,
+                    Icons.home,
                     color: Colors.black,
                   ),
-                  title: Text("Home")),
+                  title: Text("Home")
 
+              ),
               BubbleBottomBarItem(
                   backgroundColor: Colors.black,
                   icon: Icon(
-                    Icons.shopping_cart,
+                    Icons.list_alt_rounded,
                     color: Colors.black,
                   ),
                   activeIcon: Icon(
-                    Icons.shopping_cart,
+                    Icons.list_alt_rounded,
                     color: Colors.black,
                   ),
                   title: Text("Request")),
@@ -227,18 +216,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
               BubbleBottomBarItem(
                   backgroundColor: Colors.black,
                   icon: Icon(
-                    Icons.person_add_rounded,
+                    Icons.person,
                     color: Colors.black,
                   ),
+
                   activeIcon: Icon(
-                    Icons.person_add_rounded,
+                    Icons.person,
                     color: Colors.black,
                   ),
                   title: Text("Profile"))
             ],
           ),
-        ),
-
 
         body: _getWidget(),
 

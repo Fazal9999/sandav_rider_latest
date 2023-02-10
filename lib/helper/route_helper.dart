@@ -23,6 +23,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 import '../view/screens/auth/registration_details_screen.dart';
+import '../view/screens/profile/registeration_screen.dart';
 
 class RouteHelper {
   static const String initial = '/';
@@ -43,6 +44,7 @@ class RouteHelper {
   static const String chatScreen = '/chat-screen';
   static const String conversationListScreen = '/conversation-list-screen';
   static const String deliveryManRegistration = '/delivery-man-registration';
+  static const String deliveryManReRegistration = '/delivery-man-reregistration';
 
   static String getInitialRoute() => '$initial';
   static String getSplashRoute(NotificationBody body) {
@@ -81,6 +83,8 @@ class RouteHelper {
   }
   static String getConversationListRoute() => '$conversationListScreen';
   static String getDeliverymanRegistrationRoute() => '$deliveryManRegistration';
+  static String getDeliverymanReRegisterationRoute()=>'$deliveryManReRegistration';
+
 
 
   static List<GetPage> routes = [
@@ -133,5 +137,6 @@ class RouteHelper {
     }),
     GetPage(name: conversationListScreen, page: () => ConversationScreen()),
     GetPage(name: deliveryManRegistration, page: () => RegistrationDetailsScreen()),
+    GetPage(name: deliveryManReRegistration, page: () => RegistrationScreen()),
   ];
 }

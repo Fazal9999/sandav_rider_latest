@@ -28,6 +28,7 @@ class AppConstants {
   static const String DRIVER_REMOVE = '/api/v1/delivery-man/remove-account?token=';
   static const String CURRENT_ORDER_URI = '/api/v1/delivery-man/order?token=';
   static const String DM_REGISTER_URI = '/api/v1/auth/delivery-man/store';
+  static const String DM_UPDATE_URI = '/api/v1/auth/delivery-man/complete_reg';
   static const String ZONE_LIST_URI = '/api/v1/zone/list';
   static const String ZONE_URI = '/api/v1/config/get-zone-id';
   //chat url

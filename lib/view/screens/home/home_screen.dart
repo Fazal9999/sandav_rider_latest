@@ -66,98 +66,18 @@ Future<void> check_location() async {
     _loadData();
 
     return Scaffold(
-
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).cardColor,
-        leading: Padding(
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-          child: Image.asset(Images.logo, height: 30, width: 30),
-        ),
-        titleSpacing: 0, elevation: 0,
-        /*title: Text(AppConstants.APP_NAME, maxLines: 1, overflow: TextOverflow.ellipsis, style: robotoMedium.copyWith(
-          color: Theme.of(context).textTheme.bodyText1.color, fontSize: Dimensions.FONT_SIZE_DEFAULT,
-        )),*/
-        //title: Image.asset(Images.logo_name, width: 120),
-        actions: [
-          IconButton(
-            icon: GetBuilder<NotificationController>(builder: (notificationController) {
-              bool _hasNewNotification = false;
-              if(notificationController.notificationList != null) {
-                _hasNewNotification = notificationController.notificationList.length
-                    != notificationController.getSeenNotificationCount();
-              }
-              return Stack(children: [
-                Icon(Icons.notifications, size: 25, color: Theme.of(context).textTheme.bodyText1.color),
-                _hasNewNotification ? Positioned(top: 0, right: 0, child: Container(
-                  height: 10, width: 10, decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor, shape: BoxShape.circle,
-                  border: Border.all(width: 1, color: Theme.of(context).cardColor),
-                ),
-                )) : SizedBox(),
-              ]);
-            }),
-            onPressed: () => Get.toNamed(RouteHelper.getNotificationRoute()),
-          ),
-          GetBuilder<AuthController>(builder: (authController) {
-            return GetBuilder<OrderController>(builder: (orderController) {
-              return (authController.profileModel != null && orderController.currentOrderList != null) ? FlutterSwitch(
-                width: 75, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
-                activeText: 'online'.tr, inactiveText: 'offline'.tr, activeColor: Theme.of(context).primaryColor,
-                value: authController.profileModel.active == 1, onToggle: (bool isActive) async {
-                  if(!isActive && orderController.currentOrderList.length > 0) {
-                    showCustomSnackBar('you_can_not_go_offline_now'.tr);
-                  }else {
-                    if(!isActive) {
-                      Get.dialog(ConfirmationDialog(
-                        icon: Images.warning, description: 'are_you_sure_to_offline'.tr,
-                        onYesPressed: () {
-                          Get.back();
-                          authController.updateActiveStatus();
-                        },
-                      ));
-                    }else {
-                      LocationPermission permission = await Geolocator.checkPermission();
-                      // if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
-                      //     || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-                      //   if(GetPlatform.isAndroid) {
-                      //     Get.dialog(ConfirmationDialog(
-                      //       icon: Images.location_permission,
-                      //       iconSize: 200,
-                      //       hasCancel: false,
-                      //       description: 'this_app_collects_location_data'.tr,
-                      //       onYesPressed: () {
-                      //         Get.back();
-                      //      //   _checkPermission(() => authController.updateActiveStatus());
-                      //       },
-                      //     ), barrierDismissible: false);
-                      //   }else {
-                      //   //  _checkPermission(() => authController.updateActiveStatus());
-                      //   }
-                    //  }
-                    //else {
-                        authController.updateActiveStatus();
-                      //}
-                    }
-                  }
-                },
-              ) : SizedBox();
-            });
-          }),
-          SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
-        ],
-      ),
-
-      body: RefreshIndicator(
+      body:
+      RefreshIndicator(
         onRefresh: () async {
           return await _loadData();
         },
-        child: SingleChildScrollView(
+
+        child:
+        SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+          padding: EdgeInsets.symmetric(vertical: 3,horizontal: 20),
           child: GetBuilder<AuthController>(builder: (authController) {
-
             return Column(children: [
-
               GetBuilder<OrderController>(builder: (orderController) {
                 bool _hasActiveOrder = orderController.currentOrderList == null || orderController.currentOrderList.length > 0;
                 bool _hasMoreOrder = orderController.currentOrderList != null && orderController.currentOrderList.length > 1;
@@ -178,7 +98,7 @@ Future<void> check_location() async {
               }),
 
               (authController.profileModel != null && authController.profileModel.earnings == 1) ? Column(children: [
-                TitleWidget(title: 'earnings'.tr),
+               // TitleWidget(title: 'earnings'.tr),
                 SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
                 Container(
                   padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
@@ -225,8 +145,6 @@ Future<void> check_location() async {
                 ),
                 SizedBox(height: Dimensions.PADDING_SIZE_DEFAULT),
               ]) : SizedBox(),
-
-              TitleWidget(title: 'orders'.tr),
               SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
               Row(children: [
                 Expanded(child: CountCard(

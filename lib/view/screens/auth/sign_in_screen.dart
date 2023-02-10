@@ -1,205 +1,503 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:country_code_picker/country_code.dart';
-import 'package:delivery_man/controller/auth_controller.dart';
-import 'package:delivery_man/controller/localization_controller.dart';
-import 'package:delivery_man/controller/splash_controller.dart';
-import 'package:delivery_man/helper/route_helper.dart';
-import 'package:delivery_man/util/dimensions.dart';
-import 'package:delivery_man/util/images.dart';
-import 'package:delivery_man/util/styles.dart';
-import 'package:delivery_man/view/base/custom_button.dart';
-import 'package:delivery_man/view/base/custom_snackbar.dart';
-import 'package:delivery_man/view/base/custom_text_field.dart';
-import 'package:delivery_man/view/screens/auth/widget/code_picker_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:phone_number/phone_number.dart';
 
-class SignInScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:nb_utils/nb_utils.dart';
+import 'package:get/get.dart';
+
+import '../../../common/colors.dart';
+import '../../../controller/auth_controller.dart';
+import '../../../controller/splash_controller.dart';
+import '../../../helper/responsive_helper.dart';
+import '../../../helper/route_helper.dart';
+import '../../../main.dart';
+import '../../../store/profile_ob.dart';
+import '../../../store/user_signup.dart';
+import '../../../util/dimensions.dart';
+import '../../../util/images.dart';
+import '../../../util/widget.dart';
+import '../../base/custom_snackbar.dart';
+
+
+
+class SignInScreen extends StatefulWidget {
+  final bool exitFromApp;
+  const SignInScreen({@required this.exitFromApp = false, Key key})
+      : super(key: key);
+
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  TextEditingController _emailController = TextEditingController();
+  ProfileOb pr_ob = ProfileOb();
+
+  TextEditingController _passwordController = TextEditingController();
   final FocusNode _phoneFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  FocusNode f5 = FocusNode();
+
+  bool isIconTrue = false;
+  bool isChecked = false;
+  String _countryDialCode;
+  bool _canExit = GetPlatform.isWeb ? true : false;
+
+  FocusNode f1 = FocusNode();
+  FocusNode f2 = FocusNode();
+  FocusNode f6 = FocusNode();
+
+  final _formKey = GlobalKey<FormState>();
+  var userinfo;
+
+  bool checkBoxValue = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _countryDialCode =
+    Get.find<AuthController>().getUserCountryCode().isNotEmpty
+        ? Get.find<AuthController>().getUserCountryCode()
+        : CountryCode.fromCountryCode(
+        Get.find<SplashController>().configModel.country)
+        .dialCode;
+    _emailController.text = Get.find<AuthController>().getUserNumber() == null
+        ? ' '
+        : Get.find<AuthController>().getUserNumber();
+    _passwordController.text =
+        Get.find<AuthController>().getUserPassword() ?? '';
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // var userinfo = ModalRoute.of(context).settings.arguments as UserCreadential;
+    // if (_emailController == null || _passwordController == null) {
+    //   if (userinfo == null) {
+    //     _emailController = TextEditingController();
+    //     _passwordController = TextEditingController();
+    //   } else {
+    //     _emailController = TextEditingController(text: userinfo.user_email);
+    //     _passwordController =
+    //         TextEditingController(text: userinfo.user_password);
+    //   }
+    // }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    String _countryDialCode = Get.find<AuthController>().getUserCountryCode().isNotEmpty ? Get.find<AuthController>().getUserCountryCode()
-        : CountryCode.fromCountryCode(Get.find<SplashController>().configModel.country).dialCode;
-    _phoneController.text =  Get.find<AuthController>().getUserNumber() ?? '';
-    _passwordController.text = Get.find<AuthController>().getUserPassword() ?? '';
+    return WillPopScope(
+        onWillPop: () async {
+          // FocusScope.of(context).unfocus();
+          // return true;
+          if (widget.exitFromApp) {
+            if (_canExit) {
+              if (GetPlatform.isAndroid) {
+                SystemNavigator.pop();
+              } else if (GetPlatform.isIOS) {
+                exit(0);
+              } else {
+                Navigator.pushNamed(context, RouteHelper.getInitialRoute());
+              }
+              return Future.value(false);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('back_press_again_to_exit'.tr,
+                    style: TextStyle(color: Colors.white)),
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+                margin: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+              ));
+              _canExit = true;
+              Timer(Duration(seconds: 2), () {
+                _canExit = false;
+              });
+              return Future.value(false);
+            }
+          } else {
+            return true;
+          }
+        },
+        child: Scaffold(
+            appBar: ResponsiveHelper.isDesktop(context)
+                ? SizedBox()
+                : !widget.exitFromApp
+                ? AppBar(
+                elevation: 0,
+                iconTheme: IconThemeData(color: Get.iconColor))
+                : null,
+            body: Scaffold(
+              resizeToAvoidBottomInset: false,
+              // appBar:
+              // AppBar(
+              //     elevation: 0, iconTheme: IconThemeData(color: Get.iconColor)),
 
-    return Scaffold(
-      body: SafeArea(child: Center(
-        child: Scrollbar(
-          child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-            child: Center(
-              child: SizedBox(
-                width: 1170,
-                child: GetBuilder<AuthController>(builder: (authController) {
-
-                  return Column(children: [
-
-                    Image.asset(Images.logo, width: 100),
-                    SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-                    //Image.asset(Images.logo_name, width: 100),
-                    SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_LARGE),
-
-                    Text('sign_in'.tr.toUpperCase(), style: robotoBlack.copyWith(fontSize: 30)),
-                    SizedBox(height: 50),
-
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                        color: Theme.of(context).cardColor,
-                        boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200], spreadRadius: 1, blurRadius: 5)],
-                      ),
-                      child: Column(children: [
-
-                        Row(children: [
-                          CodePickerWidget(
-                            onChanged: (CountryCode countryCode) {
-                              _countryDialCode = countryCode.dialCode;
-                            },
-                            initialSelection: _countryDialCode != null ? _countryDialCode : Get.find<LocalizationController>().locale.countryCode,
-                            favorite: [_countryDialCode],
-                            showDropDownButton: true,
-                            padding: EdgeInsets.zero,
-                            showFlagMain: true,
-                            dialogBackgroundColor: Theme.of(context).cardColor,
-                            flagWidth: 30,
-                            textStyle: robotoRegular.copyWith(
-                              fontSize: Dimensions.FONT_SIZE_LARGE, color: Theme.of(context).textTheme.bodyText1.color,
+              body: SingleChildScrollView(
+                child: Container(
+                  // margin: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(16),
+                  child: Form(
+                    key: _formKey,
+                    child: GetBuilder<AuthController>(
+                      builder: (authController) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image(
+                                height: 130,
+                                width: 130,
+                                fit: BoxFit.fitWidth,
+                                image: AssetImage(Images.logo),
+                               ),
+                            Text('Login to Your Account',
+                                style: boldTextStyle(size: 24)),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              controller: _emailController,
+                              focusNode: f5,
+                              validator: (value) {
+                                if (int.tryParse(value) == null) {
+                                  return 'Phone number required!!';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (v) {
+                                f5.unfocus();
+                                FocusScope.of(context).requestFocus(f6);
+                              },
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.all(0),
+                                hintText: 'Phone number',
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: radius(defaultRadius),
+                                  borderSide: BorderSide(
+                                      color: Colors.transparent, width: 0.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: radius(defaultRadius),
+                                  borderSide: BorderSide(
+                                      color: Colors.transparent, width: 0.0),
+                                ),
+                                filled: true,
+                                fillColor: appStore.isDarkModeOn
+                                    ? cardDarkColor
+                                    : editTextBgColor,
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.only(left: 12),
+                                  child: Observer(
+                                    builder: (context) =>
+                                        DropdownButtonHideUnderline(
+                                          child: DropdownButton(
+                                            value:
+                                            pr_ob.pickedValuseOfDropDownMenu1,
+                                            style: primaryTextStyle(),
+                                            items: [
+                                              DropdownMenuItem(
+                                                  child: Text('🇿🇦'), value: 0),
+                                            ],
+                                            onChanged: (val) {
+                                              pr_ob.pickedValuseOfDropDownMenu1 =
+                                                  val.toDouble();
+                                            },
+                                          ),
+                                        ),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                          Expanded(child: CustomTextField(
-                            hintText: 'phone'.tr,
-                            controller: _phoneController,
-                            focusNode: _phoneFocus,
-                            nextFocus: _passwordFocus,
-                            inputType: TextInputType.phone,
-                            divider: false,
-                          )),
-                        ]),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: isIconTrue,
+                              focusNode: f2,
+                              validator: (value) {
+                                return Validate.validate(value);
+                              },
+                              onFieldSubmitted: (v) {
+                                f2.unfocus();
+                                if (_formKey.currentState.validate()) {
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (context) => HomeScreen()));
+                                  GetPlatform.isWeb &&
+                                      authController.acceptTerms
+                                      ? _login(authController, _countryDialCode)
+                                      : null;
+                                }
+                              },
+                              decoration: inputDecoration(
+                                context,
+                                prefixIcon: Icons.lock,
+                                hintText: "Password",
+                                suffixIcon: Theme(
+                                  data: ThemeData(
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent),
+                                  child: IconButton(
+                                    highlightColor: Colors.transparent,
+                                    onPressed: () {
+                                      setState(() {
+                                        isIconTrue = !isIconTrue;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      (isIconTrue)
+                                          ? Icons.visibility_rounded
+                                          : Icons.visibility_off,
+                                      size: 16,
+                                      color:
+                                      appStore.isDarkModeOn ? white : gray,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Theme(
+                              data: ThemeData(
+                                  unselectedWidgetColor: appStore.isDarkModeOn
+                                      ? Colors.white
+                                      : black),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.all(0),
+                                title: Text("Remember Me",
+                                    style: primaryTextStyle(
+                                      color: appStore.isDarkModeOn
+                                          ? Colors.white
+                                          : Colors.black,
+                                    )),
+                                // value: checkBoxValue,
+                                dense: true,
+                                onTap: () => authController.toggleRememberMe(),
+                                leading: Checkbox(
+                                  activeColor: Theme.of(context).primaryColor,
+                                  value: authController.isActiveRememberMe,
+                                  onChanged: (bool isChecked) =>
+                                      authController.toggleRememberMe(),
+                                ),
+                              ),
+                            ),
+                            //SizedBox(height: 8),
+                            !authController.isLoading
+                                ? GestureDetector(
+                              onTap: () {
+                                if (_formKey.currentState.validate()) {
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (context) => HomeScreen()));
+                                  _login(
+                                      authController, _countryDialCode);
+                                }
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                padding:
+                                EdgeInsets.symmetric(vertical: 16),
+                                decoration:
+                                boxDecorationWithRoundedCorners(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(45)),
+                                  backgroundColor: appStore.isDarkModeOn
+                                      ? cardDarkColor
+                                      : black,
+                                ),
+                                child: Text('Sign in',
+                                    style: boldTextStyle(color: white)),
+                              ),
+                            )
+                                : Center(child: CircularProgressIndicator()),
+                            SizedBox(height: 10),
+                            TextButton(
+                              onPressed: () => Get.toNamed(
+                                  RouteHelper.getForgotPassRoute()),
+                              child: Text('Forgot the password ?',
+                                  style: boldTextStyle()),
+                            ),
+                            SizedBox(height: 8),
+                            SizedBox(
+                              height: 30,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                      child: Container(
+                                          height: 0.2, color: Colors.black26)),
+                                  SizedBox(width: 10),
+                                  Text('Or', style: secondaryTextStyle()),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                      child: Container(
+                                          height: 0.2, color: Colors.black26)),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 24),
+                            GestureDetector(
+                              onTap: () {
+                                //if (_formKey.currentState.validate()) {
+                                // Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (context) => HomeScreen()));
+                                // _login(authController, _countryDialCode);
+                                Get.toNamed(RouteHelper.getDeliverymanRegistrationRoute());
 
-                        CustomTextField(
-                          hintText: 'password'.tr,
-                          controller: _passwordController,
-                          focusNode: _passwordFocus,
-                          inputAction: TextInputAction.done,
-                          inputType: TextInputType.visiblePassword,
-                          prefixIcon: Images.lock,
-                          isPassword: true,
-                          onSubmit: (text) => GetPlatform.isWeb ? _login(
-                            authController, _phoneController, _passwordController, _countryDialCode, context,
-                          ) : null,
-                        ),
+                                //}
+                              },
+                              child:
+                              Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                decoration: boxDecorationWithRoundedCorners(
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(45)),
+                                  backgroundColor: appStore.isDarkModeOn
+                                      ? cardDarkColor
+                                      : black,
+                                ),
+                                child: Text('Join As Delivery Man',
+                                    style: boldTextStyle(color: white)),
+                              ),
+                            ),
+                            // SizedBox(
+                            //   width: MediaQuery.of(context).size.width * 0.65,
+                            //   child: Row(
+                            //     crossAxisAlignment: CrossAxisAlignment.start,
+                            //     mainAxisAlignment:
+                            //         MainAxisAlignment.spaceEvenly,
+                            //     children: [
+                            //       GestureDetector(
+                            //         onTap: () async {
+                            //           await customDialoge(context);
+                            //         },
+                            //         child: Container(
+                            //           padding: EdgeInsets.all(12),
+                            //           width: 65,
+                            //           alignment: Alignment.center,
+                            //           decoration: BoxDecoration(
+                            //             border:
+                            //                 Border.all(color: Get.iconColor),
+                            //             borderRadius: BorderRadius.circular(15),
+                            //           ),
+                            //           child: Image(
+                            //               height: 24,
+                            //               width: 24,
+                            //               image: AssetImage(facebook)),
+                            //         ),
+                            //       ),
+                            //       GestureDetector(
+                            //         onTap: () async {
+                            //           await customDialoge(context);
+                            //         },
+                            //         child: Container(
+                            //           padding: EdgeInsets.all(12),
+                            //           width: 65,
+                            //           alignment: Alignment.center,
+                            //           decoration: BoxDecoration(
+                            //             border:
+                            //                 Border.all(color: Get.iconColor),
+                            //             borderRadius: BorderRadius.circular(15),
+                            //           ),
+                            //           child: Image(
+                            //               height: 24,
+                            //               width: 24,
+                            //               image: AssetImage(google)),
+                            //         ),
+                            //       ),
+                            //       GestureDetector(
+                            //         onTap: () async {
+                            //           await customDialoge(context);
+                            //         },
+                            //         child: Container(
+                            //           padding: EdgeInsets.all(12),
+                            //           width: 65,
+                            //           alignment: Alignment.center,
+                            //           decoration: BoxDecoration(
+                            //             border:
+                            //                 Border.all(color: Get.iconColor),
+                            //             borderRadius: BorderRadius.circular(15),
+                            //           ),
+                            //           child: Image(
+                            //               height: 24,
+                            //               width: 24,
+                            //               image: AssetImage(apple),
+                            //               color: Get.iconColor),
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            SizedBox(height: 8),
 
-                      ]),
-                    ),
-                    SizedBox(height: 10),
-
-                    Row(children: [
-                      Expanded(
-                        child: ListTile(
-                          onTap: () => authController.toggleRememberMe(),
-                          leading: Checkbox(
-                            activeColor: Theme.of(context).primaryColor,
-                            value: authController.isActiveRememberMe,
-                            onChanged: (bool isChecked) => authController.toggleRememberMe(),
-                          ),
-                          title: Text('remember_me'.tr),
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          horizontalTitleGap: 0,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => Get.toNamed(RouteHelper.getForgotPassRoute()),
-                        child: Text('${'forgot_password'.tr}?'),
-                      ),
-                    ]),
-                    SizedBox(height: 50),
-
-                    !authController.isLoading ? CustomButton(
-                      buttonText: 'sign_in'.tr,
-                      onPressed: () => _login(authController, _phoneController, _passwordController, _countryDialCode, context),
-                    ) : Center(child: CircularProgressIndicator()),
-                    SizedBox(height: Get.find<SplashController>().configModel.toggleDmRegistration ? Dimensions.PADDING_SIZE_SMALL : 0),
-
-                    Get.find<SplashController>().configModel.toggleDmRegistration ? TextButton(
-                      style: TextButton.styleFrom(
-                        minimumSize: Size(1, 40),
-                      ),
-                      onPressed: () async {
-                        // if(await canLaunchUrlString('${AppConstants.BASE_URL}/deliveryman/apply')) {
-                        //   launchUrlString('${AppConstants.BASE_URL}/deliveryman/apply', mode: LaunchMode.externalApplication);
-                        // }
-                        Get.toNamed(RouteHelper.getDeliverymanRegistrationRoute());
+                          ],
+                        );
                       },
-                      child: RichText(text: TextSpan(children: [
-                        TextSpan(text: '${'join_as_a'.tr} ', style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
-                        TextSpan(text: 'delivery_man'.tr, style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyText1.color)),
-                      ])),
-                    ) : SizedBox(),
-
-                  ]);
-                }),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
-      )),
-    );
+            )));
   }
 
-  void _login(AuthController authController, TextEditingController phoneCtlr, TextEditingController passCtlr, String countryCode, BuildContext context) async {
-    String _phone = phoneCtlr.text.trim();
-    String _password = passCtlr.text.trim();
-
-    String _numberWithCountryCode = countryCode+_phone;
-    bool _isValid = false;
-    try {
-      PhoneNumber phoneNumber = await PhoneNumberUtil().parse(_numberWithCountryCode);
-      _numberWithCountryCode = '+'+phoneNumber.countryCode+phoneNumber.nationalNumber;
-      _isValid = true;
-    }catch(e) {}
-
-    if (_phone.isEmpty) {
-      showCustomSnackBar('enter_phone_number'.tr);
-    }else if (!_isValid) {
-      showCustomSnackBar('invalid_phone_number'.tr);
-    }else if (_password.isEmpty) {
-      showCustomSnackBar('enter_password'.tr);
-    }else if (_password.length < 6) {
-      showCustomSnackBar('password_should_be'.tr);
-    }else {
-      authController.login(_numberWithCountryCode, _password).then((status) async {
-        if (status.isSuccess) {
-          if (authController.isActiveRememberMe) {
-            authController.saveUserNumberAndPassword(_phone, _password, countryCode);
-          } else {
-            authController.clearUserNumberAndPassword();
-          }
-          await Get.find<AuthController>().getProfile();
-          Get.offAllNamed(RouteHelper.getInitialRoute());
-        }else {
-          showCustomSnackBar(status.message);
-        }
-      });
+  void _login(AuthController authController, String countryDialCode) async {
+    String _phone = "+27" + _emailController.text.trim();
+    String _password = _passwordController.text.trim();
+    String _numberWithCountryCode = _phone;
+    bool _isValid = GetPlatform.isWeb ? true : false;
+    if (!GetPlatform.isWeb) {
+      try {
+        PhoneNumber phoneNumber =
+        await PhoneNumberUtil().parse(_numberWithCountryCode);
+        _numberWithCountryCode =
+            '+' + phoneNumber.countryCode + phoneNumber.nationalNumber;
+        _isValid = true;
+      } catch (e) {}
     }
 
-    /*print('------------1');
-    final _imageData = await Http.get(Uri.parse('https://cdn.dribbble.com/users/1622791/screenshots/11174104/flutter_intro.png'));
-    print('------------2');
-    String _stringImage = base64Encode(_imageData.bodyBytes);
-    print('------------3 {$_stringImage}');
-    SharedPreferences _sp = await SharedPreferences.getInstance();
-    _sp.setString('image', _stringImage);
-    print('------------4');
-    Uint8List _uintImage = base64Decode(_sp.getString('image'));
-    authController.setImage(_uintImage);
-    //await _thetaImage.writeAsBytes(_imageData.bodyBytes);
-    print('------------5');*/
+    authController
+        .login(_numberWithCountryCode, _password)
+        .then((status) async {
+      if (status.isSuccess) {
+        if (authController.isActiveRememberMe) {
+          authController.saveUserNumberAndPassword(
+              _phone, _password, countryDialCode);
+        } else {
+          authController.clearUserNumberAndPassword();
+        }
+        String _token = status.message.substring(1, status.message.length);
+        authController.login(_numberWithCountryCode, _password).then((status) async {
+          if (status.isSuccess) {
+            if (authController.isActiveRememberMe) {
+              authController.saveUserNumberAndPassword(_phone, _password, _phone);
+            } else {
+              authController.clearUserNumberAndPassword();
+            }
+            await Get.find<AuthController>().getProfile();
+            Get.offAllNamed(RouteHelper.getInitialRoute());
+          }else {
+            showCustomSnackBar(status.message);
+          }
+        });
+      } else {
+        showCustomSnackBar(status.message);
+      }
+    });
   }
 }

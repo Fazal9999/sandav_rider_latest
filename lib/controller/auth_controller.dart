@@ -174,6 +174,8 @@ class AuthController extends GetxController implements GetxService {
     Response response = await authRepo.getProfileInfo();
     if (response.statusCode == 200) {
       _profileModel = ProfileModel.fromJson(response.body);
+      print("FazalBhatti ${response.body}");
+
       if (_profileModel.active == 1) {
         startLocationRecord(_profileModel.vehicle_id);
         LocationPermission permission = await Geolocator.checkPermission();
@@ -726,8 +728,6 @@ class AuthController extends GetxController implements GetxService {
     for (XFile file in pickedVhicleIdentities) {
       _VehiclemultiParts.add(MultipartBody('vehicle_plate_image[]', file));
     }
-
-
     Response response = await authRepo.registerDeliveryMan(deliveryManBody, _multiParts,_LicensemultiParts,
         _DriverLicensemultiParts,_VehiclemultiParts,
         path,path_bank
@@ -741,5 +741,48 @@ class AuthController extends GetxController implements GetxService {
     _isLoading = false;
     update();
   }
+
+
+
+
+
+
+
+
+
+  Future<void> UpdateDeliveryMan(DeliveryManBody deliveryManBody,
+      String path,
+      String path_bank) async {
+    _isLoading = true;
+    update();
+
+    List<MultipartBody> _LicensemultiParts = [];
+    List<MultipartBody> _DriverLicensemultiParts = [];
+    List<MultipartBody> _VehiclemultiParts = [];
+
+    for (XFile file in pickedLicenseIdentities) {
+      _LicensemultiParts.add(MultipartBody('vehicle_license_image[]', file));
+    }
+    for (XFile file in pickedFrontIdentities) {
+      _DriverLicensemultiParts.add(MultipartBody('driver_license_image[]', file));
+    }
+    for (XFile file in pickedVhicleIdentities) {
+      _VehiclemultiParts.add(MultipartBody('vehicle_plate_image[]', file));
+    }
+    Response response = await authRepo.updateDeliveryMan(deliveryManBody, _LicensemultiParts,
+        _DriverLicensemultiParts,_VehiclemultiParts,
+        path,path_bank
+    );
+    if (response.statusCode == 200) {
+      Get.offAllNamed(RouteHelper.getInitialRoute());
+      showCustomSnackBar("Profile Completion Successfully!!", isError: false);
+    } else {
+      ApiChecker.checkApi(response);
+    }
+    _isLoading = false;
+    update();
+  }
+
+
 
 }

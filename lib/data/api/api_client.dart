@@ -14,6 +14,9 @@ import 'package:path/path.dart';
 import 'package:flutter/foundation.dart' as Foundation;
 import 'package:http/http.dart' as Http;
 
+import '../../controller/auth_controller.dart';
+import '../model/body/delivery_man_body.dart';
+
 class ApiClient extends GetxService {
   final String appBaseUrl;
   final SharedPreferences sharedPreferences;
@@ -181,6 +184,96 @@ class ApiClient extends GetxService {
     }
   }
 
+
+  Future<Response> postMultipartDataUpdate(String uri, DeliveryManBody body,
+
+      List<MultipartBody> licensemultiParts,
+      List<MultipartBody> driverLicensemultiParts,
+      List<MultipartBody> vehiclemultiParts,
+      String path, String path_bank, {Map<String, String> headers}) async {
+    try {
+      String token =Get.find<AuthController>().getUserToken();
+
+      debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
+       Http.MultipartRequest _request = Http.MultipartRequest('POST', Uri.parse(appBaseUrl+uri));
+    //  _request.headers.addAll(headers ?? _mainHeaders);
+      _request.headers.addAll(<String,String>{'Authorization': 'Bearer $token'});
+      for (MultipartBody multipart in licensemultiParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.readAsBytes();
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readAsBytes().asStream(),
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      for (MultipartBody multipart in driverLicensemultiParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.readAsBytes();
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readAsBytes().asStream(),
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      for (MultipartBody multipart in vehiclemultiParts) {
+        if (multipart.file != null) {
+          Uint8List _list = await multipart.file.readAsBytes();
+          _request.files.add(Http.MultipartFile(
+            multipart.key,
+            multipart.file.readAsBytes().asStream(),
+            _list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ));
+        }
+      }
+      File imgRes = File(path);
+      File imgbank = File(path_bank);
+      Uint8List imgbytesRes = await imgRes.readAsBytes();
+      Uint8List imgbytesBank = await imgbank.readAsBytes();
+      //  Uint8List imgbytesbank = await imgbank.readAsBytes();
+      Map<String, String> _fields = Map();
+      _request.files.add(Http.MultipartFile(
+        "resident_file",
+        imgRes.readAsBytes().asStream(),
+        imgbytesRes.length,
+        filename: '${DateTime.now().toString()}.pdf',
+      ));
+      _request.files.add(Http.MultipartFile(
+        "bank_file",
+        imgbank.readAsBytes().asStream(),
+        imgbytesBank.length,
+        filename: '${DateTime.now().toString()}.pdf',
+      ));
+      _request.fields.addAll(body.toJson());
+      _fields.addAll(<String, String>{
+        '_method': 'put',
+        'is_criminal_bg_check': body.is_criminal_bg_check,
+        'is_total_amount': body.is_total_amount,
+        'is_paid_every_week':body.is_paid_every_week,
+        'is_vehicle_responsibility':body.is_vehicle_responsibility,
+        'is_paid_per_km':body.is_paid_per_km,
+        'is_max_order':body.is_max_order,
+        'is_track_event':body.is_track_event,
+        'is_max_waiting_period':body.is_max_waiting_period,
+        'is_version_seven_plus':body.is_version_seven_plus,
+        'is_agree_terms':body.is_agree_terms,
+        'is_agree_privacy':body.is_agree_privacy,
+         'token': token
+      });
+      _request.fields.addAll(_fields);
+
+      Http.Response _response = await Http.Response.fromStream(await _request.send());
+      return handleResponse(_response, uri);
+    } catch (e) {
+      print("regError ${e.toString()}");
+      return Response(statusCode: 1, statusText: e.toString());
+    }
+  }
   Future<Response> putData(String uri, dynamic body, {Map<String, String> headers}) async {
     try {
       debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
@@ -192,6 +285,7 @@ class ApiClient extends GetxService {
       ).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(_response, uri);
     } catch (e) {
+
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
