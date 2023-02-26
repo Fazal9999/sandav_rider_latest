@@ -70,7 +70,6 @@ class OrderRequestWidget extends StatelessWidget {
             ),
           ]),
           SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-
           Text(
             '${orderModel.detailsCount} ${orderModel.detailsCount > 1 ? 'items'.tr : 'item'.tr}',
             style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
@@ -80,6 +79,18 @@ class OrderRequestWidget extends StatelessWidget {
             style: robotoBold.copyWith(color: Theme.of(context).primaryColor),
           ),
           SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+          Text(
+            '${'Delivery Man Tips'.tr} ${PriceConverter.convertPrice(orderModel.dmTips)} ',
+            style: robotoBold.copyWith(color: Theme.of(context).primaryColor),
+          ),
+          SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+         orderModel.vehicle_fee_per_km!=null ?
+           Text(
+             '${'Delivery Fee'.tr} R${orderModel.vehicle_fee_per_km!=null ? orderModel.vehicle_fee_per_km : ""} ',
+             style: robotoBold.copyWith(color: Theme.of(context).primaryColor),
+           ) : SizedBox(),
+
+
 
           Row(children: [
             Expanded(child: TextButton(

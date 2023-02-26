@@ -50,6 +50,7 @@ class OrderModel {
   double deliveryCharge;
   double originalDeliveryCharge;
   double dmTips;
+  double vehicle_fee_per_km;
   String scheduleAt;
   String restaurantName;
   String restaurantAddress;
@@ -97,7 +98,9 @@ class OrderModel {
         this.orderNote,
         this.deliveryAddress,
         this.customer,
-        this.processingTime});
+        this.processingTime,
+        this.vehicle_fee_per_km
+      });
 
   OrderModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -128,6 +131,7 @@ class OrderModel {
     restaurantDeliveryTime = json['restaurant_delivery_time'];
     vendorId = json['vendor_id'];
     detailsCount = json['details_count'];
+    vehicle_fee_per_km=double.tryParse(json["vehicle_fee_per_km"]) ?? 0.0;
     orderNote = json['order_note'];
     deliveryAddress = json['delivery_address'] != null
         ? new DeliveryAddress.fromJson(json['delivery_address'])
@@ -169,6 +173,7 @@ class OrderModel {
     data['vendor_id'] = this.vendorId;
     data['details_count'] = this.detailsCount;
     data['order_note'] = this.orderNote;
+    data['vehicle_fee_per_km']=this.vehicle_fee_per_km;
     if (this.deliveryAddress != null) {
       data['delivery_address'] = this.deliveryAddress.toJson();
     }

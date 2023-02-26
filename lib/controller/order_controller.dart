@@ -15,7 +15,6 @@ import 'package:get/get.dart';
 class OrderController extends GetxController implements GetxService {
   final OrderRepo orderRepo;
   OrderController({ this.orderRepo});
-
   List<OrderModel> _allOrderList;
   List<OrderModel> _currentOrderList;
   List<OrderModel> _deliveredOrderList;
@@ -48,7 +47,6 @@ class OrderController extends GetxController implements GetxService {
   int get pageSize => _pageSize;
   int get offset => _offset;
   OrderModel get orderModel => _orderModel;
-
   Future<void> getAllOrders() async {
     Response response = await orderRepo.getAllOrders();
     if(response.statusCode == 200) {
@@ -65,7 +63,6 @@ class OrderController extends GetxController implements GetxService {
     }
     update();
   }
-
   Future<void> getCompletedOrders(int offset) async {
     if(offset == 1) {
       _offsetList = [];
@@ -94,19 +91,15 @@ class OrderController extends GetxController implements GetxService {
       }
     }
   }
-
   void showBottomLoader() {
     _paginate = true;
     update();
   }
-
   void setOffset(int offset) {
     _offset = offset;
   }
-
   Future<void> getCurrentOrders() async {
     Response response = await orderRepo.getCurrentOrders();
-
     if(response.statusCode == 200) {
       _currentOrderList = [];
       response.body.forEach((order) => _currentOrderList.add(OrderModel.fromJson(order)));
@@ -208,7 +201,6 @@ class OrderController extends GetxController implements GetxService {
     }
     update();
   }
-
   Future<bool> acceptOrder(int orderID, int index, OrderModel orderModel) async {
     _isLoading = true;
     update();

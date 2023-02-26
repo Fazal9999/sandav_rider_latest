@@ -28,7 +28,7 @@ class NoInternetScreen extends StatelessWidget {
                 )),
             SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
             Text(
-              'no_internet_connection'.tr,
+              "No Internet Connection",
               textAlign: TextAlign.center,
               style: robotoRegular,
             ),

@@ -4,7 +4,6 @@ import 'package:delivery_man/view/base/custom_app_bar.dart';
 import 'package:delivery_man/view/screens/order/widget/history_order_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 class OrderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -12,7 +11,7 @@ class OrderScreen extends StatelessWidget {
     Get.find<OrderController>().getCompletedOrders(1);
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'my_orders'.tr, isBackButtonExist: false),
+      appBar: CustomAppBar(title: 'completed_order'.tr, isBackButtonExist: false),
       body: GetBuilder<OrderController>(builder: (orderController) {
         scrollController?.addListener(() {
           if (scrollController.position.pixels == scrollController.position.maxScrollExtent
