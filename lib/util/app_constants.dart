@@ -36,7 +36,6 @@ class AppConstants {
   static const String GET_MESSAGE_LIST_URI = '/api/v1/delivery-man/message/details';
   static const String SEND_MESSAGE_URI = '/api/v1/delivery-man/message/send';
   static const String SEARCH_CONVERSATION_LIST_URI = '/api/v1/delivery-man/message/search-list';
-
   // Shared Key
   static const String THEME = 'theme';
   static const String TOKEN = 'delivery_man_token';

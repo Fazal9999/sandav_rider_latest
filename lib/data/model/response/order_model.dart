@@ -1,3 +1,5 @@
+import 'package:nb_utils/nb_utils.dart';
+
 class PaginatedOrderModel {
   int totalSize;
   String limit;
@@ -131,7 +133,7 @@ class OrderModel {
     restaurantDeliveryTime = json['restaurant_delivery_time'];
     vendorId = json['vendor_id'];
     detailsCount = json['details_count'];
-    vehicle_fee_per_km=double.tryParse(json["vehicle_fee_per_km"]) ?? 0.0;
+    vehicle_fee_per_km=json["vehicle_fee_per_km"].toString().toDouble();
     orderNote = json['order_note'];
     deliveryAddress = json['delivery_address'] != null
         ? new DeliveryAddress.fromJson(json['delivery_address'])

@@ -24,7 +24,6 @@ import 'package:get/get.dart';
 class HomeScreen extends StatelessWidget {
   bool serviceEnabled;
   LocationPermission permission;
-
   Future<void> _loadData() async {
     check_location();
     Get.find<OrderController>().getIgnoreList();
@@ -64,14 +63,13 @@ Future<void> check_location() async {
   @override
   Widget build(BuildContext context) {
     _loadData();
-
     return Scaffold(
+
       body:
       RefreshIndicator(
         onRefresh: () async {
           return await _loadData();
         },
-
         child:
         SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
@@ -211,27 +209,8 @@ Future<void> check_location() async {
     );
   }
 
-  // void _checkPermission(Function callback) async {
-  //   LocationPermission permission = await Geolocator.requestPermission();
-  //   permission = await Geolocator.checkPermission();
-  //   if(permission == LocationPermission.denied
-  //       || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-  //     Get.dialog(CustomAlertDialog(description: 'you_denied'.tr, onOkPressed: () async {
-  //       Get.back();
-  //       await Geolocator.requestPermission();
-  //       _checkPermission(callback);
-  //     }), barrierDismissible: false);
-  //   }else if(permission == LocationPermission.deniedForever) {
-  //     Get.dialog(CustomAlertDialog(description: 'you_denied_forever'.tr, onOkPressed: () async {
-  //       Get.back();
-  //       await Geolocator.openAppSettings();
-  //       _checkPermission(callback);
-  //     }), barrierDismissible: false);
-  //   }else {
-  //     callback();
-  //   }
-  // }
-   void _checkPermission(Function callback) async {
+
+  void _checkPermission(Function callback) async {
     LocationPermission permission = await Geolocator.requestPermission();
     permission = await Geolocator.checkPermission();
     if(permission == LocationPermission.denied

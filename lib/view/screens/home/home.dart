@@ -15,6 +15,7 @@ import '../../../util/T13Constants.dart';
 import '../../../util/dimensions.dart';
 import '../../../util/images.dart';
 import '../../base/confirmation_dialog.dart';
+import '../../base/custom_alert_dialog.dart';
 import '../../base/custom_snackbar.dart';
 import 'home_screen.dart';
 
@@ -89,9 +90,8 @@ class HomeState extends State<Home> {
             return GetBuilder<OrderController>(builder: (orderController) {
               return (authController.profileModel != null && orderController.currentOrderList != null) ?
               FlutterSwitch(
-                inactiveColor: Colors.grey,
                 width: 75, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
-                activeText: 'online'.tr, inactiveText: 'offline'.tr, activeColor: Colors.green,
+                activeText: 'online'.tr, inactiveText: 'offline'.tr, activeColor: Theme.of(context).primaryColor,
                 value: authController.profileModel.active == 1, onToggle: (bool isActive) async {
                 if(!isActive && orderController.currentOrderList.length > 0) {
                   showCustomSnackBar('you_can_not_go_offline_now'.tr);
@@ -106,26 +106,25 @@ class HomeState extends State<Home> {
                     ));
                   }else {
                     LocationPermission permission = await Geolocator.checkPermission();
-                    // if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
-                    //     || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-                    //   if(GetPlatform.isAndroid) {
-                    //     Get.dialog(ConfirmationDialog(
-                    //       icon: Images.location_permission,
-                    //       iconSize: 200,
-                    //       hasCancel: false,
-                    //       description: 'this_app_collects_location_data'.tr,
-                    //       onYesPressed: () {
-                    //         Get.back();
-                    //      //   _checkPermission(() => authController.updateActiveStatus());
-                    //       },
-                    //     ), barrierDismissible: false);
-                    //   }else {
-                    //   //  _checkPermission(() => authController.updateActiveStatus());
-                    //   }
-                    //  }
-                    //else {
-                    authController.updateActiveStatus();
-                    //}
+                    if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
+                        || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
+                      if(GetPlatform.isAndroid) {
+                        Get.dialog(ConfirmationDialog(
+                          icon: Images.location_permission,
+                          iconSize: 200,
+                          hasCancel: false,
+                          description: 'this_app_collects_location_data'.tr,
+                          onYesPressed: () {
+                            Get.back();
+                            _checkPermission(() => authController.updateActiveStatus());
+                          },
+                        ), barrierDismissible: false);
+                      }else {
+                        _checkPermission(() => authController.updateActiveStatus());
+                      }
+                    }else {
+                      authController.updateActiveStatus();
+                    }
                   }
                 }
               },
@@ -166,5 +165,26 @@ class HomeState extends State<Home> {
       ),
 
     );
+  }
+
+  void _checkPermission(Function callback) async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    permission = await Geolocator.checkPermission();
+    if(permission == LocationPermission.denied
+        || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
+      Get.dialog(CustomAlertDialog(description: 'you_denied'.tr, onOkPressed: () async {
+        Get.back();
+        await Geolocator.requestPermission();
+        _checkPermission(callback);
+      }), barrierDismissible: false);
+    }else if(permission == LocationPermission.deniedForever) {
+      Get.dialog(CustomAlertDialog(description: 'you_denied_forever'.tr, onOkPressed: () async {
+        Get.back();
+        await Geolocator.openAppSettings();
+        _checkPermission(callback);
+      }), barrierDismissible: false);
+    }else {
+      callback();
+    }
   }
 }

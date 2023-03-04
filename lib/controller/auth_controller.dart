@@ -94,13 +94,6 @@ class AuthController extends GetxController implements GetxService {
   bool get loading => _loading;
   bool get inZone => _inZone;
   int get zoneID => _zoneID;
-
-
-
-
-
-
-
   String _saveAsFileName;
   //List<PlatformFile> _paths;
   String _directoryPath;
@@ -122,11 +115,6 @@ class AuthController extends GetxController implements GetxService {
    List<XFile> _pickedLicenseIdentities = [];
   List<XFile> _pickedFrontIdentities = [];
   List<XFile> _pickedVehicleIdentities = [];
-
-
-
-
-
 
   Future<List> get_Vehicles(
       ) async {
@@ -174,26 +162,24 @@ class AuthController extends GetxController implements GetxService {
     Response response = await authRepo.getProfileInfo();
     if (response.statusCode == 200) {
       _profileModel = ProfileModel.fromJson(response.body);
-      print("FazalBhatti ${response.body}");
-
       if (_profileModel.active == 1) {
         startLocationRecord(_profileModel.vehicle_id);
         LocationPermission permission = await Geolocator.checkPermission();
-        // if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
-        //     || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-        //   Get.dialog(ConfirmationDialog(
-        //     icon: Images.location_permission,
-        //     iconSize: 200,
-        //     hasCancel: false,
-        //     description: 'this_app_collects_location_data'.tr,
-        //     onYesPressed: () {
-        //       Get.back();
-        //       _checkPermission(() => startLocationRecord(_profileModel.vehicle_id));
-        //     },
-        //   ), barrierDismissible: false);
-        // }else {
-        //   startLocationRecord(_profileModel.vehicle_id);
-        // }
+        if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
+            || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
+          Get.dialog(ConfirmationDialog(
+            icon: Images.location_permission,
+            iconSize: 200,
+            hasCancel: false,
+            description: 'this_app_collects_location_data'.tr,
+            onYesPressed: () {
+              Get.back();
+              _checkPermission(() => startLocationRecord(_profileModel.vehicle_id));
+            },
+          ), barrierDismissible: false);
+        }else {
+          startLocationRecord(_profileModel.vehicle_id);
+        }
       } else {
         stopLocationRecord();
       }
@@ -257,21 +243,21 @@ class AuthController extends GetxController implements GetxService {
         startLocationRecord(_profileModel.vehicle_id);
         LocationPermission permission = await Geolocator.checkPermission();
 
-        // if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
-        //     || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-        //   Get.dialog(ConfirmationDialog(
-        //     icon: Images.location_permission,
-        //     iconSize: 200,
-        //     hasCancel: false,
-        //     description: 'this_app_collects_location_data'.tr,
-        //     onYesPressed: () {
-        //       Get.back();
-        //       _checkPermission(() => startLocationRecord(_profileModel.vehicle_id));
-        //     },
-        //   ), barrierDismissible: false);
-        // }else {
-        //   startLocationRecord(_profileModel.vehicle_id);
-        // }
+        if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
+            || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
+          Get.dialog(ConfirmationDialog(
+            icon: Images.location_permission,
+            iconSize: 200,
+            hasCancel: false,
+            description: 'this_app_collects_location_data'.tr,
+            onYesPressed: () {
+              Get.back();
+              _checkPermission(() => startLocationRecord(_profileModel.vehicle_id));
+            },
+          ), barrierDismissible: false);
+        }else {
+          startLocationRecord(_profileModel.vehicle_id);
+        }
       } else {
         stopLocationRecord();
       }
@@ -432,7 +418,6 @@ class AuthController extends GetxController implements GetxService {
   void initData() {
     _pickedFile = null;
   }
-
   void _checkPermission(Function callback) async {
     LocationPermission permission = await Geolocator.requestPermission();
     permission = await Geolocator.checkPermission();
