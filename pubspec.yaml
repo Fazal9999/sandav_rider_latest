@@ -1,11 +1,9 @@
 name: delivery_man
 description: A new Flutter application.
 publish_to: 'none' #
-version: 2.0.0+2
-
+version: 2.0.3+4
 environment:
   sdk: ">=2.7.0 <3.0.0"
-
 dependencies:
   flutter:
     sdk: flutter

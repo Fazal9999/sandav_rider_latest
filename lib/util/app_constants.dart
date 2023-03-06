@@ -3,7 +3,7 @@ import 'package:delivery_man/util/images.dart';
 
 class AppConstants {
   static const String APP_NAME = 'Sandav Rider';
-  static const double APP_VERSION = 2.0;
+  static const double APP_VERSION = 2.5;
  static const isDarkModeOnPref = 'isDarkModeOnPref';
   static const String BASE_URL = 'https://sandavdelivery.co.za/sandav';
   static const String CONFIG_URI = '/api/v1/config';

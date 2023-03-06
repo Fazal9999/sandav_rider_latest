@@ -33,7 +33,10 @@ class ChooseLanguageScreen extends StatelessWidget {
                     width: 1170,
                     child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-                      Center(child: Image.asset(Images.logo, width: 100)),
+                      Center(child: Image.asset(Images.logo,
+                          color: Colors.black,
+
+                          width: 100)),
                       SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
                     //  Center(child: Image.asset(Images.logo_name, width: 100)),
 

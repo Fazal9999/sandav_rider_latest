@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:delivery_man/controller/auth_controller.dart';
 import 'package:delivery_man/controller/chat_controller.dart';
 import 'package:delivery_man/controller/order_controller.dart';
@@ -16,12 +18,17 @@ import 'package:http/http.dart' as http;
 class NotificationHelper {
 
   static Future<void> initialize(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
-    var androidInitialize = new AndroidInitializationSettings('notification_icon');
+    var androidInitialize = new AndroidInitializationSettings('app_icon');
     var iOSInitialize = new IOSInitializationSettings();
     var initializationsSettings = new InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
     flutterLocalNotificationsPlugin.initialize(initializationsSettings, onSelectNotification: (String payload) async{
       try{
         if(payload != null && payload.isNotEmpty){
+          AudioCache _audio = AudioCache();
+          _audio.play('notification.mp3');
+          Timer _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+            _audio.play('notification.mp3');
+          });
 
           NotificationBody _payload = NotificationBody.fromJson(jsonDecode(payload));
 
@@ -150,7 +157,7 @@ class NotificationHelper {
       contentTitle: title, htmlFormatContentTitle: true,
     );
     AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'sandav_delivery channel id', 'sandav_delivery name', importance: Importance.max,
+      'sandav_delivery', 'sandav_delivery', importance: Importance.max,
       styleInformation: bigTextStyleInformation, priority: Priority.max, playSound: true,
       sound: RawResourceAndroidNotificationSound('notification'),
     );
@@ -175,7 +182,6 @@ class NotificationHelper {
     final NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
     await fln.show(0, title, body, platformChannelSpecifics, payload: notificationBody != null ? jsonEncode(notificationBody.toJson()) : null);
   }
-
   static Future<String> _downloadAndSaveFile(String url, String fileName) async {
     final Directory directory = await getApplicationDocumentsDirectory();
     final String filePath = '${directory.path}/$fileName';
@@ -209,6 +215,7 @@ class NotificationHelper {
 }
 
 Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) async {
+
   print("onBackground: ${message.notification.title}/${message.notification.body}/${message.notification.titleLocKey}");
   // var androidInitialize = new AndroidInitializationSettings('notification_icon');
   // var iOSInitialize = new IOSInitializationSettings();
@@ -216,4 +223,5 @@ Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) async {
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   // flutterLocalNotificationsPlugin.initialize(initializationsSettings);
   // NotificationHelper.showNotification(message, flutterLocalNotificationsPlugin, true);
+
 }

@@ -22,6 +22,7 @@ const opBackgroundColor = Color(0xFFFFFFFF);
 Widget applogo() {
   return Image.asset(
     Images.logo,
+    color: Colors.black,
     width: 36,
     height: 36,
     fit: BoxFit.fill,

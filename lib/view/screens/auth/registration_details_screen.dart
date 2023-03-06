@@ -2546,46 +2546,9 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
                             return;
                           }
                         }
-                        String _fName = _fNameController.text.trim();
-                        String _lName = _lNameController.text.trim();
-                        String _email = _emailController.text.trim();
-                        String _phone = _phoneController.text.trim();
-                        String _password =
-                        _passwordController.text.trim();
-                        String _identityNumber =
-                        _identityNumberController.text.trim();
-
-                        String _numberWithCountryCode =
-                            _countryDialCode + _phone;
-                        bool _isValid = GetPlatform.isWeb ? true : false;
+                        registerDeliveryMan(authController);
 
 
-                        authController.registerDeliveryMan(
-                            DeliveryManBody(
-                              fName: _fName, lName: _lName, password: _password, phone: _numberWithCountryCode,
-                              email: _email,
-                              identityNumber: _identityNumber,
-                              identityType: authController.identityTypeList[authController.identityTypeIndex],
-                              earning: authController.dmTypeIndex == 0 ? '1' : '0',
-                              zoneId: authController.zoneList[authController.selectedZoneIndex].id.toString(),
-                              vehicle_id: vehicle_id,
-                              is_criminal_bg_check: bg,
-                              is_total_amount: percent_hu,
-                              is_paid_every_week: paid_week,
-                              is_vehicle_responsibility: responsibility,
-                              is_paid_per_km: paidR7,
-                              is_max_order: max_order,
-                              is_track_event: track_event,
-                              is_max_waiting_period: waiting_period,
-                              is_version_seven_plus: sevenplus,
-                              is_agree_terms: terms,
-                              is_agree_privacy: privacy,
-
-                            ),
-                            _path,
-                            _path_bank
-                        );
-                        finish(context);
                       },
                       child: !authController.isLoading
                           ? Text('Finish',
@@ -2902,6 +2865,53 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
     setState(() {
       _path_bank = result;
     });
+  }
+
+  Future<void> registerDeliveryMan(AuthController authController) async {
+    bool _isValid = GetPlatform.isWeb ? true : false;
+
+    String _fName = _fNameController.text.trim();
+    String _lName = _lNameController.text.trim();
+    String _email = _emailController.text.trim();
+    String _phone = _phoneController.text.trim();
+    String _password =
+    _passwordController.text.trim();
+    String _identityNumber =
+    _identityNumberController.text.trim();
+    String _numberWithCountryCode =
+        _countryDialCode + _phone;
+    if(!GetPlatform.isWeb) {
+      try {
+        PhoneNumber phoneNumber = await PhoneNumberUtil().parse(_numberWithCountryCode);
+        _numberWithCountryCode = '+' + phoneNumber.countryCode + phoneNumber.nationalNumber;
+        _isValid = true;
+      } catch (e) {}
+    }
+     authController.registerDeliveryMan(
+        DeliveryManBody(
+          fName: _fName, lName: _lName, password: _password, phone: _numberWithCountryCode,
+          email: _email,
+          identityNumber: _identityNumber,
+          identityType: authController.identityTypeList[authController.identityTypeIndex],
+          earning: authController.dmTypeIndex == 0 ? '1' : '0',
+          zoneId: authController.zoneList[authController.selectedZoneIndex].id.toString(),
+          vehicle_id: vehicle_id,
+          is_criminal_bg_check: bg,
+          is_total_amount: percent_hu,
+          is_paid_every_week: paid_week,
+          is_vehicle_responsibility: responsibility,
+          is_paid_per_km: paidR7,
+          is_max_order: max_order,
+          is_track_event: track_event,
+          is_max_waiting_period: waiting_period,
+          is_version_seven_plus: sevenplus,
+          is_agree_terms: terms,
+          is_agree_privacy: privacy,
+        ),
+        _path,
+        _path_bank
+    );
+    finish(context);
   }
 
 // _buildIOSParams() {

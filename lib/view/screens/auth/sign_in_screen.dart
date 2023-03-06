@@ -162,6 +162,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 height: 130,
                                 width: 130,
                                 fit: BoxFit.fitWidth,
+                              color: Colors.black,
                                 image: AssetImage(Images.logo),
                                ),
                             Text('Login to Your Account',
