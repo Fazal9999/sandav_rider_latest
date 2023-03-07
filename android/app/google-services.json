@@ -134,7 +134,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:37598349845:android:39e11474baa2e2507ddc1c",
         "android_client_info": {
-          "package_name": "sandav.delivery.man"
+          "package_name": "com.delivery.sandav"
         }
       },
       "oauth_client": [
@@ -142,7 +142,7 @@
           "client_id": "37598349845-3p0mvj452jm7vcnb24femo092h74do8b.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "sandav.delivery.man",
+            "package_name": "com.delivery.sandav",
             "certificate_hash": "f92e8fa541e91c983dbfbd6233b3cbc9a874a165"
           }
         },

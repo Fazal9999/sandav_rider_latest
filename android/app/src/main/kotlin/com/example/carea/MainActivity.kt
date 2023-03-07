@@ -1,4 +1,4 @@
-package sandav.delivery.man
+package com.delivery.sandav
 
 import io.flutter.embedding.android.FlutterActivity
 

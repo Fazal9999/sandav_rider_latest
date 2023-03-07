@@ -34,7 +34,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   PageController _pageController;
   int _pageIndex = 0;
    List<Widget> _screens;
-  final _channel = const MethodChannel('sandav.delivery.man');
+  final _channel = const MethodChannel('com.delivery.sandav');
   StreamSubscription _stream;
   //Timer _timer;
   //int _orderCount;
