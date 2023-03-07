@@ -2618,12 +2618,10 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
       showCustomSnackBar("Enter Confirm Password");
       return false;
     }
-
     else if (confirm_password != _password) {
       showCustomSnackBar("Confirm Password does not match");
       return false;
     }
-
     else if (_identityNumber.isEmpty) {
       showCustomSnackBar('enter_delivery_man_identity_number'.tr);
       return false;
@@ -2632,13 +2630,10 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
       showCustomSnackBar('upload_delivery_man_image'.tr);
       return false;
     }
-
-
     else {
       return true;
     }
   }
-
   Widget checkBox(List Items, String item, int number) {
     return Column(
       children: List.generate(
@@ -2869,7 +2864,6 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen>
 
   Future<void> registerDeliveryMan(AuthController authController) async {
     bool _isValid = GetPlatform.isWeb ? true : false;
-
     String _fName = _fNameController.text.trim();
     String _lName = _lNameController.text.trim();
     String _email = _emailController.text.trim();
